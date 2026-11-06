@@ -24,8 +24,6 @@ jobs:
           bun-version: latest
       - run: bun install
       - run: bun run build:web
-        env:
-          VITE_BASE_PATH: /IA-entra-in-classe/
       - run: cp packages/web/dist/index.html packages/web/dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:

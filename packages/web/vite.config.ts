@@ -14,8 +14,9 @@ export default defineConfig(({ mode }) => {
   Object.assign(process.env, env);
 
   return {
-    // Support sub-path hosting (e.g. GitHub Pages under /<repo>/) via VITE_BASE_PATH.
-    base: process.env.VITE_BASE_PATH || "/",
+    // Relative base so the built app works on any host path (GitHub Pages, Vercel,
+    // Netlify) without hard-coding the repository name.
+    base: "./",
     // All env files live at the repo root — keep Vite's own env loading there too,
     // so packages/web/.env* files can never shadow the root .env.
     envDir: root,
