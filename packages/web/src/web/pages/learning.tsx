@@ -464,8 +464,8 @@ export default function Learning() {
                   <Feather size={17} />
                   01 · RIFLETTI E PROGETTA
                 </div>
-                <h2>Dal tuo contesto a una scelta didattica.</h2>
-                <p>Lavora su una lezione o un compito della tua disciplina. Usa casi inventati: le risposte formeranno il tuo quaderno finale.</p>
+                <h2>Rispondi in poche righe.</h2>
+                <p>Una domanda per il tuo contesto. La tua risposta entrerà nel quaderno finale.</p>
                 {step.prompts.map((p, i) => field(`${data.current}-p${i}`, p))}
               </section>
               <section className="activity">

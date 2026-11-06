@@ -7,7 +7,7 @@ export const steps = [
     intro: 'Nel corso di aggiornamento non cerchiamo soltanto modi per lavorare più velocemente. Chiediamoci che cosa l’IA cambia nel nostro modo di insegnare e che cosa deve restare un’esperienza attiva degli alunni. Se non la usi ancora, parti da un’attività che conosci bene.',
     concept: 'Uno strumento è pertinente quando serve un obiettivo di apprendimento osservabile. Produrre più materiali non equivale a far apprendere meglio: occorre decidere quale lavoro cognitivo svolge il docente, quale il sistema e quale l’alunno.',
     prompts: [
-      'Pensa a una lezione della tua disciplina: indica obiettivo osservabile, contesto senza dati personali e quale attività cognitiva deve restare agli alunni. Scrivi un prompt per ottenere due proposte di attività coerenti, con prerequisiti, vincoli, tempi e criteri di qualità; indica anche quando preferiresti non usare l’IA.',
+      'Quale parte del tuo lavoro non delegherai all’IA, e perché?',
     ],
     question: 'Quale criterio è più utile per decidere se integrare l’IA in una lezione?',
     options: ['La proposta contiene molti esercizi e una veste grafica curata.', 'La proposta sostiene l’obiettivo e mantiene visibile il lavoro cognitivo degli alunni.', 'La proposta permette di usare la stessa consegna in tutte le classi.'], correct: 1,
@@ -22,7 +22,7 @@ export const steps = [
     intro: 'Un testo plausibile può contenere errori, semplificazioni scorrette o esempi poco adatti alla classe. L’automation bias riguarda anche noi docenti: un formato professionale può farci abbassare la soglia di controllo.',
     concept: 'La revisione didattica controlla almeno correttezza disciplinare, coerenza delle consegne, adeguatezza linguistica e possibili stereotipi. Chiedere al medesimo sistema di confermarsi non è una verifica indipendente.',
     prompts: [
-      'Immagina una scheda generata per la tua disciplina: costruisci una checklist di controllo (contenuti, consegna/soluzione, linguaggio, rappresentazioni) e indica come eseguirla. Quale caratteristica ti fa fidare troppo di un output e quale controllo non salterai mai, neppure con fretta?',
+      'Quale controllo non salterai mai, neppure con fretta, e perché?',
     ],
     question: 'L’IA ha generato esercizi con soluzioni. Quale verifica è più solida prima dell’uso?',
     options: ['Risolvere gli esercizi e controllare i contenuti con risorse disciplinari indipendenti.', 'Chiedere allo stesso sistema una seconda conferma della correttezza.', 'Controllare soltanto che il livello di difficoltà sembri adatto alla classe.'], correct: 0,
@@ -37,7 +37,7 @@ export const steps = [
     intro: 'Una rubrica o una bozza di feedback possono essere supporti. La lettura del processo di apprendimento, l’ascolto dell’alunno e la motivazione del giudizio non si esauriscono nel testo prodotto da un sistema.',
     concept: 'Una valutazione solida usa criteri espliciti ed evidenze pertinenti. Un indicatore automatico non è una prova autosufficiente di apprendimento o di uso scorretto dell’IA. Il docente deve poter spiegare e rivedere il proprio giudizio.',
     prompts: [
-      'Scegli un compito e descrivi due criteri di valutazione, con evidenze sul processo oltre al prodotto. Se usi l’IA per una rubrica, quali decisioni restano tue? Scrivi una breve procedura per un elaborato dal processo poco chiaro, evitando di confondere stile fluido e apprendimento.',
+      'Quale evidenza useresti per capire se un alunno ha davvero appreso, oltre al prodotto finale?',
     ],
     question: 'Un rilevatore segnala che un elaborato sarebbe stato generato dall’IA. Qual è l’interpretazione più prudente?',
     options: ['Il valore elevato basta per assegnare una penalizzazione.', 'La segnalazione sostituisce il confronto con l’alunno se lo stile è insolito.', 'La segnalazione non basta: occorrono criteri chiari e un confronto sul processo.'], correct: 2,
@@ -52,7 +52,7 @@ export const steps = [
     intro: 'L’IA può suggerire versioni alternative di un testo, ma personalizzare non significa caricare documenti degli alunni né ridurre le aspettative. La dignità passa anche da ciò che scegliamo di non comunicare a un sistema.',
     concept: 'La rimozione del nome non garantisce che una persona non sia riconoscibile. Per progettare, privilegia esempi inventati e descrizioni funzionali generiche. Prima di adottare strumenti, chiarisci con l’istituto finalità, dati, condizioni d’uso e responsabilità; non improvvisare autorizzazioni.',
     prompts: [
-      'Progetta due versioni della stessa attività con un obiettivo comune: barriere, supporti e complessità. Scrivi un prompt con un caso inventato o esigenze generiche, elenca i dati che non inserirai e prevedi un’alternativa equivalente per chi non usa lo strumento.',
+      'Quale dato di un alunno non inseriresti mai in uno strumento esterno, e perché?',
     ],
     question: 'Vuoi adattare un’attività con un chatbot esterno. Qual è il punto di partenza più prudente?',
     options: ['Descrivere barriere e obiettivi senza documenti reali, chiarendo prima le condizioni d’uso con l’istituto.', 'Caricare il piano individuale dopo aver tolto soltanto il nome.', 'Inserire diagnosi e dettagli familiari per ottenere una proposta più precisa.'], correct: 0,
@@ -67,7 +67,7 @@ export const steps = [
     intro: 'Nel gruppo di aggiornamento c’è chi vede nell’IA un supporto e chi teme che sostituisca il lavoro degli alunni. Usiamo il confronto per costruire consegne chiare, non per scegliere fra entusiasmo e rifiuto assoluti.',
     concept: 'Le regole acquistano senso quando si collegano all’obiettivo del compito. Una consegna esplicita quali supporti sono consentiti, che cosa deve essere prodotto autonomamente, come documentare l’aiuto e quale alternativa è disponibile. L’accesso degli alunni va verificato secondo le condizioni del servizio e le procedure dell’istituto.',
     prompts: [
-      'Scrivi un paragrafo per una consegna: obiettivo, usi consentiti e non consentiti dell’IA, dichiarazione dell’aiuto e evidenze del lavoro autonomo. Riformula con rispetto l’obiezione più forte di un collega e indica come evitare svantaggi per chi non ha lo strumento.',
+      'Quale obiezione di un collega ti sembra la più forte, e come la risponderesti con rispetto?',
     ],
     question: 'Quale consegna rende più chiaro il ruolo dell’IA?',
     options: ['Usate l’IA responsabilmente; decideremo dopo come valutare.', 'L’IA può suggerire domande; l’argomentazione è vostra e documentate gli aiuti. È disponibile un percorso senza IA.', 'L’IA è facoltativa, quindi non servono indicazioni sul suo utilizzo.'], correct: 1,
@@ -82,7 +82,7 @@ export const steps = [
     intro: 'Il risultato del percorso è una scelta professionale verificabile: una piccola sperimentazione, oppure una decisione motivata di non usare l’IA. Il risparmio di tempo del docente e l’apprendimento degli alunni sono risultati distinti.',
     concept: 'Una sperimentazione utile dichiara obiettivo, condizioni, tempi, evidenze e criteri di arresto. Non dimostra automaticamente un effetto causale: differenze fra classi, compiti e momenti richiedono cautela. Il valore sta nel rendere le decisioni rivedibili.',
     prompts: [
-      'Compila la scheda di prova: contesto, obiettivo, ruolo dell’IA, attività degli alunni, verifiche, alternativa senza IA, durata. Definisci due evidenze di apprendimento, un indicatore del carico di lavoro e un criterio per sospendere la prova; scrivi il confine non delegabile e il primo passo concreto.',
+      'Quale piccola prova potresti fare nelle prossime due settimane, e quale evidenza la fermerebbe?',
     ],
     question: 'Quale evidenza documenta meglio un obiettivo di argomentazione?',
     options: ['Il docente ha preparato la lezione in meno tempo.', 'Gli alunni dichiarano che lo strumento è piacevole.', 'Negli elaborati e nel confronto gli alunni motivano le tesi con evidenze, secondo criteri espliciti.'], correct: 2,
