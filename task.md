@@ -1,0 +1,11 @@
+ # Restare umani — stato del lavoro
+ - Piano approvato: sito educativo per superiori e adulti, sei tappe, diario, quiz, scenari, risorse, guida e PDF.
+ - Implementato frontend React nel template gestito, nessun dato personale via API.
+ - Font Poppins locali; illustrazione astratta CSS originale.
+ - Articolo riscontrato nei risultati di ricerca, testo integrale bloccato da Cloudflare: esplicitato nelle fonti. Non usati i numeri e i casi traumatici non verificati della trascrizione.
+ - Build iniziale riuscita; corretto import font CSS per produzione.
+ - Verificato: layout desktop e mobile (390px, senza overflow), quiz con spiegazioni, scenari, diario, persistenza dopo reload, avanzamento, ricerca glossario, cancellazione con conferma/annullamento.
+ - PDF scaricato dal browser e verificato tramite pdftotext: 15 pagine, sei tappe, risposte, diario, campi mancanti, glossario e fonti.
+ - Lint: zero errori e warning. Build finale riuscita (rimangono solo avvisi del template/bundle).
+ - Riavviato server dopo cache HMR temporanea durante formattazione; test finale passato, nessun errore browser.
+ - Pronto per consegna website, porta gestita 4200. Nessun dato di test nel browser di anteprima.
