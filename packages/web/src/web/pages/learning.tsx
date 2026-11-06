@@ -77,6 +77,11 @@ export default function Learning() {
   const [showProfile, setShowProfile] = useState(false);
   const [openPerspective, setOpenPerspective] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [feedback, setFeedback] = useState({ u: 0, c: 0, t: 0, open: "" });
+  const [feedbackSent, setFeedbackSent] = useState(
+    () => localStorage.getItem("restare-umani-feedback") === "1",
+  );
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(data));
@@ -159,6 +164,30 @@ export default function Learning() {
       }
     };
     reader.readAsText(file);
+  };
+  // --- Sondaggio feedback (Google Forms) ---
+  // Crea un Google Form con 3 domande a scelta multipla (1-5) + 1 aperta,
+  // poi sostituisci FORM_ID e gli entry.XXXXX con gli ID reali del tuo form.
+  // Per ottenere gli ID: apri il form -> "Ottieni URL precompilato" -> copia i parametri.
+  const FEEDBACK_FORM_URL =
+    "https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url";
+  const FEEDBACK_ENTRIES = {
+    utility: "entry.111111111",
+    clarity: "entry.222222222",
+    time: "entry.333333333",
+    open: "entry.444444444",
+  };
+  const submitFeedback = () => {
+    const params = new URLSearchParams();
+    if (feedback.u) params.set(FEEDBACK_ENTRIES.utility, String(feedback.u));
+    if (feedback.c) params.set(FEEDBACK_ENTRIES.clarity, String(feedback.c));
+    if (feedback.t) params.set(FEEDBACK_ENTRIES.time, String(feedback.t));
+    if (feedback.open.trim()) params.set(FEEDBACK_ENTRIES.open, feedback.open.trim());
+    const url = `${FEEDBACK_FORM_URL}&${params.toString()}`;
+    window.open(url, "_blank", "noopener");
+    localStorage.setItem("restare-umani-feedback", "1");
+    setFeedbackSent(true);
+    setToast("Grazie per il feedback! Il form si è aperto in una nuova scheda.");
   };
   const step = steps[data.current];
   const profile = buildTeacherProfile(data);
@@ -935,6 +964,122 @@ export default function Learning() {
                 L’esportazione crea un file sul dispositivo; non lo invia al formatore. Mantieni
                 private le tue riflessioni.
               </div>
+              {!feedbackSent ? (
+                <div className="concept-box">
+                  <MessageCircle size={24} />
+                  <div>
+                    <strong>Aiutaci a migliorare il percorso</strong>
+                    <p>
+                      3 domande, anonime, 30 secondi. I risultati ci aiutano a capire se il
+                      percorso è utile, chiaro e ben calibrato nei tempi.
+                    </p>
+                    <fieldset className="option-list" style={{ marginTop: "12px" }}>
+                      <legend style={{ fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
+                        1. Quanto è stato utile?
+                      </legend>
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            className={`option ${feedback.u === n ? "chosen" : ""}`}
+                            style={{ flex: "1 1 40px", padding: "8px", justifyContent: "center" }}
+                            onClick={() => setFeedback((f) => ({ ...f, u: n }))}
+                            aria-pressed={feedback.u === n}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <fieldset className="option-list" style={{ marginTop: "12px" }}>
+                      <legend style={{ fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
+                        2. Quanto erano chiare le attività?
+                      </legend>
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            className={`option ${feedback.c === n ? "chosen" : ""}`}
+                            style={{ flex: "1 1 40px", padding: "8px", justifyContent: "center" }}
+                            onClick={() => setFeedback((f) => ({ ...f, c: n }))}
+                            aria-pressed={feedback.c === n}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <fieldset className="option-list" style={{ marginTop: "12px" }}>
+                      <legend style={{ fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
+                        3. Il tempo richiesto era adeguato?
+                      </legend>
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            className={`option ${feedback.t === n ? "chosen" : ""}`}
+                            style={{ flex: "1 1 40px", padding: "8px", justifyContent: "center" }}
+                            onClick={() => setFeedback((f) => ({ ...f, t: n }))}
+                            aria-pressed={feedback.t === n}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <label className="text-field" style={{ marginTop: "12px" }}>
+                      <span>Altro da segnalare? (facoltativo)</span>
+                      <textarea
+                        rows={3}
+                        value={feedback.open}
+                        onChange={(e) =>
+                          setFeedback((f) => ({ ...f, open: e.target.value }))
+                        }
+                        placeholder="Suggerimenti, difficoltà, idee…"
+                      />
+                    </label>
+                    <div className="hero-actions" style={{ marginTop: "12px" }}>
+                      <button
+                        className="button primary"
+                        onClick={submitFeedback}
+                        disabled={!feedback.u || !feedback.c || !feedback.t}
+                      >
+                        Invia feedback
+                      </button>
+                      <button
+                        className="button outline"
+                        onClick={() => {
+                          localStorage.setItem("restare-umani-feedback", "1");
+                          setFeedbackSent(true);
+                        }}
+                      >
+                        Salta
+                      </button>
+                    </div>
+                    <p style={{ fontSize: "11px", color: "#6f7a65", marginTop: "8px" }}>
+                      Il feedback è anonimo. Il form si apre in una nuova scheda; i valori
+                      selezionati sono già compilati.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="notice">
+                  Grazie per il tuo feedback!{" "}
+                  <button
+                    className="text-button"
+                    onClick={() => {
+                      localStorage.removeItem("restare-umani-feedback");
+                      setFeedbackSent(false);
+                      setFeedback({ u: 0, c: 0, t: 0, open: "" });
+                    }}
+                  >
+                    Modifica risposta
+                  </button>
+                </div>
+              )}
             </div>
           )}
           <footer className="footer">
