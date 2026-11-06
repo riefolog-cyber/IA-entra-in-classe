@@ -166,15 +166,14 @@ export default function Learning() {
     reader.readAsText(file);
   };
   // --- Sondaggio feedback (Google Forms) ---
-  // Crea un Google Form con 3 domande a scelta multipla (1-5) + 1 aperta,
-  // poi sostituisci FORM_ID e gli entry.XXXXX con gli ID reali del tuo form.
-  // Per ottenere gli ID: apri il form -> "Ottieni URL precompilato" -> copia i parametri.
+  // Form: https://docs.google.com/forms/d/1hxlD_cUGAbZ973Ban5wpU0IqdExpGPa4HB8okZfh-b0/edit
+  // Entry ID estratti automaticamente dal form pubblico.
   const FEEDBACK_FORM_URL =
-    "https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url";
+    "https://docs.google.com/forms/d/e/1FAIpQLScHacKURs-Exni9nb62SenSPPXZu_gSUq1HggdWYRF6wNQY0A/viewform?usp=pp_url";
   const FEEDBACK_ENTRIES = {
-    utility: "entry.111111111",
-    clarity: "entry.222222222",
-    open: "entry.333333333",
+    utility: "entry.154579810",
+    clarity: "entry.298496945",
+    open: "entry.948175716",
   };
   const submitFeedback = () => {
     const params = new URLSearchParams();
