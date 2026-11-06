@@ -21,23 +21,21 @@ async def main():
         for i, correct in enumerate(correct_answers):
             await page.locator('.step-nav button').nth(i).click()
             await page.locator('textarea').nth(0).fill(f'Tappa {i+1}: obiettivo osservabile e ragionamento degli alunni, contesto inventato.')
-            await page.locator('textarea').nth(1).fill(f'Tappa {i+1}: verifica e confronto professionale senza dati personali.')
             options = page.locator('fieldset.option-list button')
             await options.nth((correct+1)%3).click()
             await page.get_by_text('Un’occasione per approfondire.').wait_for()
             await options.nth(correct).click()
             await page.get_by_text('Hai individuato il concetto.').wait_for()
             await page.locator('.activity').nth(2).locator('.option-list button').nth(1).click()
-            await page.locator('textarea').nth(2).fill('Discuto condizioni, limiti e rischi con un collega.')
+            await page.locator('textarea').nth(1).fill('Discuto condizioni, limiti e rischi con un collega.')
             await page.get_by_role('button', name='Segna come conclusa').click()
-        await page.get_by_role('button', name='Il mio diario', exact=True).click()
-        await page.locator('textarea').fill('Diario professionale di prova: criteri, equità e sperimentazione.')
+        await page.get_by_role('button', name='Vai al riepilogo').click()
         await page.locator('main input').fill('Docente di prova')
         async with page.expect_download() as new_download:
             await page.get_by_role('button', name='Esporta il percorso in PDF').click()
         await (await new_download.value).save_as('/home/user/restare-teacher-test.pdf')
         stored = await page.evaluate('JSON.parse(localStorage.getItem("restare-umani-docenti-v2"))')
-        assert len(stored['completed']) == 6 and len(stored['answers']) == 31
+        assert len(stored['completed']) == 6 and len(stored['answers']) == 24
         assert 'Risposta precedente' in await page.evaluate('localStorage.getItem("restare-umani-v1")')
         await page.reload()
         await page.get_by_role('button', name='Riprendi il percorso', exact=True).wait_for()

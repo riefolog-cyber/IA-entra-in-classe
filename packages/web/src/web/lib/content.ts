@@ -10,8 +10,7 @@ export const steps = [
     concept:
       "L’IA generativa produce contenuti a partire da regolarità apprese nei dati. Una risposta fluida non è, da sola, una prova di verità, comprensione o cura.",
     prompts: [
-      "In quali situazioni uso l’IA? Che cosa cerco: velocità, idee, conferme o ascolto?",
-      "Che cosa provo quando una risposta sembra capirmi? Quale aspettativa nasce in me?",
+      "In quali situazioni uso l’IA e che cosa cerco (velocità, idee, conferme, ascolto)? Che cosa provo quando una risposta sembra capirmi?",
     ],
     question: "Una risposta molto convincente è necessariamente affidabile?",
     options: [
@@ -46,8 +45,7 @@ export const steps = [
     concept:
       "Una macchina può apparire neutrale, ma dati, progettazione e contesto d’uso influenzano il suo risultato. Il controllo critico non è sfiducia indiscriminata.",
     prompts: [
-      "Ricordo una volta in cui ho accettato una risposta automatica senza verificarla? Che cosa mi ha convinto?",
-      "Quali tre controlli posso fare prima di usare un’informazione generata?",
+      "Ricordo una volta in cui ho accettato una risposta automatica senza verificarla: che cosa mi ha convinto? Quali tre controlli posso fare prima di usare un’informazione generata?",
     ],
     question: "Quale comportamento aiuta a ridurre l’automation bias?",
     options: [
@@ -82,8 +80,7 @@ export const steps = [
     concept:
       "Un errore di calcolo è un problema tecnico. La scelta di non affidare una decisione intima a un sistema è un confine etico. Riconoscere questa differenza apre il confronto, non lo chiude.",
     prompts: [
-      "Quale decisione posso farmi aiutare a esplorare, ma non voglio delegare? Perché?",
-      "Quando la disponibilità continua di uno strumento mi aiuta, e quando rischia di sostituire il confronto con una persona?",
+      "Quale decisione posso farmi aiutare a esplorare, ma non voglio delegare, e perché? Quando la disponibilità continua di uno strumento mi aiuta, e quando rischia di sostituire il confronto con una persona?",
     ],
     question: "Quale esempio esprime soprattutto un limite etico?",
     options: [
@@ -118,8 +115,7 @@ export const steps = [
     concept:
       "Accountability significa poter chiedere conto delle decisioni e delle conseguenze. La difficoltà di interpretare un modello non annulla il bisogno di verifiche, supervisione e possibilità di contestazione.",
     prompts: [
-      "Se un sistema produce un risultato ingiusto, quali persone o organizzazioni dovrebbero darne conto?",
-      "Quali garanzie vorrei prima che la scuola adottasse uno strumento di IA?",
+      "Se un sistema produce un risultato ingiusto, quali persone o organizzazioni dovrebbero darne conto? Quali garanzie vorrei prima che la scuola adottasse uno strumento di IA?",
     ],
     question: "Che cosa descrive meglio l’accountability?",
     options: [
@@ -154,8 +150,7 @@ export const steps = [
     concept:
       "Le due prospettive possono convergere sulla dignità umana, pur proponendo rimedi diversi. Comprendere una posizione non significa doverla condividere.",
     prompts: [
-      "Qual è l’argomento più forte a favore di confini non delegabili all’IA?",
-      "Qual è l’argomento più forte a favore di regole e responsabilità umane? Dove le due prospettive si incontrano?",
+      "Qual è l’argomento più forte a favore di confini non delegabili all’IA, e quale a favore di regole e responsabilità umane? Dove le due prospettive si incontrano?",
     ],
     question: "Quale frase favorisce un confronto rigoroso?",
     options: [
@@ -190,8 +185,7 @@ export const steps = [
     concept:
       "Un patto di autonomia è un impegno rivedibile: dice come verificare, quando fermarsi e a chi rivolgersi. Non è una diagnosi né un profilo della tua personalità.",
     prompts: [
-      "Completa il mio patto: userò l’IA per… Verificherò sempre… Non delegherò…",
-      "Quale piccolo gesto farò nella prossima settimana per proteggere la mia autonomia e il confronto umano?",
+      "Completa il mio patto: userò l’IA per… Verificherò sempre… Non delegherò… Quale piccolo gesto farò nella prossima settimana per proteggere la mia autonomia e il confronto umano?",
     ],
     question: "Quale impegno è più concreto e verificabile?",
     options: [

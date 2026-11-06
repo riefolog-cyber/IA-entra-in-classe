@@ -34,7 +34,7 @@ export function exportPdf(state: SavedState, previousVersion = false) {
   paragraph(
     `Esportato il ${new Date().toLocaleDateString("it-IT")} · ${state.completed.length} tappe segnate come concluse su 6`,
   );
-  if (state.name.trim()) paragraph(`Nome o pseudonimo: ${state.name}`);
+  if (state.name.trim()) paragraph(`Nome: ${state.name}`);
   paragraph(
     "Questo documento raccoglie tutte le attività del percorso e le risposte presenti al momento dell’esportazione. Le risposte mancanti sono indicate. Non è una valutazione della persona. Condividi solo ciò che desideri; conserva il file con cura.",
   );
@@ -78,8 +78,6 @@ export function exportPdf(state: SavedState, previousVersion = false) {
   });
   doc.addPage();
   y = 25;
-  paragraph(previousVersion ? "Il mio diario libero" : "Il mio diario professionale", 20, true);
-  paragraph(state.answers.diary || "[Nessuna nota]");
   paragraph("Glossario", 17, true);
   glossary.forEach(([term, definition]) => {
     paragraph(term, 11, true);

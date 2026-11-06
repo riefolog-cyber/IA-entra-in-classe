@@ -4,7 +4,7 @@
 Percorso di aggiornamento professionale in italiano per docenti di ogni ordine scolastico: sei tappe di riflessione e progettazione sull’uso dell’IA a scuola. Editoriale caldo, contemplativo, senza gamificazione della persona.
 Palette: carta #f7f6f0, inchiostro #203b32, verde #284c3e, salvia #e4e9dd, terracotta #c07d5b. Georgia per titoli, Poppins per corpo e controlli.
 Sidebar desktop, navigazione compatta mobile, hero asimmetrico con specchio geometrico CSS. Spazi 8/16/24/32/48/64px, bordi sottili, ombre minime, icone Lucide.
-Sezioni: panoramica, sei tappe, diario professionale, approfondimenti e glossario, riepilogo. Non ripristinare sezioni fonti o guida docente, eliminate su richiesta.
+Sezioni: panoramica, sei tappe, approfondimenti e glossario, riepilogo. Non ripristinare sezioni fonti o guida docente, eliminate su richiesta.
 Le tappe producono: obiettivo didattico e prompt, checklist di verifica, piano di valutazione, garanzie su dati/inclusione, consegna trasparente, scheda di sperimentazione. Restano quiz concettuali e scenari di discussione.
 Risposte solo in localStorage, errori gestiti, cancellazione con conferma; PDF multipagina client-side con attività, risposte e glossario. Nuova versione con chiave separata; vecchie risposte esportabili senza associarle ai nuovi quesiti. Nessun account né API per dati personali. Analytics della piattaforma preservati.
 Focus visibile, contrasto, etichette, movimento ridotto e layout responsive.

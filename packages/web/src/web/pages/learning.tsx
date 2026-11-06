@@ -21,11 +21,12 @@ import {
   X,
 } from "lucide-react";
 import { emptyState, glossary, steps, type SavedState } from "../lib/teacher-content";
+import { buildTeacherProfile } from "../lib/teacher-profile";
 import { exportPdf } from "../lib/export-pdf";
 
 const KEY = "restare-umani-docenti-v2";
 const PREVIOUS_KEY = "restare-umani-v1";
-type View = "home" | "step" | "diary" | "resources" | "summary";
+type View = "home" | "step" | "resources" | "summary";
 function load(key = KEY): SavedState {
   try {
     const parsed = JSON.parse(localStorage.getItem(key) || "null");
@@ -34,7 +35,7 @@ function load(key = KEY): SavedState {
       Object.entries(parsed.answers || {}).filter(
         ([k, v]) =>
           typeof v === "string" &&
-          (/^[0-5]-(p[01]|quiz|scenario|reason)$/.test(k) || k === "diary"),
+          (/^[0-5]-(p[01]|quiz|scenario|reason)$/.test(k)),
       ),
     );
     for (const k of Object.keys(answers))
@@ -73,6 +74,8 @@ export default function Learning() {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState("");
   const [toast, setToast] = useState("");
+  const [showProfile, setShowProfile] = useState(false);
+  const [openPerspective, setOpenPerspective] = useState<number | null>(null);
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(data));
@@ -94,6 +97,19 @@ export default function Learning() {
   };
   const write = (key: string, value: string) =>
     setData((d) => ({ ...d, answers: { ...d.answers, [key]: value } }));
+  const toggleComplete = () => {
+    setData((d) => ({
+      ...d,
+      completed: d.completed.includes(d.current)
+        ? d.completed.filter((n) => n !== d.current)
+        : [...d.completed, d.current],
+    }));
+    setToast(
+      data.completed.includes(data.current)
+        ? "Tappa riaperta."
+        : "Tappa conclusa. Puoi sempre tornarci.",
+    );
+  };
   const download = async (previousVersion = false) => {
     setExporting(true);
     setExportError("");
@@ -110,9 +126,8 @@ export default function Learning() {
     }
   };
   const step = steps[data.current];
-  const answered = Object.entries(data.answers).filter(
-    ([k, v]) => k !== "diary" && v.trim(),
-  ).length;
+  const profile = buildTeacherProfile(data);
+  const answered = Object.entries(data.answers).filter(([_, v]) => v.trim()).length;
   const field = (
     key: string,
     label: string,
@@ -139,7 +154,6 @@ export default function Learning() {
   const names: Record<View, string> = {
     home: "Il tuo percorso",
     step: `Tappa ${data.current + 1}`,
-    diary: "Il mio diario",
     resources: "Approfondimenti",
     summary: "Il mio riepilogo",
   };
@@ -175,13 +189,6 @@ export default function Learning() {
           >
             <LayoutGrid size={18} />
             Il tuo percorso
-          </button>
-          <button
-            className={`nav-item ${view === "diary" ? "active" : ""}`}
-            onClick={() => go("diary")}
-          >
-            <Feather size={18} />
-            Il mio diario
           </button>
           <button
             className={`nav-item ${view === "resources" ? "active" : ""}`}
@@ -260,6 +267,11 @@ export default function Learning() {
           )}
           {view === "home" && (
             <>
+              <div className="home-credit-banner">
+                <Feather size={16} />
+                <span>Realizzato dal prof. Riefolo Giovanni</span>
+                <small>Docente di IRC al Ferraris Fermi di Verona</small>
+              </div>
               {(Object.keys(previousData.answers).length > 0 || previousData.completed.length > 0 || previousData.name) && <div className="notice"><strong>Le tue risposte precedenti sono conservate.</strong><p>Le attività sono cambiate: il quaderno docente usa uno spazio distinto, per non associare risposte vecchie a domande nuove.</p><button className="text-button" disabled={exporting} onClick={() => download(true)}>Esporta il percorso precedente <Download size={15}/></button></div>}
               <section className="hero">
                 <div className="hero-copy">
@@ -284,16 +296,6 @@ export default function Learning() {
                         : "Inizia il percorso"}
                       <ArrowRight size={17} />
                     </button>
-                  </div>
-                  <div className="hero-meta">
-                    <span>
-                      <Clock3 size={14} />
-                      90–120 minuti
-                    </span>
-                    <span>
-                      <MessageCircle size={14} />
-                      Individualmente e tra colleghi
-                    </span>
                   </div>
                 </div>
                 <div className="mirror-art" aria-hidden="true">
@@ -380,7 +382,12 @@ export default function Learning() {
                           )}
                         </span>
                       </div>
-                      <div className="card-category">{s.category}</div>
+                      <div className="card-category">
+                        {s.category}
+                        {i === data.current && !data.completed.includes(i) && (
+                          <span className="card-current-badge">In corso</span>
+                        )}
+                      </div>
                       <h3>{s.title}</h3>
                       <p>{s.subtitle}</p>
                       <div className="card-bottom">
@@ -422,7 +429,7 @@ export default function Learning() {
             </>
           )}
           {view === "step" && (
-            <div className="reading-page">
+            <div className="reading-page step-reading">
               <div className="page-eyebrow">
                 TAPPA 0{data.current + 1} / 06{" "}
                 <span>
@@ -547,19 +554,7 @@ export default function Learning() {
                 </div>
                 <button
                   className="button primary"
-                  onClick={() => {
-                    setData((d) => ({
-                      ...d,
-                      completed: d.completed.includes(d.current)
-                        ? d.completed.filter((n) => n !== d.current)
-                        : [...d.completed, d.current],
-                    }));
-                    setToast(
-                      data.completed.includes(data.current)
-                        ? "Tappa riaperta."
-                        : "Tappa conclusa. Puoi sempre tornarci.",
-                    );
-                  }}
+                  onClick={toggleComplete}
                 >
                   <Check size={17} />
                   {data.completed.includes(data.current)
@@ -583,40 +578,13 @@ export default function Learning() {
                   <ArrowRight size={16} />
                 </button>
               </div>
-            </div>
-          )}
-          {view === "diary" && (
-            <div className="reading-page">
-              <div className="eyebrow">UNO SPAZIO SOLO TUO</div>
-              <h1>Il mio diario professionale.</h1>
-              <p className="page-lead">Decisioni da rivedere, pratiche da provare, domande da discutere.</p>
-              <div className="concept-box">
-                <LockKeyhole size={22} />
-                <p>
-                  Le risposte non vengono inviate a un’IA, al formatore o alla scuola. Restano in questo browser.
-                  Usa contesti non identificanti; non riportare nomi, diagnosi o documenti degli alunni. Scegli quali riflessioni condividere.
-                </p>
-              </div>
-              {field(
-                "diary",
-                "Appunti di aggiornamento e confronto professionale",
-                "Quale pratica sto riconsiderando? Quale dubbio porterò ai colleghi? Che cosa osserverò nella prossima lezione?",
-              )}
-              <label className="text-field">
-                <span>Nome o pseudonimo per il PDF (facoltativo)</span>
-                <input
-                  aria-label="Nome o pseudonimo per il PDF"
-                  value={data.name}
-                  onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
-                  placeholder="Puoi lasciare questo campo vuoto"
-                />
-              </label>
-              <div className="page-navigation">
-                <button className="text-button" onClick={() => go("home")}>
-                  <ArrowLeft size={16} />
-                  Torna al percorso
+              <div className="mobile-step-cta">
+                <button className="button primary" onClick={toggleComplete}>
+                  <Check size={16} />
+                  {data.completed.includes(data.current)
+                    ? "Riapri questa tappa"
+                    : "Concludi questa tappa"}
                 </button>
-                {exportButton}
               </div>
             </div>
           )}
@@ -628,19 +596,80 @@ export default function Learning() {
                 Parole da chiarire e prospettive da tenere aperte.
               </p>
               <div className="two-perspectives">
-                <article>
+                <article className={`perspective-card ${openPerspective === 0 ? "open" : ""}`}>
                   <span>PROSPETTIVA 01</span>
                   <h2>Custodire il limite</h2>
                   <p>
                     Ascoltare un alunno, interpretare un percorso e motivare una valutazione richiedono responsabilità professionale. Quale parte del tuo lavoro può ricevere supporto e quale non vuoi delegare?
                   </p>
+                  <button
+                    className="perspective-toggle"
+                    aria-expanded={openPerspective === 0}
+                    onClick={() => setOpenPerspective(openPerspective === 0 ? null : 0)}
+                  >
+                    {openPerspective === 0 ? "Chiudi la scheda" : "Apri la scheda"}
+                    <ChevronDown size={16} />
+                  </button>
+                  {openPerspective === 0 && (
+                    <div className="perspective-body">
+                      <p>
+                        Il limite non coincide con ciò che la macchina non sa fare. È una scelta
+                        professionale: ascoltare, interpretare, valutare e accompagnare richiedono
+                        una relazione e una responsabilità che non si trasferiscono a un sistema.
+                      </p>
+                      <p>
+                        Distinguere tra supporto e delega aiuta a usare l’IA senza svuotare il
+                        ruolo docente. Un testo generato può offrire uno spunto; la lettura del
+                        contesto, la scelta dei criteri e la responsabilità della decisione restano
+                        umane.
+                      </p>
+                      <p>
+                        Il limite è anche una forma di tutela: protegge la dignità dell’alunno, la
+                        fiducia della famiglia e la credibilità della scuola.
+                      </p>
+                      <p className="perspective-takeaway">
+                        In sintesi: custodire il limite significa decidere consapevolmente che cosa
+                        non delegare, anche quando sarebbe tecnicamente possibile.
+                      </p>
+                    </div>
+                  )}
                 </article>
-                <article>
+                <article className={`perspective-card ${openPerspective === 1 ? "open" : ""}`}>
                   <span>PROSPETTIVA 02</span>
                   <h2>Governare la tecnologia</h2>
                   <p>
                     Criteri didattici, controllo dei materiali, tutela dei dati e alternative accessibili rendono gli usi discutibili e rivedibili. Quali decisioni spettano a te e quali vanno chiarite con l’istituto?
                   </p>
+                  <button
+                    className="perspective-toggle"
+                    aria-expanded={openPerspective === 1}
+                    onClick={() => setOpenPerspective(openPerspective === 1 ? null : 1)}
+                  >
+                    {openPerspective === 1 ? "Chiudi la scheda" : "Apri la scheda"}
+                    <ChevronDown size={16} />
+                  </button>
+                  {openPerspective === 1 && (
+                    <div className="perspective-body">
+                      <p>
+                        Governare significa rendere l’uso dell’IA discutibile, verificabile e
+                        rivedibile. Non basta adottare uno strumento: servono criteri didattici,
+                        verifica dei materiali, tutela dei dati e alternative accessibili.
+                      </p>
+                      <p>
+                        La governance non è solo un compito dirigenziale. Il docente può chiedere
+                        chiarezza su finalità, dati, conservazione, accessi e responsabilità; può
+                        documentare le proprie scelte e condividerle con i colleghi.
+                      </p>
+                      <p>
+                        Un uso governato accetta la possibilità di sospendere o modificare la
+                        scelta se le evidenze non sostengono l’apprendimento.
+                      </p>
+                      <p className="perspective-takeaway">
+                        In sintesi: governare la tecnologia significa trasformare una scelta
+                        individuale in una pratica trasparente, verificabile e rivedibile.
+                      </p>
+                    </div>
+                  )}
                 </article>
               </div>
               <div className="resource-heading">
@@ -693,7 +722,7 @@ export default function Learning() {
                 <div>
                   <strong>
                     {answered}
-                    <small>/30</small>
+                    <small>/24</small>
                   </strong>
                   <span>Domande e scelte compilate</span>
                 </div>
@@ -704,18 +733,18 @@ export default function Learning() {
                   <strong>Un PDF con tutta l’attività</strong>
                   <p>
                     Include le sei tappe, le domande, le tue risposte, i quiz con spiegazioni, tutti
-                    gli scenari, il diario e il glossario. Le risposte mancanti sono indicate: puoi
+                    gli scenari e il glossario. Le risposte mancanti sono indicate: puoi
                     esportare in qualsiasi momento.
                   </p>
                   {exportButton}
                 </div>
               </div>
               <label className="text-field">
-                <span>Nome o pseudonimo (facoltativo)</span>
+                <span>Nome</span>
                 <input
-                  aria-label="Nome o pseudonimo"
+                  aria-label="Nome"
                   value={data.name}
-                  placeholder="Come vuoi firmare il percorso?"
+                  placeholder="Inserisci il tuo nome"
                   onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
                 />
               </label>
@@ -766,14 +795,65 @@ export default function Learning() {
                   </div>
                 </details>
               ))}
-              <div className="activity">
-                <h2>Il diario libero</h2>
-                <p className="answer-text">
-                  {data.answers.diary || "Non hai ancora aggiunto appunti liberi."}
+<div className="activity">
+                <h2>Il mio profilo docente</h2>
+                <p>
+                  Genera una lettura personalizzata delle tue risposte: punti di forza, aree da
+                  esplorare e domande per l’autovalutazione. Il profilo è calcolato solo nel tuo
+                  browser: confronta tappe concluse, quiz, testi scritti e scelte negli scenari.
+                  Non usa un’IA, non invia dati e non produce un giudizio sulla persona.
                 </p>
-                <button className="text-button" onClick={() => go("diary")}>
-                  Apri il diario <Feather size={15} />
+                <button className="button primary" onClick={() => setShowProfile(true)}>
+                  Genera il mio profilo docente
                 </button>
+                {showProfile && (
+                  <div className="profile-report">
+                    <div className="profile-header">
+                      <span className="profile-kicker">PROFILO DOCENTE</span>
+                      <h3>{profile.headline}</h3>
+                      <p>{profile.summary}</p>
+                    </div>
+                    <div className="profile-grid">
+                      <section className="profile-panel strengths">
+                        <h4>
+                          <CheckCircle2 size={16} />
+                          Forze
+                        </h4>
+                        <ul>
+                          {profile.strengths.map((s) => (
+                            <li key={s}>{s}</li>
+                          ))}
+                        </ul>
+                      </section>
+                      <section className="profile-panel growth">
+                        <h4>
+                          <Sparkles size={16} />
+                          Da esplorare
+                        </h4>
+                        <ul>
+                          {profile.growth.map((s) => (
+                            <li key={s}>{s}</li>
+                          ))}
+                        </ul>
+                      </section>
+                      <section className="profile-panel questions">
+                        <h4>
+                          <MessageCircle size={16} />
+                          Domande per te
+                        </h4>
+                        <ul>
+                          {profile.questions.map((s) => (
+                            <li key={s}>{s}</li>
+                          ))}
+                        </ul>
+                      </section>
+                    </div>
+                    <p className="profile-footnote">
+                      Il profilo non è una valutazione: è una traccia per rileggere le tue scelte
+                      e decidere il prossimo passo.
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="notice">
                 L’esportazione crea un file sul dispositivo; non lo invia al formatore. Puoi lasciare
@@ -823,7 +903,7 @@ export default function Learning() {
             <Trash2 size={28} />
             <h2 id="delete-title">Cancellare le tue parole?</h2>
             <p>
-              Diario, risposte, nome e avanzamento, anche della versione precedente, saranno rimossi da questo browser. I PDF già
+              Risposte, nome e avanzamento, anche della versione precedente, saranno rimossi da questo browser. I PDF già
               scaricati non saranno cancellati. Questa operazione non può essere annullata.
             </p>
             <div>
