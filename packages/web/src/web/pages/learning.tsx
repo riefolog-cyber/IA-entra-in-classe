@@ -77,7 +77,7 @@ export default function Learning() {
   const [showProfile, setShowProfile] = useState(false);
   const [openPerspective, setOpenPerspective] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [feedback, setFeedback] = useState({ u: 0, c: 0, t: 0, open: "" });
+  const [feedback, setFeedback] = useState({ u: 0, c: 0, open: "" });
   const [feedbackSent, setFeedbackSent] = useState(
     () => localStorage.getItem("restare-umani-feedback") === "1",
   );
@@ -174,14 +174,12 @@ export default function Learning() {
   const FEEDBACK_ENTRIES = {
     utility: "entry.111111111",
     clarity: "entry.222222222",
-    time: "entry.333333333",
-    open: "entry.444444444",
+    open: "entry.333333333",
   };
   const submitFeedback = () => {
     const params = new URLSearchParams();
     if (feedback.u) params.set(FEEDBACK_ENTRIES.utility, String(feedback.u));
     if (feedback.c) params.set(FEEDBACK_ENTRIES.clarity, String(feedback.c));
-    if (feedback.t) params.set(FEEDBACK_ENTRIES.time, String(feedback.t));
     if (feedback.open.trim()) params.set(FEEDBACK_ENTRIES.open, feedback.open.trim());
     const url = `${FEEDBACK_FORM_URL}&${params.toString()}`;
     window.open(url, "_blank", "noopener");
@@ -1011,27 +1009,8 @@ export default function Learning() {
                         ))}
                       </div>
                     </fieldset>
-                    <fieldset className="option-list" style={{ marginTop: "12px" }}>
-                      <legend style={{ fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
-                        3. Il tempo richiesto era adeguato?
-                      </legend>
-                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <button
-                            key={n}
-                            type="button"
-                            className={`option ${feedback.t === n ? "chosen" : ""}`}
-                            style={{ flex: "1 1 40px", padding: "8px", justifyContent: "center" }}
-                            onClick={() => setFeedback((f) => ({ ...f, t: n }))}
-                            aria-pressed={feedback.t === n}
-                          >
-                            {n}
-                          </button>
-                        ))}
-                      </div>
-                    </fieldset>
                     <label className="text-field" style={{ marginTop: "12px" }}>
-                      <span>Altro da segnalare? (facoltativo)</span>
+                      <span>Altro da segnalare?</span>
                       <textarea
                         rows={3}
                         value={feedback.open}
@@ -1045,7 +1024,7 @@ export default function Learning() {
                       <button
                         className="button primary"
                         onClick={submitFeedback}
-                        disabled={!feedback.u || !feedback.c || !feedback.t}
+                        disabled={!feedback.u || !feedback.c}
                       >
                         Invia feedback
                       </button>
@@ -1073,7 +1052,7 @@ export default function Learning() {
                     onClick={() => {
                       localStorage.removeItem("restare-umani-feedback");
                       setFeedbackSent(false);
-                      setFeedback({ u: 0, c: 0, t: 0, open: "" });
+                      setFeedback({ u: 0, c: 0, open: "" });
                     }}
                   >
                     Modifica risposta
