@@ -8,10 +8,27 @@
       content="Un percorso di aggiornamento per docenti sull’IA a scuola: progettazione, valutazione, inclusione, tutela dei dati e sperimentazione. Quaderno professionale e PDF finale."
     />
     <meta name="theme-color" content="#284c3e" />
+  <link rel="manifest" href="./manifest.json" />
     <title>Restare umani · IA a scuola, aggiornamento docenti</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Restare umani · IA a scuola, aggiornamento docenti" />
+    <meta property="og:description" content="Un percorso di aggiornamento per docenti sull'IA a scuola: progettazione, verifica, valutazione, inclusione, dati, regole d'uso e sperimentazione." />
+    <meta property="og:image" content="https://riefolog-cyber.github.io/IA-entra-in-classe/og-image.png" />
+    <meta property="og:locale" content="it_IT" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Restare umani · IA a scuola, aggiornamento docenti" />
+    <meta name="twitter:description" content="Un percorso di aggiornamento per docenti sull'IA a scuola." />
+    <meta name="twitter:image" content="https://riefolog-cyber.github.io/IA-entra-in-classe/og-image.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/web/main.tsx"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

@@ -1,8 +1,8 @@
-import { jsPDF } from "jspdf";
 import { steps as previousSteps, glossary as previousGlossary } from "./content";
 import { steps as teacherSteps, glossary as teacherGlossary, type SavedState } from "./teacher-content";
 
-export function exportPdf(state: SavedState, previousVersion = false) {
+export async function exportPdf(state: SavedState, previousVersion = false) {
+  const { jsPDF } = await import("jspdf");
   const steps = previousVersion ? previousSteps : teacherSteps;
   const glossary = previousVersion ? previousGlossary : teacherGlossary;
   const doc = new jsPDF();

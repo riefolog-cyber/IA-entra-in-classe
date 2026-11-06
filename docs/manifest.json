@@ -1,0 +1,17 @@
+{
+  "name": "Restare umani · IA a scuola",
+  "short_name": "Restare umani",
+  "description": "Percorso di aggiornamento per docenti sull'IA a scuola.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f6f0",
+  "theme_color": "#284c3e",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "./og-image.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

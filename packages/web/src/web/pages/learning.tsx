@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -76,6 +76,7 @@ export default function Learning() {
   const [toast, setToast] = useState("");
   const [showProfile, setShowProfile] = useState(false);
   const [openPerspective, setOpenPerspective] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(data));
@@ -94,6 +95,13 @@ export default function Learning() {
     setMobileOpen(false);
     if (step !== undefined) setData((d) => ({ ...d, current: step }));
     window.scrollTo({ top: 0, behavior: "instant" });
+    requestAnimationFrame(() => {
+      const target = document.querySelector("main") as HTMLElement | null;
+      if (target) {
+        target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+      }
+    });
   };
   const write = (key: string, value: string) =>
     setData((d) => ({ ...d, answers: { ...d.answers, [key]: value } }));
@@ -115,7 +123,7 @@ export default function Learning() {
     setExportError("");
     try {
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      exportPdf(previousVersion ? previousData : data, previousVersion);
+      await exportPdf(previousVersion ? previousData : data, previousVersion);
       setToast("PDF generato. Controlla i download del browser.");
     } catch {
       setExportError(
@@ -124,6 +132,33 @@ export default function Learning() {
     } finally {
       setExporting(false);
     }
+  };
+  const exportJson = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "restare-umani-dati.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    setToast("Dati esportati in JSON.");
+  };
+  const importJson = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result));
+        if (parsed && typeof parsed === "object" && parsed.answers) {
+          setData(parsed as SavedState);
+          setToast("Dati importati. Controlla le risposte.");
+        } else {
+          setExportError("File non valido: struttura non riconosciuta.");
+        }
+      } catch {
+        setExportError("File non valido: impossibile leggere il JSON.");
+      }
+    };
+    reader.readAsText(file);
   };
   const step = steps[data.current];
   const profile = buildTeacherProfile(data);
@@ -158,7 +193,11 @@ export default function Learning() {
     summary: "Il mio riepilogo",
   };
   return (
-    <div className="app-shell">
+    <>
+      <a className="skip-link" href="#main-content">
+        Vai al contenuto principale
+      </a>
+      <div className="app-shell">
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}>
         <button
           className="brand"
@@ -253,7 +292,7 @@ export default function Learning() {
             {storageError ? "Salvataggio non disponibile" : "Salvataggio sul dispositivo"}
           </div>
         </header>
-        <main>
+        <main id="main-content">
           {storageError && (
             <div className="alert">
               Il browser non permette il salvataggio locale. Non chiudere questa pagina prima di
@@ -739,6 +778,38 @@ export default function Learning() {
                   {exportButton}
                 </div>
               </div>
+              <div className="concept-box">
+                <Download size={24} />
+                <div>
+                  <strong>Trasferisci i tuoi dati</strong>
+                  <p>
+                    Esporta le risposte in JSON per conservarle o spostarle su un altro dispositivo;
+                    importa un file precedentemente esportato per riprendere il lavoro.
+                  </p>
+                  <div className="hero-actions">
+                    <button className="button outline" onClick={exportJson}>
+                      Esporta JSON
+                    </button>
+                    <button
+                      className="button outline"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Importa JSON
+                    </button>
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/json"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) importJson(f);
+                      e.target.value = "";
+                    }}
+                  />
+                </div>
+              </div>
               <label className="text-field">
                 <span>Nome</span>
                 <input
@@ -852,6 +923,11 @@ export default function Learning() {
                       Il profilo non è una valutazione: è una traccia per rileggere le tue scelte
                       e decidere il prossimo passo.
                     </p>
+                    <div className="profile-print">
+                      <button className="button outline" onClick={() => window.print()}>
+                        Stampa il profilo
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -933,5 +1009,6 @@ export default function Learning() {
         </div>
       )}
     </div>
+    </>
   );
 }

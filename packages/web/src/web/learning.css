@@ -50,6 +50,20 @@ textarea,
 summary {
   -webkit-tap-highlight-color: transparent;
 }
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 8px 12px;
+  background: var(--green);
+  color: #fff;
+  font-size: 12px;
+  border-radius: 0 0 6px 0;
+}
+.skip-link:focus {
+  left: 0;
+}
 button {
   cursor: pointer;
 }
@@ -1890,6 +1904,32 @@ details[open] summary > svg:last-child {
   }
   .modal h2 {
     font-size: 27px;
+  }
+}
+@media print {
+  .sidebar,
+  .topbar,
+  .mobile-menu,
+  .mobile-step-cta,
+  .skip-link {
+    display: none !important;
+  }
+  .main-shell {
+    margin-left: 0 !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .profile-report {
+    border: 1px solid #ccc;
+  }
+  .profile-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 11pt;
   }
 }
 @media (prefers-reduced-motion: reduce) {
