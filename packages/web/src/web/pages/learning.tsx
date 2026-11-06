@@ -175,16 +175,27 @@ export default function Learning() {
     clarity: "entry.298496945",
     open: "entry.948175716",
   };
-  const submitFeedback = () => {
+  const submitFeedback = async () => {
     const params = new URLSearchParams();
     if (feedback.u) params.set(FEEDBACK_ENTRIES.utility, String(feedback.u));
     if (feedback.c) params.set(FEEDBACK_ENTRIES.clarity, String(feedback.c));
     if (feedback.open.trim()) params.set(FEEDBACK_ENTRIES.open, feedback.open.trim());
-    const url = `${FEEDBACK_FORM_URL}&${params.toString()}`;
-    window.open(url, "_blank", "noopener");
+    try {
+      await fetch(
+        "https://docs.google.com/forms/d/e/1FAIpQLScHacKURs-Exni9nb62SenSPPXZu_gSUq1HggdWYRF6wNQY0A/formResponse",
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params.toString(),
+        },
+      );
+    } catch {
+      // no-cors: la risposta è opaca, ma l'invio è partito
+    }
     localStorage.setItem("restare-umani-feedback", "1");
     setFeedbackSent(true);
-    setToast("Grazie per il feedback! Il form si è aperto in una nuova scheda.");
+    setToast("Grazie per il feedback!");
   };
   const step = steps[data.current];
   const profile = buildTeacherProfile(data);
@@ -1038,8 +1049,8 @@ export default function Learning() {
                       </button>
                     </div>
                     <p style={{ fontSize: "11px", color: "#6f7a65", marginTop: "8px" }}>
-                      Il feedback è anonimo. Il form si apre in una nuova scheda; i valori
-                      selezionati sono già compilati.
+                      Il feedback è anonimo e viene inviato direttamente al form. Nessun dato
+                      personale viene raccolto da questo sito.
                     </p>
                   </div>
                 </div>
