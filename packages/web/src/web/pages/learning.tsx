@@ -465,7 +465,7 @@ export default function Learning() {
                   01 · RIFLETTI E PROGETTA
                 </div>
                 <h2>Dal tuo contesto a una scelta didattica.</h2>
-                <p>Lavora su una lezione o un compito della tua disciplina. Usa casi inventati: le risposte formeranno il tuo quaderno finale. Puoi lasciare domande vuote.</p>
+                <p>Lavora su una lezione o un compito della tua disciplina. Usa casi inventati: le risposte formeranno il tuo quaderno finale.</p>
                 {step.prompts.map((p, i) => field(`${data.current}-p${i}`, p))}
               </section>
               <section className="activity">
@@ -856,8 +856,8 @@ export default function Learning() {
                 )}
               </div>
               <div className="notice">
-                L’esportazione crea un file sul dispositivo; non lo invia al formatore. Puoi lasciare
-                domande vuote e mantenere private le tue riflessioni.
+                L’esportazione crea un file sul dispositivo; non lo invia al formatore. Mantieni
+                private le tue riflessioni.
               </div>
             </div>
           )}
