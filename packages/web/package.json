@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit && vite build",
+    "build:pages": "tsc --noEmit && vite build && node -e \"const fs=require('fs');fs.rmSync('../../docs',{recursive:true,force:true});fs.cpSync('dist','../../docs',{recursive:true});fs.writeFileSync('../../docs/.nojekyll','');console.log('docs/ aggiornata')\"",
     "dev": "vite",
     "start": "bun src/__server.ts",
     "typecheck": "tsc --noEmit",
