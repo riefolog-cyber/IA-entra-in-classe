@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" fill="none">
+  <style>
+    .wave { animation: wave 3s ease-in-out infinite; }
+    .w1 { animation-delay: 0s; } .w2 { animation-delay: 0.3s; } .w3 { animation-delay: 0.6s; }
+    .spark { animation: spark 2s ease-in-out infinite; }
+    @keyframes wave { 0%,100% { d: path("M20 90 Q60 70 100 90 Q140 110 180 90"); } 50% { d: path("M20 90 Q60 110 100 90 Q140 70 180 90"); } }
+    @keyframes spark { 0%,100% { opacity: 0.3; r: 2; } 50% { opacity: 1; r: 4; } }
+  </style>
+  <!-- Brain outline -->
+  <path d="M110 30 Q150 30 160 60 Q175 75 165 100 Q160 130 130 140 Q110 150 90 140 Q60 130 55 100 Q45 75 60 60 Q70 30 110 30" fill="#eaf0e3" stroke="#5a7a5a" stroke-width="2"/>
+  <!-- Neural connections -->
+  <path class="wave w1" d="M40 90 Q80 70 120 90 Q160 110 200 90" stroke="#d97757" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path class="wave w2" d="M40 100 Q80 80 120 100 Q160 120 200 100" stroke="#5a7a5a" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path class="wave w3" d="M40 80 Q80 60 120 80 Q160 100 200 80" stroke="#f4a261" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- Spark nodes -->
+  <circle class="spark" cx="60" cy="75" r="2" fill="#d97757"/>
+  <circle class="spark" cx="100" cy="90" r="2" fill="#5a7a5a" style="animation-delay:0.5s"/>
+  <circle class="spark" cx="140" cy="75" r="2" fill="#f4a261" style="animation-delay:1s"/>
+  <circle class="spark" cx="110" cy="120" r="2" fill="#d97757" style="animation-delay:1.5s"/>
+  <circle class="spark" cx="80" cy="105" r="2" fill="#5a7a5a" style="animation-delay:0.8s"/>
+  <circle class="spark" cx="150" cy="105" r="2" fill="#f4a261" style="animation-delay:1.2s"/>
+  <!-- Center core -->
+  <circle cx="110" cy="90" r="8" fill="#1f3d33"/>
+  <circle cx="110" cy="90" r="4" fill="#f4a261"/>
+</svg>
