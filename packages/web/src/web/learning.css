@@ -2391,8 +2391,8 @@ body { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(217,119,87,
 .hero-visual { position: relative; }
 .hero-visual > img:not(.hero-float) { position: relative; z-index: 1; }
 .hero::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle 2px at 20% 30%, rgba(217,119,87,0.5) 0%, transparent 100%), radial-gradient(circle 2px at 70% 20%, rgba(244,162,97,0.4) 0%, transparent 100%), radial-gradient(circle 3px at 85% 70%, rgba(90,122,90,0.4) 0%, transparent 100%), radial-gradient(circle 2px at 35% 80%, rgba(217,119,87,0.3) 0%, transparent 100%); animation: particleDrift 20s linear infinite; }
-.quote-band::before { content: ""; position: absolute; top: -60px; left: -60px; width: 180px; height: 180px; background: url("./images/theme/anim-people.svg") center/contain no-repeat; opacity: 0.12; pointer-events: none; animation: floatSlow 10s ease-in-out infinite; }
-.quote-band::after { content: ""; position: absolute; bottom: -40px; right: -40px; width: 140px; height: 140px; background: url("./images/theme/anim-shield.svg") center/contain no-repeat; opacity: 0.10; pointer-events: none; animation: floatSlow2 8s ease-in-out infinite; }
+.quote-band::before { content: ""; position: absolute; top: -60px; left: -60px; width: 180px; height: 180px; background: url("../images/theme/anim-people.svg") center/contain no-repeat; opacity: 0.12; pointer-events: none; animation: floatSlow 10s ease-in-out infinite; }
+.quote-band::after { content: ""; position: absolute; bottom: -40px; right: -40px; width: 140px; height: 140px; background: url("../images/theme/anim-shield.svg") center/contain no-repeat; opacity: 0.10; pointer-events: none; animation: floatSlow2 8s ease-in-out infinite; }
 @keyframes floatSlow2 { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
 .step-visual { animation: floatSlow2 7s ease-in-out infinite; filter: drop-shadow(0 8px 20px rgba(31,61,51,0.12)); }
 .scenario-story { position: relative; overflow: hidden; }
@@ -2474,22 +2474,22 @@ body { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(217,119,87,
 }
 
 /* ===== Thematic animated elements v4 ===== */
-.hero::after { content: ""; position: absolute; bottom: -20px; right: -20px; width: 260px; height: 170px; background: url("./images/theme/anim-network.svg") center/contain no-repeat; opacity: 0.18; pointer-events: none; animation: floatSlow 12s ease-in-out infinite; z-index: 0; }
+.hero::after { content: ""; position: absolute; bottom: -20px; right: -20px; width: 260px; height: 170px; background: url("../images/theme/anim-network.svg") center/contain no-repeat; opacity: 0.18; pointer-events: none; animation: floatSlow 12s ease-in-out infinite; z-index: 0; }
 .hero > * { position: relative; z-index: 1; }
 .quote-band { position: relative; overflow: hidden; min-height: 120px; }
-.quote-band::before { content: ""; position: absolute; top: -30px; left: -30px; width: 220px; height: 150px; background: url("./images/theme/anim-balance.svg") center/contain no-repeat; opacity: 0.15; pointer-events: none; animation: floatSlow2 9s ease-in-out infinite; }
-.quote-band::after { content: ""; position: absolute; bottom: -20px; right: -20px; width: 200px; height: 130px; background: url("./images/theme/anim-people.svg") center/contain no-repeat; opacity: 0.18; pointer-events: none; animation: floatSlow 11s ease-in-out infinite; }
+.quote-band::before { content: ""; position: absolute; top: -30px; left: -30px; width: 220px; height: 150px; background: url("../images/theme/anim-balance.svg") center/contain no-repeat; opacity: 0.15; pointer-events: none; animation: floatSlow2 9s ease-in-out infinite; }
+.quote-band::after { content: ""; position: absolute; bottom: -20px; right: -20px; width: 200px; height: 130px; background: url("../images/theme/anim-people.svg") center/contain no-repeat; opacity: 0.18; pointer-events: none; animation: floatSlow 11s ease-in-out infinite; }
 .hero-float { width: 160px; height: 160px; opacity: 0.9; }
 @media (max-width: 720px) { .hero::after { width: 160px; height: 110px; opacity: 0.10; } .quote-band::before, .quote-band::after { width: 120px; height: 80px; opacity: 0.08; } .hero-float { width: 100px; height: 100px; } }
 @media (prefers-reduced-motion: reduce) { .hero::after, .quote-band::before, .quote-band::after, .hero-float { animation: none !important; } }
 
 /* ===== Thematic animated elements v5 ===== */
 .ai-result { position: relative; overflow: hidden; }
-.ai-result::before { content: ""; position: absolute; top: -30px; right: -30px; width: 200px; height: 160px; background: url("./images/theme/anim-brain.svg") center/contain no-repeat; opacity: 0.12; pointer-events: none; animation: floatSlow 10s ease-in-out infinite; }
+.ai-result::before { content: ""; position: absolute; top: -30px; right: -30px; width: 200px; height: 160px; background: url("../images/theme/anim-brain.svg") center/contain no-repeat; opacity: 0.12; pointer-events: none; animation: floatSlow 10s ease-in-out infinite; }
 .glossary { position: relative; }
-.glossary::before { content: ""; position: absolute; top: -20px; left: -20px; width: 180px; height: 140px; background: url("./images/theme/anim-book.svg") center/contain no-repeat; opacity: 0.10; pointer-events: none; animation: floatSlow2 9s ease-in-out infinite; }
+.glossary::before { content: ""; position: absolute; top: -20px; left: -20px; width: 180px; height: 140px; background: url("../images/theme/anim-book.svg") center/contain no-repeat; opacity: 0.10; pointer-events: none; animation: floatSlow2 9s ease-in-out infinite; }
 .progress-panel { position: relative; overflow: hidden; }
-.progress-panel::before { content: ""; position: absolute; top: -20px; right: -20px; width: 180px; height: 140px; background: url("./images/theme/anim-growth.svg") center/contain no-repeat; opacity: 0.12; pointer-events: none; animation: floatSlow 11s ease-in-out infinite; }
+.progress-panel::before { content: ""; position: absolute; top: -20px; right: -20px; width: 180px; height: 140px; background: url("../images/theme/anim-growth.svg") center/contain no-repeat; opacity: 0.12; pointer-events: none; animation: floatSlow 11s ease-in-out infinite; }
 @media (max-width: 720px) { .ai-result::before, .glossary::before, .progress-panel::before { width: 120px; height: 90px; opacity: 0.07; } }
 @media (prefers-reduced-motion: reduce) { .ai-result::before, .glossary::before, .progress-panel::before { animation: none !important; } }
 
