@@ -1415,8 +1415,7 @@ export default function Learning() {
 
                   </strong>
 
-                  <p>Puoi concluderla anche senza condividere o scrivere risposte.</p>
-
+                  
                 </div>
 
                 <button

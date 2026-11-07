@@ -2311,3 +2311,24 @@ body { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(217,119,87,
 @media (max-width: 900px) { .hero { padding: 36px 24px 32px; } .hero h1 { font-size: 40px; } .hero-visual { justify-self: center; max-width: 420px; } }
 @media (max-width: 640px) { .hero { padding: 28px 20px 24px; } .hero h1 { font-size: 32px; } .step-head-visual { grid-template-columns: 1fr; } .step-visual { width: 100%; max-width: 280px; justify-self: center; } .path-phase-title { flex-wrap: wrap; } }
 @media print { .sidebar, .topbar, .hero-actions, .glossary-tools, .button { display: none !important; } .glossary details { border: 1px solid #ccc; padding: 8px; margin-bottom: 8px; page-break-inside: avoid; } }
+
+/* ===== Section-level thematic graphic accents ===== */
+.activity { position: relative; overflow: hidden; }
+.activity::before { content: ""; position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: radial-gradient(circle at top right, rgba(217,119,87,0.12) 0%, transparent 65%); pointer-events: none; z-index: 0; }
+.activity > * { position: relative; z-index: 1; }
+.activity .activity-label::before { content: ""; display: inline-block; width: 8px; height: 8px; background: var(--accent-hot); border-radius: 2px; margin-right: 8px; transform: rotate(45deg); box-shadow: 0 0 0 3px rgba(217,119,87,0.15); }
+@keyframes sectionPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(217,119,87,0.15); } 50% { box-shadow: 0 0 0 6px rgba(217,119,87,0.08); } }
+.activity .activity-label::before { animation: sectionPulse 3s ease-in-out infinite; }
+.scenario-story { position: relative; }
+.scenario-story::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 60px; height: 3px; background: var(--accent-hot); }
+.concept-box { position: relative; padding-left: 20px; }
+.concept-box::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--accent-hot), var(--accent-glow)); border-radius: 2px; }
+.quote-band { position: relative; overflow: hidden; }
+.quote-band::before { content: ""; position: absolute; top: -40px; left: -40px; width: 120px; height: 120px; border: 2px solid rgba(217,119,87,0.15); border-radius: 50%; pointer-events: none; }
+.quote-band::after { content: ""; position: absolute; bottom: -50px; right: -30px; width: 160px; height: 160px; border: 2px solid rgba(90,122,90,0.12); border-radius: 50%; pointer-events: none; }
+.glossary details { position: relative; }
+.glossary details::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--accent-hot), var(--accent-glow)); opacity: 0; transition: opacity 0.2s ease; }
+.glossary details[open]::before { opacity: 1; }
+.ai-result { position: relative; overflow: hidden; }
+.ai-result::before { content: ""; position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle at top right, rgba(217,119,87,0.15) 0%, transparent 70%); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .activity .activity-label::before { animation: none !important; } }
