@@ -179,4 +179,8 @@ export const glossary = [
   ['Comunicazione scuola-famiglia', 'Informazione chiara su obiettivi, regole, tutele e alternative legate all’uso dell’IA. Aiuta fiducia e collaborazione senza richiedere dettagli tecnici o dati sensibili.'],
   ['Scatola nera', 'Difficoltà di interpretare in dettaglio i processi interni di un modello. Non annulla la necessità di verificare output, conseguenze e condizioni d’uso.'],
   ['Governance scolastica', 'Insieme di criteri, ruoli, procedure e momenti di revisione che rendono condivisibili le scelte sull’IA. Collega la pratica docente alle responsabilità dell’istituto.'],
+  ['Trasparenza del processo', 'Insieme di tracce che rendono osservabile il lavoro: bozze, versioni, fonti, scelte e dichiarazioni d’uso. Sostiene l\'apprendimento, non il controllo.'],
+  ['Sostenibilità didattica', 'Equilibrio tra qualità dell’apprendimento, carico di lavoro del docente e tempi disponibili. Un uso sostenibile è rivedibile e non automatizza ogni fase.'],
+  ['Alternativa senza IA', 'Percorso didattico equivalente che non richiede l’uso dell’IA, per garantire equità di accesso e chiarezza di valutazione.'],
+  ['Revisione tra pari', 'Confronto professionale strutturato tra colleghi per verificare materiali, regole e conseguenze delle scelte sull’IA.'],
 ];

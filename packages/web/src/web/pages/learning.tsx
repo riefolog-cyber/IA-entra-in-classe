@@ -804,7 +804,7 @@ export default function Learning() {
 
               </div>
 
-              {(Object.keys(previousData.answers).length > 0 || previousData.completed.length > 0 || previousData.name) && <div className="notice"><strong>Le tue risposte precedenti sono conservate.</strong><p>Le attivitÃ  sono cambiate: il quaderno docente usa uno spazio distinto, per non associare risposte vecchie a domande nuove.</p><button className="text-button" disabled={exporting} onClick={() => download(true)}>Esporta il percorso precedente <Download size={15}/></button></div>}
+              {(Object.keys(previousData.answers).length > 0 || previousData.completed.length > 0 || previousData.name) && <div className="notice"><strong>Le tue risposte precedenti sono conservate.</strong><p>Le attività sono cambiate: il quaderno docente usa uno spazio distinto, per non associare risposte vecchie a domande nuove.</p><button className="text-button" disabled={exporting} onClick={() => download(true)}>Esporta il percorso precedente <Download size={15}/></button></div>}
 
               <section className="hero">
 
@@ -1722,7 +1722,7 @@ export default function Learning() {
 
                 <div>
 
-                  <strong>Un PDF con tutta l’attivitÃ </strong>
+                  <strong>Un PDF con tutta l’attività </strong>
 
                   <p>
 
@@ -2028,7 +2028,7 @@ export default function Learning() {
 
                       <legend style={{ fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
 
-                        2. Quanto erano chiare le attivitÃ ?
+                        2. Quanto erano chiare le attività ?
 
                       </legend>
 
@@ -2290,7 +2290,7 @@ export default function Learning() {
 
                   go("home");
 
-                  setToast("Dati personali cancellati da questa attivitÃ .");
+                  setToast("Dati personali cancellati da questa attività .");
 
                 }}
 
