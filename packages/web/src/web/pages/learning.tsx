@@ -1044,7 +1044,7 @@ export default function Learning() {
 
               <section className="quote-band">
 
-                <span className="quote-mark">“</span>
+                <span className="quote-mark">{String.fromCharCode(8220)}</span>
 
                 <blockquote>
 
