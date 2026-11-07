@@ -1767,17 +1767,7 @@ export default function Learning() {
 
               </div>
 
-              <div className="glossary-tools">
-
-                <button className="button outline" type="button" onClick={() => window.print()}>
-
-                  Stampa il glossario
-
-                </button>
-
-                <span className="glossary-hint">Ogni voce indica le tappe in cui compare.</span>
-
-              </div>
+              
 
               <div className="glossary">
 
