@@ -2242,24 +2242,6 @@ export default function Learning() {
 
                       </button>
 
-                      <button
-
-                        className="button outline"
-
-                        onClick={() => {
-
-                          localStorage.setItem("restare-umani-feedback", "1");
-
-                          setFeedbackSent(true);
-
-                        }}
-
-                      >
-
-                        Salta
-
-                      </button>
-
                     </div>
 
                     <p style={{ fontSize: "11px", color: "#6f7a65", marginTop: "8px" }}>
