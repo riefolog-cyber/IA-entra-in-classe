@@ -609,6 +609,19 @@ export default function Learning() {
 
         </button>
 
+        <div className="sidebar-progress">
+          <div className="sidebar-progress-info">
+            <span>Tappe concluse</span>
+            <strong>{data.completed.length} <small>/ {stepCount}</small></strong>
+          </div>
+          <progress
+            className="sidebar-progress-bar"
+            aria-label="Tappe concluse"
+            value={data.completed.length}
+            max={stepCount}
+          />
+        </div>
+
         <button
 
           className="close-mobile icon-button"
@@ -733,31 +746,44 @@ export default function Learning() {
 
         <header className="topbar">
 
-          <div className="breadcrumb">
+           <div className="breadcrumb">
 
-            <button
+             <button
 
-              className="mobile-menu icon-button"
+               className="mobile-menu icon-button"
 
-              onClick={() => setMobileOpen(true)}
+               onClick={() => setMobileOpen(true)}
 
-              aria-label="Apri menu"
+               aria-label="Apri menu"
 
-            >
+             >
 
-              <Menu size={20} />
+               <Menu size={20} />
 
-            </button>
+             </button>
 
-            <span>Il laboratorio</span>
+             <span>Il laboratorio</span>
 
-            <span className="crumb-slash">/</span>
+             <span className="crumb-slash">/</span>
 
-            <strong>{names[view]}</strong>
+             <strong>{names[view]}</strong>
 
-          </div>
+           </div>
 
-          <div className={`save-status ${storageError ? "error" : ""}`}>
+           <div className="topbar-progress">
+             <div className="progress-text">
+               <span>Avanzamento</span>
+               <strong>{Math.round((data.completed.length / stepCount) * 100)}% completato</strong>
+             </div>
+             <progress
+               className="progress-bar"
+               aria-label="Avanzamento complessivo"
+               value={data.completed.length}
+               max={stepCount}
+             />
+           </div>
+
+           <div className={`save-status ${storageError ? "error" : ""}`}>
 
             <span />
 
