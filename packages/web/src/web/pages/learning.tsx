@@ -992,7 +992,7 @@ export default function Learning() {
 
                             tabIndex={0}
 
-                            className={path-card  }
+                            className={`path-card ${i === data.current ? "current-card" : ""} ${data.completed.includes(i) ? "done-card" : ""}`}
 
                             key={s.title}
 
