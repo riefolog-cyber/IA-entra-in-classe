@@ -63,6 +63,15 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     );
     paragraph(`Risposta corretta: ${step.options[step.correct]}`);
     paragraph(`Spiegazione: ${step.explanation}`);
+    if (step.microQuestion) {
+      paragraph("Micro-quiz", 12, true);
+      paragraph(step.microQuestion, 11, true);
+      step.microOptions.forEach((o, n) => paragraph(`${n + 1}. ${o}`, 10));
+      const mq = state.answers[`${i}-microquiz`];
+      paragraph(`Risposta scelta: ${mq !== undefined ? step.microOptions[Number(mq)] : "[Nessuna risposta]"}`);
+      paragraph(`Risposta correta: ${step.microOptions[step.microCorrect]}`);
+      paragraph(`Spiegazione: ${step.microExplanation}`);
+    }
     paragraph("Scenario e prospettive", 13, true);
     paragraph(step.scenario);
     step.choices.forEach((c, n) => {

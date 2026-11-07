@@ -58,7 +58,7 @@ type View = "home" | "step" | "resources" | "summary";
 
 const stepCount = steps.length;
 
-const answerKeyRe = new RegExp(`^\\d+-(p\\d+|quiz|scenario|reason)$`);
+const answerKeyRe = new RegExp(`^\\d+-(p\\d+|quiz|microquiz|scenario|reason)$`);
 
 function load(key = KEY): SavedState {
 
@@ -80,7 +80,7 @@ function load(key = KEY): SavedState {
 
     for (const k of Object.keys(answers))
 
-      if (/(quiz|scenario)$/.test(k) && !["0", "1", "2"].includes(answers[k] as string))
+      if (/(quiz|microquiz|scenario)$/.test(k) && !["0", "1", "2"].includes(answers[k] as string))
 
         delete answers[k];
 
@@ -421,12 +421,13 @@ export default function Learning() {
       const prompt = s.prompts.map((q, n) => `Riflessione ${n + 1} (${q}): ${data.answers[`${i}-p${n}`] || "[vuoto]"}`).join("\n");
 
       const quiz = data.answers[`${i}-quiz`] !== undefined ? s.options[Number(data.answers[`${i}-quiz`])] : "[nessuna]";
+      const micro = s.microQuestion ? (data.answers[`${i}-microquiz`] !== undefined ? s.microOptions[Number(data.answers[`${i}-microquiz`])] : "[nessuna]") : null;
 
       const scenario = data.answers[`${i}-scenario`] !== undefined ? s.choices[Number(data.answers[`${i}-scenario`])] : "[nessuna]";
 
       const reason = data.answers[`${i}-reason`] || "[vuota]";
 
-      lines.push(`\nTappa ${i + 1} - ${s.title} (${s.phase || s.category})\n${prompt}\nQuiz: domanda "${s.question}" | risposta scelta: ${quiz} | corretta: ${s.options[s.correct]}\nScenario: ${s.scenario}\nScelta: ${scenario}\nMotivazione: ${reason}`);
+      lines.push(`\nTappa ${i + 1} - ${s.title} (${s.phase || s.category})\n${prompt}\nQuiz: domanda "${s.question}" | risposta scelta: ${quiz} | corretta: ${s.options[s.correct]}${micro ? `\nMicro-quiz: ${s.microQuestion} | risposta scelta: ${micro} | corretta: ${s.microOptions[s.microCorrect]}` : ""}\nScenario: ${s.scenario}\nScelta: ${scenario}\nMotivazione: ${reason}`);
 
     });
 
@@ -1242,6 +1243,72 @@ export default function Learning() {
 
               </section>
 
+              {step.microQuestion && (
+                <section className="activity micro-quiz">
+
+                  <div className="activity-label">
+
+                    <CheckCircle2 size={17} />
+
+                    02b · VERIFICA RAPIDA
+
+                  </div>
+
+                  <h2>{step.microQuestion}</h2>
+
+                  <p>Un secondo concetto, in forma breve.</p>
+
+                  <fieldset className="option-list" aria-label="Risposte al micro-quiz">
+
+                    {step.microOptions.map((o, i) => (
+
+                      <button
+
+                        key={o}
+
+                        aria-pressed={data.answers[`${data.current}-microquiz`] === String(i)}
+
+                        className={`option ${data.answers[`${data.current}-microquiz`] === String(i) ? "chosen" : ""}`}
+
+                        onClick={() => write(`${data.current}-microquiz`, String(i))}
+
+                      >
+
+                        <span className="radio-dot" />
+
+                        {o}
+
+                      </button>
+
+                    ))}
+
+                  </fieldset>
+
+                  {data.answers[`${data.current}-microquiz`] !== undefined && (
+
+                    <output className="feedback" aria-live="polite">
+
+                      <strong>
+
+                        {Number(data.answers[`${data.current}-microquiz`]) === step.microCorrect
+
+                          ? "Hai individuato il concetto."
+
+                          : "Un’occasione per approfondire."}
+
+                      </strong>
+
+                      <p>{step.microExplanation}</p>
+
+                      <small>Risposta correta: {step.microOptions[step.microCorrect]}</small>
+
+                    </output>
+
+                  )}
+
+                </section>
+              )}
+
               <section className="activity">
 
                 <div className="activity-label">
@@ -1255,6 +1322,12 @@ export default function Learning() {
                 <h2>Nel tuo ruolo docente, che cosa faresti?</h2>
 
                 <div className="scenario-story">{step.scenario}</div>
+
+                {step.decisionFocus && (
+                  <p className="decision-focus">
+                    <strong>Focus della decisione:</strong> {step.decisionFocus}
+                  </p>
+                )}
 
                 <p>Non c’è un voto. Scegli un punto di partenza e discuti le sue conseguenze.</p>
 
@@ -1610,6 +1683,18 @@ export default function Learning() {
 
               </div>
 
+              <div className="glossary-tools">
+
+                <button className="button outline" type="button" onClick={() => window.print()}>
+
+                  Stampa il glossario
+
+                </button>
+
+                <span className="glossary-hint">Ogni voce indica le tappe in cui compare.</span>
+
+              </div>
+
               <div className="glossary">
 
                 {glossary
@@ -1620,7 +1705,7 @@ export default function Learning() {
 
                   )
 
-                  .map(([term, def]) => (
+                  .map(([term, def, refs]) => (
 
                     <details key={term}>
 
@@ -1628,11 +1713,31 @@ export default function Learning() {
 
                         {term}
 
+                        {Array.isArray(refs) && refs.length > 0 && (
+
+                          <span className="glossary-refs">
+
+                            {refs.map((r) => `T${r}`).join(" · ")}
+
+                          </span>
+
+                        )}
+
                         <ChevronDown size={17} />
 
                       </summary>
 
                       <p>{def}</p>
+
+                      {Array.isArray(refs) && refs.length > 0 && (
+
+                        <p className="glossary-refline">
+
+                          Compare nelle tappe: {refs.map((r) => r).join(", ")}
+
+                        </p>
+
+                      )}
 
                     </details>
 
