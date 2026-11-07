@@ -1173,7 +1173,7 @@ export default function Learning() {
 
                 <h2>Rispondi in poche righe.</h2>
 
-                <p>Una domanda per il tuo contesto. La tua risposta entrerÃ  nel quaderno finale.</p>
+                <p>Una domanda per il tuo contesto. La tua risposta entrerà nel quaderno finale.</p>
 
                 {step.prompts.map((p, i) => field(`${data.current}-p${i}`, p))}
 
@@ -1515,7 +1515,7 @@ export default function Learning() {
 
                   <p>
 
-                    Ascoltare un alunno, interpretare un percorso e motivare una valutazione richiedono responsabilitÃ  professionale. Quale parte del tuo lavoro può ricevere supporto e quale non vuoi delegare?
+                    Ascoltare un alunno, interpretare un percorso e motivare una valutazione richiedono responsabilità professionale. Quale parte del tuo lavoro può ricevere supporto e quale non vuoi delegare?
 
                   </p>
 
@@ -1545,7 +1545,7 @@ export default function Learning() {
 
                         professionale: ascoltare, interpretare, valutare e accompagnare richiedono
 
-                        una relazione e una responsabilitÃ  che non si trasferiscono a un sistema.
+                        una relazione e una responsabilità che non si trasferiscono a un sistema.
 
                       </p>
 
@@ -1555,7 +1555,7 @@ export default function Learning() {
 
                         ruolo docente. Un testo generato può offrire uno spunto; la lettura del
 
-                        contesto, la scelta dei criteri e la responsabilitÃ  della decisione restano
+                        contesto, la scelta dei criteri e la responsabilità della decisione restano
 
                         umane.
 
@@ -1563,9 +1563,9 @@ export default function Learning() {
 
                       <p>
 
-                        Il limite è anche una forma di tutela: protegge la dignitÃ  dell’alunno, la
+                        Il limite è anche una forma di tutela: protegge la dignità dell’alunno, la
 
-                        fiducia della famiglia e la credibilitÃ  della scuola.
+                        fiducia della famiglia e la credibilità della scuola.
 
                       </p>
 
@@ -1629,7 +1629,7 @@ export default function Learning() {
 
                         La governance non è solo un compito dirigenziale. Il docente può chiedere
 
-                        chiarezza su finalitÃ , dati, conservazione, accessi e responsabilitÃ ; può
+                        chiarezza su finalità, dati, conservazione, accessi e responsabilità; può
 
                         documentare le proprie scelte e condividerle con i colleghi.
 
@@ -1637,7 +1637,7 @@ export default function Learning() {
 
                       <p>
 
-                        Un uso governato accetta la possibilitÃ  di sospendere o modificare la
+                        Un uso governato accetta la possibilità di sospendere o modificare la
 
                         scelta se le evidenze non sostengono l’apprendimento.
 
@@ -2183,7 +2183,7 @@ export default function Learning() {
 
                         }
 
-                        placeholder="Suggerimenti, difficoltÃ , idee…"
+                        placeholder="Suggerimenti, difficoltà, idee…"
 
                       />
 
@@ -2355,7 +2355,7 @@ export default function Learning() {
 
             <p>
 
-              Risposte, nome e avanzamento, anche della versione precedente, saranno rimossi da questo browser. I PDF giÃ 
+              Risposte, nome e avanzamento, anche della versione precedente, saranno rimossi da questo browser. I PDF già
 
               scaricati non saranno cancellati. Questa operazione non può essere annullata.
 
