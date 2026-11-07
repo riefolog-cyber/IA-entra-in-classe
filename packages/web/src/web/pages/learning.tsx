@@ -2072,7 +2072,10 @@ export default function Learning() {
                   riflessione, non una valutazione della persona né una diagnosi: rileggila
                   criticamente nel tuo contesto.
                 </p>
-                <div className="ai-analysis">
+                <div className="ai-analysis ai-analysis-with-visual">
+                  <div className="ai-visual">
+                    <img className="ai-hero-image" src="./images/theme/anim-brain.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  </div>
                   <div className="ai-actions">
                     <button className="button outline" type="button" onClick={() => setShowAiPreview((v) => !v)}>
                       {showAiPreview ? "Nascondi dati inviati" : "Mostra dati inviati"}
