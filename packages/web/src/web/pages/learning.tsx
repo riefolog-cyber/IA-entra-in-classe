@@ -1044,7 +1044,7 @@ export default function Learning() {
 
               <section className="quote-band">
 
-                <span className="quote-mark">â€œ</span>
+                <span className="quote-mark">“</span>
 
                 <blockquote>
 
