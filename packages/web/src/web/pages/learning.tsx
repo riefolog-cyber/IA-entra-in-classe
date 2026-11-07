@@ -228,27 +228,20 @@ export default function Learning() {
 
     setData((d) => ({ ...d, answers: { ...d.answers, [key]: value } }));
 
-  const toggleComplete = () => {
+  const toggleComplete = (i: number = data.current) => {
+
+    const wasCompleted = data.completed.includes(i);
 
     setData((d) => ({
-
       ...d,
-
-      completed: d.completed.includes(d.current)
-
-        ? d.completed.filter((n) => n !== d.current)
-
-        : [...d.completed, d.current],
-
+      completed: wasCompleted
+        ? d.completed.filter((n) => n !== i)
+        : [...d.completed, i],
     }));
 
     setToast(
 
-      data.completed.includes(data.current)
-
-        ? "Tappa riaperta."
-
-        : "Tappa conclusa. Puoi sempre tornarci.",
+      wasCompleted ? "Tappa riaperta." : "Tappa conclusa. Puoi sempre tornarci.",
 
     );
 
@@ -993,19 +986,49 @@ export default function Learning() {
 
                         {phase.items.map(({ s, i }) => (
 
-                          <button
+                          <div
 
-                            className={`path-card ${i === data.current ? "current-card" : ""}`}
+                            role="button"
+
+                            tabIndex={0}
+
+                            className={path-card  }
 
                             key={s.title}
 
                             onClick={() => go("step", i)}
+
+                            onKeyDown={(e) => e.key === "Enter" && go("step", i)}
 
                           >
 
                             <div className="card-top">
 
                               <span className="card-number">0{i + 1}</span>
+
+                              <button
+
+                                className="card-complete-toggle"
+
+                                onClick={(e) => { e.stopPropagation(); toggleComplete(i); }}
+
+                                aria-label={
+
+                                  data.completed.includes(i)
+
+                                    ? "Segna tappa come da rivedere"
+
+                                    : "Segna tappa come conclusa"
+
+                                }
+
+                                aria-pressed={data.completed.includes(i)}
+
+                              >
+
+                                {data.completed.includes(i) ? <Check size={13} /> : <CheckCircle2 size={13} />}
+
+                              </button>
 
                               <span className="card-time">
 
@@ -1053,7 +1076,7 @@ export default function Learning() {
 
                             </div>
 
-                          </button>
+                          </div>
 
                         ))}
 
