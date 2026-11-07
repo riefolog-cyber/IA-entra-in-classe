@@ -1,34 +1,25 @@
-const CACHE = "restare-umani-v1";
+const CACHE = "restare-umani-v2";
 const PRECACHE = ["./", "./index.html", "./manifest.json"];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)).catch(() => {})));
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).catch(() => {})
+  );
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (e) => {
-  e.waitUntil(
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))),
-    ),
+      Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))
+    ).catch(() => {})
   );
   self.clients.claim();
 });
 
-self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET") return;
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fetchPromise = fetch(e.request)
-        .then((res) => {
-          if (res && res.status === 200 && res.type === "basic") {
-            const clone = res.clone();
-            caches.open(CACHE).then((c) => c.put(e.request, clone));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || fetchPromise;
-    }),
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
   );
 });
