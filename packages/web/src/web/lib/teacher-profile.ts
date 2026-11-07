@@ -42,7 +42,7 @@ const themes = [
   {
     key: "sostenibilita",
     label: "la sostenibilità del lavoro docente",
-    words: ["tempo", "caric", "sostenib", "frett", "veloc", "durata"],
+    words: ["tempo", "caric", "sostenib", "frett", "veloc"],
   },
 ];
 
@@ -97,8 +97,8 @@ export function buildTeacherProfile(data: SavedState): TeacherProfile {
     : "Un profilo in costruzione";
 
   const summaryParts = [
-    `${data.completed.length}/6 tappe concluse`,
-    `${correctCount}/6 quiz corretti`,
+    `${data.completed.length}/${steps.length} tappe concluse`,
+    `${correctCount}/${steps.length} quiz corretti`,
     `${answeredCount} risposte compilate`,
   ];
   if (filledScenarios.length) summaryParts.push(`${filledScenarios.length} scenari scelti`);
@@ -125,9 +125,9 @@ export function buildTeacherProfile(data: SavedState): TeacherProfile {
     );
   }
 
-  if (data.completed.length >= 4) {
+  if (data.completed.length >= Math.ceil(steps.length * 0.6)) {
     strengths.push(
-      `Hai portato a termine ${data.completed.length} tappe su 6: il percorso sta diventando una pratica costante, non una lettura isolata.`,
+      `Hai portato a termine ${data.completed.length} tappe su ${steps.length}: il percorso sta diventando una pratica costante, non una lettura isolata.`,
     );
   } else if (data.completed.length > 0) {
     strengths.push(

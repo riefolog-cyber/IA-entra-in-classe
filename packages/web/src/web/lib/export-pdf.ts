@@ -32,13 +32,13 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
   paragraph("RESTARE UMANI", 24, true);
   paragraph(previousVersion ? "Percorso personale precedente" : "IA a scuola · Il mio quaderno di aggiornamento professionale", 14);
   paragraph(
-    `Esportato il ${new Date().toLocaleDateString("it-IT")} · ${state.completed.length} tappe segnate come concluse su 6`,
+    `Esportato il ${new Date().toLocaleDateString("it-IT")} · ${state.completed.length} tappe segnate come concluse su ${steps.length}`,
   );
   if (state.name.trim()) paragraph(`Nome: ${state.name}`);
   paragraph(
     "Questo documento raccoglie tutte le attività del percorso e le risposte presenti al momento dell’esportazione. Le risposte mancanti sono indicate. Non è una valutazione della persona. Condividi solo ciò che desideri; conserva il file con cura.",
   );
-  if (!previousVersion) paragraph("Percorso per docenti: progettazione, verifica dei materiali, valutazione, inclusione e dati, regole d’uso e sperimentazione. I casi sono inventati. Non inserire dati identificativi degli alunni. Le attività non sostituiscono le procedure dell’istituto.");
+  if (!previousVersion) paragraph("Percorso per docenti: progettazione, verifica dei materiali, valutazione, processo visibile, regole d’uso, comunicazione, inclusione e dati, accessibilità, sperimentazione e scelte istituzionali. I casi sono inventati. Non inserire dati identificativi degli alunni. Le attività non sostituiscono le procedure dell’istituto.");
   steps.forEach((step, i) => {
     doc.addPage();
     y = 25;
