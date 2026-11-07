@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" fill="none">
+  <style>
+    .leaf { animation: float 4s ease-in-out infinite; }
+    .leaf1 { animation-delay: 0s; } .leaf2 { animation-delay: 0.5s; } .leaf3 { animation-delay: 1s; } .leaf4 { animation-delay: 1.5s; }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(4deg); } }
+    @keyframes glow { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+  </style>
+  <!-- Branch -->
+  <path d="M60 140 Q110 20 190 140" fill="none" stroke="#5a7a5a" stroke-width="4" stroke-linecap="round"/>
+  <path d="M100 110 Q130 80 160 110" fill="none" stroke="#9fb28f" stroke-width="2" stroke-linecap="round"/>
+  <path d="M90 100 Q120 70 150 100" fill="none" stroke="#9fb28f" stroke-width="2" stroke-linecap="round"/>
+  <!-- Leaves -->
+  <ellipse class="leaf leaf1" cx="70" cy="115" rx="26" ry="16" fill="#7a9a6d"/>
+  <ellipse class="leaf leaf2" cx="100" cy="90" rx="26" ry="16" fill="#5a7a5a"/>
+  <ellipse class="leaf leaf3" cx="130" cy="115" rx="26" ry="16" fill="#7a9a6d"/>
+  <ellipse class="leaf leaf4" cx="60" cy="90" rx="20" ry="14" fill="#5a7a5a"/>
+  <ellipse class="leaf leaf2" cx="140" cy="90" rx="20" ry="14" fill="#7a9a6d"/>
+  <!-- Center spark -->
+  <circle cx="100" cy="100" r="6" fill="#d97757"/>
+  <circle cx="100" cy="100" r="3" fill="#f4a261"/>
+  <!-- Stem text -->
+  <text x="100" cy="155" text-anchor="middle" font-size="10" fill="#5a7a5a" font-family="sans-serif" font-weight="bold">CURA</text>
+</svg>

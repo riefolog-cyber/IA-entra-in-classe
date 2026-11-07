@@ -938,18 +938,15 @@ export default function Learning() {
 
               <section className="path-section">
 
-                <div className="section-heading">
-
-                  <div className="eyebrow">IL PERCORSO</div>
-
-                  <div>
-
-                    <h2>{stepCount} tappe, dalla riflessione alla pratica.</h2>
-
-                    <span>Rifletti. Progetta. Verifica. Rivedi.</span>
-
+                <div className="section-heading section-heading-with-image">
+                  <div className="section-visual">
+                    <img className="section-hero-image" src="./images/theme/anim-path.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
                   </div>
-
+                  <div className="eyebrow">IL PERCORSO</div>
+                  <div>
+                    <h2>{stepCount} tappe, dalla riflessione alla pratica.</h2>
+                    <span>Rifletti. Progetta. Verifica. Rivedi.</span>
+                  </div>
                 </div>
 
                 <div className="path-phases">
@@ -1044,7 +1041,11 @@ export default function Learning() {
 
               </section>
 
-              <section className="quote-band">
+              <section className="quote-band quote-band-with-image">
+
+                <div className="section-visual">
+                  <img className="section-hero-image" src="./images/theme/anim-balance.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <span className="quote-mark">{String.fromCharCode(8220)}</span>
 
@@ -1148,9 +1149,11 @@ export default function Learning() {
 
               <p className="intro-text">{step.intro}</p>
 
-              <div className="concept-box">
+              <div className="concept-box concept-box-with-image">
 
-                <BookOpen size={22} />
+                <div className="concept-visual">
+                  <img className="concept-hero-image" src="./images/theme/anim-book.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <div>
 
@@ -1164,7 +1167,9 @@ export default function Learning() {
 
               <section className="activity">
 
-                <img className="activity-deco" src="./images/theme/anim-core.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                <div className="activity-visual">
+                  <img className="activity-hero-image" src="./images/theme/anim-brain.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <div className="activity-label">
 
@@ -1184,7 +1189,9 @@ export default function Learning() {
 
               <section className="activity">
 
-                <img className="activity-deco" src={`./images/theme/fase-${step.phase === "Progettazione" ? "progettazione" : step.phase === "Pratica" ? "pratica" : step.phase === "Progettazione inclusiva" ? "inclusione" : step.phase === "Revisione" ? "revisione" : "progettazione"}.svg`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                <div className="activity-visual">
+                  <img className="activity-hero-image" src={`./images/theme/fase-${step.phase === "Progettazione" ? "progettazione" : step.phase === "Pratica" ? "pratica" : step.phase === "Progettazione inclusiva" ? "inclusione" : step.phase === "Revisione" ? "revisione" : "progettazione"}.svg`} alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <div className="activity-label">
 
@@ -1251,7 +1258,9 @@ export default function Learning() {
               {step.microQuestion && (
                 <section className="activity micro-quiz">
 
-                <img className="activity-deco" src="./images/theme/anim-shield.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                <div className="activity-visual">
+                  <img className="activity-hero-image" src="./images/theme/anim-core.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                   <div className="activity-label">
 
@@ -1318,7 +1327,9 @@ export default function Learning() {
 
               <section className="activity">
 
-                <img className="activity-deco" src="./images/theme/anim-people.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                <div className="activity-visual">
+                  <img className="activity-hero-image" src="./images/theme/anim-people.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <div className="activity-label">
 
@@ -1329,6 +1340,10 @@ export default function Learning() {
                 </div>
 
                 <h2>Nel tuo ruolo docente, che cosa faresti?</h2>
+
+                <div className="scenario-visual">
+                  <img className="scenario-hero-image" src="./images/theme/anim-core.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <div className="scenario-story">{step.scenario}</div>
 
@@ -1410,7 +1425,11 @@ export default function Learning() {
 
               </section>
 
-              <div className="completion-box">
+              <div className="completion-box completion-box-with-image">
+
+                <div className="completion-visual">
+                  <img className="completion-hero-image" src="./images/theme/anim-shield.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                </div>
 
                 <div>
 
@@ -1515,7 +1534,11 @@ export default function Learning() {
 
               <div className="two-perspectives">
 
-                <article className={`perspective-card ${openPerspective === 0 ? "open" : ""}`}>
+                <article className={`perspective-card perspective-card-with-image ${openPerspective === 0 ? "open" : ""}`}>
+
+                  <div className="perspective-visual">
+                    <img className="perspective-hero-image" src="./images/theme/anim-brain.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  </div>
 
                   <span>PROSPETTIVA 01</span>
 
@@ -1591,7 +1614,11 @@ export default function Learning() {
 
                 </article>
 
-                <article className={`perspective-card ${openPerspective === 1 ? "open" : ""}`}>
+                <article className={`perspective-card perspective-card-with-image ${openPerspective === 1 ? "open" : ""}`}>
+
+                  <div className="perspective-visual">
+                    <img className="perspective-hero-image" src="./images/theme/anim-leaf.svg" alt="" aria-hidden="true" loading="eager" decoding="async" />
+                  </div>
 
                   <span>PROSPETTIVA 02</span>
 

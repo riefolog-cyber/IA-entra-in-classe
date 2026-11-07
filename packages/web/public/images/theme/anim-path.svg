@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" fill="none">
+  <style>
+    .path { animation: dash 3s ease-in-out infinite; stroke-dasharray: 8 4; stroke-dashoffset: 0; }
+    .dot { animation: pulse 2s ease-in-out infinite; }
+    @keyframes dash { 0% { stroke-dashoffset: 12; } 100% { stroke-dashoffset: -12; } }
+    @keyframes pulse { 0%,100% { r: 4; opacity: 0.6; } 50% { r: 6; opacity: 1; } }
+  </style>
+  <!-- Winding path -->
+  <path d="M30 120 Q100 20 170 100 Q200 180 220 110" fill="none" stroke="#c19167" stroke-width="4" stroke-linecap="round"/>
+  <path d="M30 120 Q100 20 170 100 Q200 180 220 110" fill="none" stroke="#d97757" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6"/>
+  <!-- Steps/markers -->
+  <circle class="dot" cx="30" cy="120" r="5" fill="#d97757"/>
+  <circle class="dot" cx="100" cy="60" r="5" fill="#5a7a5a"/>
+  <circle class="dot" cx="170" cy="100" r="5" fill="#f4a261"/>
+  <circle class="dot" cx="220" cy="110" r="5" fill="#1f3d33"/>
+  <!-- Path markers -->
+  <path d="M42 108 L48 100" stroke="#d97757" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M112 72 L118 66" stroke="#5a7a5a" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M182 112 L188 106" stroke="#f4a261" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="40" cy="132" text-anchor="middle" font-size="8" fill="#5f6b57" font-family="sans-serif">INIZIO</text>
+  <text x="220" cy="122" text-anchor="middle" font-size="8" fill="#1f3d33" font-family="sans-serif" font-weight="bold">META</text>
+</svg>
