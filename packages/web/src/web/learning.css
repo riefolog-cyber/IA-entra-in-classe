@@ -2412,8 +2412,18 @@ body { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(217,119,87,
 
 /* Activity decorative thematic images */
 .activity { position: relative; overflow: hidden; }
-.activity-deco { position: absolute; top: 12px; right: 16px; width: 72px; height: 72px; opacity: 0.18; pointer-events: none; z-index: 0; animation: floatSlow 9s ease-in-out infinite; filter: saturate(0.9); }
+.activity-deco { position: absolute; top: 8px; right: 12px; width: 96px; height: 96px; opacity: 0.25; pointer-events: none; z-index: 0; animation: floatSlow 9s ease-in-out infinite; filter: saturate(1.1); }
 .activity > * { position: relative; z-index: 1; }
 @keyframes floatSlow { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
 @media (max-width: 640px) { .activity-deco { width: 48px; height: 48px; opacity: 0.12; } }
 @media (prefers-reduced-motion: reduce) { .activity-deco { animation: none !important; } }
+
+/* ===== Thematic animated elements v4 ===== */
+.hero::after { content: ""; position: absolute; bottom: -20px; right: -20px; width: 260px; height: 170px; background: url("./images/theme/anim-network.svg") center/contain no-repeat; opacity: 0.18; pointer-events: none; animation: floatSlow 12s ease-in-out infinite; z-index: 0; }
+.hero > * { position: relative; z-index: 1; }
+.quote-band { position: relative; overflow: hidden; min-height: 120px; }
+.quote-band::before { content: ""; position: absolute; top: -30px; left: -30px; width: 220px; height: 150px; background: url("./images/theme/anim-balance.svg") center/contain no-repeat; opacity: 0.15; pointer-events: none; animation: floatSlow2 9s ease-in-out infinite; }
+.quote-band::after { content: ""; position: absolute; bottom: -20px; right: -20px; width: 200px; height: 130px; background: url("./images/theme/anim-people.svg") center/contain no-repeat; opacity: 0.18; pointer-events: none; animation: floatSlow 11s ease-in-out infinite; }
+.hero-float { width: 160px; height: 160px; opacity: 0.9; }
+@media (max-width: 720px) { .hero::after { width: 160px; height: 110px; opacity: 0.10; } .quote-band::before, .quote-band::after { width: 120px; height: 80px; opacity: 0.08; } .hero-float { width: 100px; height: 100px; } }
+@media (prefers-reduced-motion: reduce) { .hero::after, .quote-band::before, .quote-band::after, .hero-float { animation: none !important; } }

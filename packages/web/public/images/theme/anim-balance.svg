@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="none">
+  <style>
+    .beam { animation: tilt 4s ease-in-out infinite; transform-origin: 100px 60px; }
+    .left { animation: leftBob 4s ease-in-out infinite; transform-origin: 40px 90px; }
+    .right { animation: rightBob 4s ease-in-out infinite; transform-origin: 160px 90px; }
+    @keyframes tilt { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+    @keyframes leftBob { 0%,100% { transform: translateY(0); } 25% { transform: translateY(-4px); } 75% { transform: translateY(4px); } }
+    @keyframes rightBob { 0%,100% { transform: translateY(0); } 25% { transform: translateY(4px); } 75% { transform: translateY(-4px); } }
+  </style>
+  <!-- Stand -->
+  <rect x="95" y="60" width="10" height="70" rx="3" fill="#5a7a5a"/>
+  <rect x="70" y="125" width="60" height="8" rx="4" fill="#1f3d33"/>
+  <!-- Beam -->
+  <g class="beam">
+    <rect x="30" y="57" width="140" height="6" rx="3" fill="#1f3d33"/>
+    <!-- Left pan -->
+    <g class="left">
+      <line x1="40" y1="63" x2="40" y2="85" stroke="#9fb28f" stroke-width="1.5"/>
+      <ellipse cx="40" cy="90" rx="22" ry="6" fill="#eaf0e3" stroke="#5a7a5a" stroke-width="1.5"/>
+      <text x="40" y="93" text-anchor="middle" font-size="8" fill="#1f3d33" font-family="sans-serif" font-weight="bold">IA</text>
+    </g>
+    <!-- Right pan -->
+    <g class="right">
+      <line x1="160" y1="63" x2="160" y2="85" stroke="#9fb28f" stroke-width="1.5"/>
+      <ellipse cx="160" cy="90" rx="22" ry="6" fill="#f3e7dc" stroke="#d97757" stroke-width="1.5"/>
+      <text x="160" y="93" text-anchor="middle" font-size="8" fill="#1f3d33" font-family="sans-serif" font-weight="bold">umano</text>
+    </g>
+    <!-- Center pivot -->
+    <circle cx="100" cy="60" r="6" fill="#d97757"/>
+  </g>
+</svg>
