@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <style>
+    .ring { animation: spin 12s linear infinite; transform-origin: 100px 100px; }
+    .ring2 { animation: spin 18s linear infinite reverse; transform-origin: 100px 100px; }
+    .dot { animation: pulse 2s ease-in-out infinite; }
+    .dot2 { animation: pulse 2.5s ease-in-out infinite 0.5s; }
+    .dot3 { animation: pulse 3s ease-in-out infinite 1s; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { r: 4; opacity: 0.6; } 50% { r: 7; opacity: 1; } }
+  </style>
+  <circle class="ring" cx="100" cy="100" r="70" stroke="#d97757" stroke-width="1.5" stroke-dasharray="8 6" fill="none" opacity="0.5"/>
+  <circle class="ring2" cx="100" cy="100" r="50" stroke="#5a7a5a" stroke-width="1.5" stroke-dasharray="4 8" fill="none" opacity="0.4"/>
+  <circle cx="100" cy="100" r="28" fill="#faf6ee" stroke="#1f3d33" stroke-width="2"/>
+  <path d="M100 82 L100 95 M92 88 L100 82 L108 88" stroke="#d97757" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle class="dot" cx="100" cy="110" r="4" fill="#d97757"/>
+  <circle class="dot2" cx="30" cy="100" r="4" fill="#5a7a5a"/>
+  <circle class="dot3" cx="170" cy="100" r="4" fill="#f4a261"/>
+  <circle class="dot" cx="100" cy="30" r="4" fill="#5a7a5a"/>
+  <circle class="dot2" cx="100" cy="170" r="4" fill="#f4a261"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none">
+  <style>
+    .shield { animation: shieldPulse 3s ease-in-out infinite; transform-origin: 60px 70px; }
+    .check { animation: checkDraw 2s ease-in-out infinite; stroke-dasharray: 40; stroke-dashoffset: 40; }
+    @keyframes shieldPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+    @keyframes checkDraw { 0% { stroke-dashoffset: 40; } 50%,100% { stroke-dashoffset: 0; } }
+  </style>
+  <path class="shield" d="M60 10 L105 30 L105 75 Q105 110 60 130 Q15 110 15 75 L15 30 Z" fill="#eaf0e3" stroke="#5a7a5a" stroke-width="2.5"/>
+  <path class="check" d="M40 72 L55 87 L82 58" stroke="#d97757" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

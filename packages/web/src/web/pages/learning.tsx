@@ -858,6 +858,7 @@ export default function Learning() {
                 </div>
 
                                 <figure className="hero-visual" aria-hidden="true">
+                  <img className="hero-float" src="./images/theme/anim-core.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
                   <img className="hero-theme-image" src="./images/theme/hero-discernimento.svg" alt="" loading="eager" decoding="async" />
                   <figcaption className="art-caption">
                     10 TAPPE · DALLA SCELTA ALLA REVISIONE

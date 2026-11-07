@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 120" fill="none">
+  <style>
+    .p1 { animation: bob 3s ease-in-out infinite; }
+    .p2 { animation: bob 3s ease-in-out infinite 0.5s; }
+    .p3 { animation: bob 3s ease-in-out infinite 1s; }
+    .link { animation: flow 2s linear infinite; stroke-dasharray: 4 4; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    @keyframes flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -8; } }
+  </style>
+  <circle class="p1" cx="40" cy="60" r="16" fill="#eaf0e3" stroke="#5a7a5a" stroke-width="2"/>
+  <circle class="p1" cx="40" cy="52" r="7" fill="#5a7a5a"/>
+  <circle class="p2" cx="120" cy="60" r="16" fill="#f3e7dc" stroke="#d97757" stroke-width="2"/>
+  <circle class="p2" cx="120" cy="52" r="7" fill="#d97757"/>
+  <circle class="p3" cx="200" cy="60" r="16" fill="#eaf0e3" stroke="#5a7a5a" stroke-width="2"/>
+  <circle class="p3" cx="200" cy="52" r="7" fill="#5a7a5a"/>
+  <path class="link" d="M56 60 L104 60" stroke="#9fb28f" stroke-width="2" fill="none"/>
+  <path class="link" d="M136 60 L184 60" stroke="#9fb28f" stroke-width="2" fill="none"/>
+</svg>
