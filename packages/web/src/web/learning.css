@@ -2409,3 +2409,11 @@ body { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(217,119,87,
 .section-divider { height: 2px; background: linear-gradient(90deg, transparent, var(--accent-hot), var(--accent-glow), var(--accent-hot), transparent); background-size: 200% 100%; animation: shimmerMove 4s linear infinite; margin: 24px 0; border: none; }
 @media (prefers-reduced-motion: reduce) { .hero-float, .hero::after, .quote-band::before, .quote-band::after, .topbar::after, .home-credit-banner::before, .scenario-story::before, .glossary details[open], .ai-result::before { animation: none !important; } }
 @media (max-width: 720px) { .hero-float { width: 90px; height: 90px; top: -10px; right: -15px; } }
+
+/* Activity decorative thematic images */
+.activity { position: relative; overflow: hidden; }
+.activity-deco { position: absolute; top: 12px; right: 16px; width: 72px; height: 72px; opacity: 0.18; pointer-events: none; z-index: 0; animation: floatSlow 9s ease-in-out infinite; filter: saturate(0.9); }
+.activity > * { position: relative; z-index: 1; }
+@keyframes floatSlow { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+@media (max-width: 640px) { .activity-deco { width: 48px; height: 48px; opacity: 0.12; } }
+@media (prefers-reduced-motion: reduce) { .activity-deco { animation: none !important; } }

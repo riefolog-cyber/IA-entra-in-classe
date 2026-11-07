@@ -1164,6 +1164,8 @@ export default function Learning() {
 
               <section className="activity">
 
+                <img className="activity-deco" src="./images/theme/anim-core.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+
                 <div className="activity-label">
 
                   <Feather size={17} />
@@ -1181,6 +1183,8 @@ export default function Learning() {
               </section>
 
               <section className="activity">
+
+                <img className="activity-deco" src={`./images/theme/fase-${step.phase === "Progettazione" ? "progettazione" : step.phase === "Pratica" ? "pratica" : step.phase === "Progettazione inclusiva" ? "inclusione" : step.phase === "Revisione" ? "revisione" : "progettazione"}.svg`} alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
                 <div className="activity-label">
 
@@ -1247,6 +1251,8 @@ export default function Learning() {
               {step.microQuestion && (
                 <section className="activity micro-quiz">
 
+                <img className="activity-deco" src="./images/theme/anim-shield.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+
                   <div className="activity-label">
 
                     <CheckCircle2 size={17} />
@@ -1311,6 +1317,8 @@ export default function Learning() {
               )}
 
               <section className="activity">
+
+                <img className="activity-deco" src="./images/theme/anim-people.svg" alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
                 <div className="activity-label">
 
@@ -2024,8 +2032,10 @@ export default function Learning() {
               <div className="activity">
                 <h2>Il mio profilo e l’autocomprensione</h2>
                 <p>
-                  L’analisi IA legge le risposte e le scelte che hai inserito nel percorso e propone
-                  una lettura per l’autocomprensione professionale: punti di forza, tensioni utili,
+                  L’analisi IA non si limita a riassumere le tue risposte: le legge come un testo
+                  professionale. Cerca il senso delle scelte, i silenzi, le tensioni e le contraddizioni
+                  che emergono dal percorso, e propone una lettura ermeneutica del tuo modo di insegnare
+                  con (o senza) l’IA: punti di forza come risorse, tensioni come opportunità,
                   domande aperte e un possibile prossimo passo.
                 </p>
                 <p className="ai-guard">
