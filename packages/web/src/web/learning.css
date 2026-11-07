@@ -2332,3 +2332,53 @@ body { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(217,119,87,
 .ai-result { position: relative; overflow: hidden; }
 .ai-result::before { content: ""; position: absolute; top: 0; right: 0; width: 80px; height: 80px; background: radial-gradient(circle at top right, rgba(217,119,87,0.15) 0%, transparent 70%); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .activity .activity-label::before { animation: none !important; } }
+
+/* ===== Marked animations and graphic elements v2 ===== */
+@keyframes floatSlow { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
+@keyframes pulseGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(217,119,87,0.4); } 50% { box-shadow: 0 0 0 12px rgba(217,119,87,0); } }
+@keyframes shimmerMove { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes borderFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { transform: scale(1.08); } 70% { transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
+.activity { animation: slideUp 0.5s cubic-bezier(0.4,0,0.2,1) both; border-left: 5px solid var(--accent-hot); position: relative; overflow: hidden; }
+.activity::after { content: ""; position: absolute; left: -5px; top: 0; width: 5px; height: 100%; background: linear-gradient(180deg, var(--accent-hot), var(--accent-glow), var(--accent-hot)); background-size: 100% 200%; animation: borderFlow 4s ease infinite; }
+.activity::before { width: 180px; height: 180px; background: radial-gradient(circle at top right, rgba(217,119,87,0.18) 0%, transparent 65%); }
+.activity .activity-label::before { width: 10px; height: 10px; animation: pulseGlow 2.5s ease-in-out infinite, sectionPulse 3s ease-in-out infinite; }
+.path-card { animation: scaleIn 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+.path-card:nth-child(1) { animation-delay: 0.05s; }
+.path-card:nth-child(2) { animation-delay: 0.1s; }
+.path-card:nth-child(3) { animation-delay: 0.15s; }
+.path-card:nth-child(4) { animation-delay: 0.2s; }
+.path-card:hover { transform: translate(-3px,-3px) scale(1.01); box-shadow: 10px 10px 0 rgba(217,119,87,0.22); border-color: var(--accent-hot); }
+.path-card .card-number { animation: bounceIn 0.6s cubic-bezier(0.4,0,0.2,1) both; }
+.hero { animation: slideUp 0.6s cubic-bezier(0.4,0,0.2,1) both; }
+.hero::before { background: radial-gradient(circle 500px at 85% 20%, rgba(217,119,87,0.45) 0%, transparent 60%), radial-gradient(circle 400px at 10% 80%, rgba(244,162,97,0.35) 0%, transparent 60%); }
+.hero-theme-image { animation: floatSlow 6s ease-in-out infinite; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.25)); }
+.step-pills button.active { animation: pulseGlow 2.5s ease-in-out infinite; }
+.scenario-story { position: relative; overflow: hidden; }
+.scenario-story::before { content: ""; position: absolute; left: 0; top: 0; width: 5px; height: 100%; background: linear-gradient(180deg, var(--accent-hot), var(--accent-glow), var(--accent-hot)); background-size: 100% 200%; animation: borderFlow 3s ease infinite; }
+.scenario-story::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 80px; height: 3px; background: linear-gradient(90deg, var(--accent-hot), var(--accent-glow), var(--accent-hot)); background-size: 200% 100%; animation: shimmerMove 2.5s linear infinite; }
+.glossary details { transition: all 0.2s cubic-bezier(0.4,0,0.2,1); }
+.glossary details[open] { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 rgba(217,119,87,0.18); border-color: var(--accent-hot); }
+.glossary details[open] summary { color: var(--accent-hot); }
+.glossary details::after { content: ""; position: absolute; top: 8px; right: 8px; width: 6px; height: 6px; background: var(--accent-hot); border-radius: 50%; opacity: 0; transition: opacity 0.2s ease; }
+.glossary details[open]::after { opacity: 1; animation: pulseGlow 2s ease-in-out infinite; }
+.ai-result { animation: slideUp 0.5s cubic-bezier(0.4,0,0.2,1) both; }
+.ai-result::before { width: 120px; height: 120px; background: radial-gradient(circle at top right, rgba(217,119,87,0.22) 0%, transparent 70%); }
+.ai-badge { animation: bounceIn 0.5s cubic-bezier(0.4,0,0.2,1) both; }
+.progress-panel { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+.topbar { position: relative; }
+.topbar::after { content: ""; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--ink-deep), var(--accent-hot), var(--accent-glow), var(--accent-hot), var(--ink-deep)); background-size: 200% 100%; animation: shimmerMove 4s linear infinite; }
+.brand-icon { animation: pulseGlow 3s ease-in-out infinite; }
+.footer { position: relative; }
+.footer::before { content: ""; position: absolute; top: 0; left: 0; width: 60px; height: 2px; background: var(--accent-hot); }
+.home-credit-banner { position: relative; overflow: hidden; }
+.home-credit-banner::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); animation: shimmerMove 3s ease-in-out infinite; }
+.concept-box { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+.decision-focus { position: relative; overflow: hidden; }
+.decision-focus::after { content: ""; position: absolute; top: 0; right: 0; width: 40px; height: 100%; background: linear-gradient(90deg, transparent, rgba(217,119,87,0.08)); pointer-events: none; }
+.micro-quiz { animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1) both; }
+.micro-quiz .activity-label::before { background: var(--accent-glow); }
+@media (prefers-reduced-motion: reduce) { .activity::after, .scenario-story::before, .scenario-story::after, .glossary details::after, .topbar::after, .home-credit-banner::before, .hero-theme-image, .step-pills button.active, .activity .activity-label::before, .path-card, .path-card .card-number, .hero, .concept-box, .ai-result, .progress-panel, .micro-quiz { animation: none !important; } .path-card:hover, .glossary details:hover { transform: none !important; } }
+@media (max-width: 720px) { .activity::before { width: 80px; height: 80px; } }
