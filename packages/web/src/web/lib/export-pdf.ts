@@ -1,5 +1,10 @@
 import { steps as previousSteps, glossary as previousGlossary } from "./content";
-import { steps as teacherSteps, glossary as teacherGlossary, type SavedState } from "./teacher-content";
+import {
+  steps as teacherSteps,
+  glossary as teacherGlossary,
+  references as teacherReferences,
+  type SavedState,
+} from "./teacher-content";
 
 export async function exportPdf(state: SavedState, previousVersion = false) {
   const { jsPDF } = await import("jspdf");
@@ -30,7 +35,12 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     y += 4;
   };
   paragraph("RESTARE UMANI", 24, true);
-  paragraph(previousVersion ? "Percorso personale precedente" : "IA a scuola · Il mio quaderno di aggiornamento professionale", 14);
+  paragraph(
+    previousVersion
+      ? "Percorso personale precedente"
+      : "IA a scuola · Il mio quaderno di aggiornamento professionale",
+    14,
+  );
   paragraph(
     `Esportato il ${new Date().toLocaleDateString("it-IT")} · ${state.completed.length} tappe segnate come concluse su ${steps.length}`,
   );
@@ -38,7 +48,10 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
   paragraph(
     "Questo documento raccoglie tutte le attività del percorso e le risposte presenti al momento dell’esportazione. Le risposte mancanti sono indicate. Non è una valutazione della persona. Condividi solo ciò che desideri; conserva il file con cura.",
   );
-  if (!previousVersion) paragraph("Percorso per docenti: progettazione, verifica dei materiali, valutazione, processo visibile, regole d’uso, comunicazione, inclusione e dati, accessibilità, sperimentazione e scelte istituzionali. I casi sono inventati. Non inserire dati identificativi degli alunni. Le attività non sostituiscono le procedure dell’istituto.");
+  if (!previousVersion)
+    paragraph(
+      "Percorso per docenti: progettazione, verifica dei materiali, valutazione, processo visibile, regole d’uso, comunicazione, inclusione e dati, accessibilità, sperimentazione e scelte istituzionali. I casi sono inventati. Non inserire dati identificativi degli studenti. Le attività non sostituiscono le procedure dell’istituto.",
+    );
   steps.forEach((step, i) => {
     doc.addPage();
     y = 25;
@@ -50,6 +63,10 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     paragraph(step.intro);
     paragraph("Idea da approfondire", 12, true);
     paragraph(step.concept);
+    if (!previousVersion && "disciplineCase" in step && step.disciplineCase) {
+      paragraph("Un caso nella tua disciplina", 12, true);
+      paragraph(step.disciplineCase, 10);
+    }
     step.prompts.forEach((prompt, n) => {
       paragraph(prompt, 11, true);
       paragraph(state.answers[`${i}-p${n}`] || "[Nessuna risposta]");
@@ -63,15 +80,6 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     );
     paragraph(`Risposta corretta: ${step.options[step.correct]}`);
     paragraph(`Spiegazione: ${step.explanation}`);
-    if (step.microQuestion) {
-      paragraph("Micro-quiz", 12, true);
-      paragraph(step.microQuestion, 11, true);
-      step.microOptions.forEach((o, n) => paragraph(`${n + 1}. ${o}`, 10));
-      const mq = state.answers[`${i}-microquiz`];
-      paragraph(`Risposta scelta: ${mq !== undefined ? step.microOptions[Number(mq)] : "[Nessuna risposta]"}`);
-      paragraph(`Risposta correta: ${step.microOptions[step.microCorrect]}`);
-      paragraph(`Spiegazione: ${step.microExplanation}`);
-    }
     paragraph("Scenario e prospettive", 13, true);
     paragraph(step.scenario);
     step.choices.forEach((c, n) => {
@@ -92,6 +100,16 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     paragraph(term, 11, true);
     paragraph(definition);
   });
+  if (!previousVersion) {
+    doc.addPage();
+    y = 25;
+    paragraph("Riferimenti", 17, true);
+    teacherReferences.forEach((reference) => {
+      paragraph(reference.title, 11, true);
+      paragraph(reference.description, 10);
+      paragraph(reference.url, 9);
+    });
+  }
   const count = doc.getNumberOfPages();
   for (let page = 1; page <= count; page++) {
     doc.setPage(page);
@@ -101,5 +119,9 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     doc.text("Restare umani · Documento personale", 22, 286);
     doc.text(`${page} / ${count}`, 185, 286, { align: "right" });
   }
-  doc.save(previousVersion ? "restare-umani-percorso-precedente.pdf" : "restare-umani-quaderno-docente.pdf");
+  doc.save(
+    previousVersion
+      ? "restare-umani-percorso-precedente.pdf"
+      : "restare-umani-quaderno-docente.pdf",
+  );
 }

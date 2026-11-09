@@ -11,6 +11,7 @@
     "dev": "vite",
     "start": "bun src/__server.ts",
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "preview": "bun run build && vite preview",
     "db:generate": "bun --env-file=../../.env drizzle-kit generate",
     "db:migrate": "bun --env-file=../../.env drizzle-kit migrate",

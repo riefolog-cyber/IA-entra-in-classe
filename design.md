@@ -1,57 +1,50 @@
 # Restare umani — Design
 
 ## Direzione approvata
-Percorso di aggiornamento professionale in italiano per docenti di ogni ordine scolastico: sei tappe di riflessione e progettazione sull’uso dell’IA a scuola. Editoriale caldo, contemplativo, senza gamificazione della persona.
-Palette: carta #f7f6f0, inchiostro #203b32, verde #284c3e, salvia #e4e9dd, terracotta #c07d5b. Georgia per titoli, Poppins per corpo e controlli.
-Sidebar desktop, navigazione compatta mobile, hero asimmetrico con specchio geometrico CSS. Spazi 8/16/24/32/48/64px, bordi sottili, ombre minime, icone Lucide.
-Sezioni: panoramica, sei tappe, approfondimenti e glossario, riepilogo. Non ripristinare sezioni fonti o guida docente, eliminate su richiesta.
-Le tappe producono: obiettivo didattico e prompt, checklist di verifica, piano di valutazione, garanzie su dati/inclusione, consegna trasparente, scheda di sperimentazione. Restano quiz concettuali e scenari di discussione.
-Risposte solo in localStorage, errori gestiti, cancellazione con conferma; PDF multipagina client-side con attività, risposte e glossario. Nuova versione con chiave separata; vecchie risposte esportabili senza associarle ai nuovi quesiti. Nessun account né API per dati personali. Analytics della piattaforma preservati.
-Focus visibile, contrasto, etichette, movimento ridotto e layout responsive.
-Implementazione: packages/web/src/web/pages/learning.tsx, lib/content.ts, lib/export-pdf.ts, styles.css. index.tsx è solo composizione. Backend invariato.
 
-> Starter design brief. Replace this content with the app you're building before writing any UI.
-> Keep it short and concrete — it's the single source of truth for palette, typography, pages,
-> screens, and flows across web, mobile, and desktop.
+Percorso di aggiornamento professionale in italiano per **docenti della scuola secondaria di secondo grado**. Dieci tappe di riflessione e progettazione sull’uso dell’IA a scuola. Editoriale caldo, contemplativo, senza gamificazione della persona.
 
-One-line description of the app, the platforms it ships on, the visual direction (style, feel), and the core job it does for the user.
+Palette: carta `#f7f6f0`, inchiostro `#203b32`, verde `#284c3e`, salvia `#e4e9dd`, terracotta `#c07d5b`. Georgia per titoli, Poppins per corpo e controlli.
 
-## Brand & Colors
+Sidebar desktop, navigazione compatta mobile, hero asimmetrico con specchio geometrico CSS. Spazi 8/16/24/32/48/64 px, bordi sottili, ombre minime, icone Lucide.
 
-One token set, consumed per platform:
+## Sezioni
 
-- **Web & desktop**: CSS variables in `packages/web/src/web/styles.css` (desktop loads the web UI).
-- **Mobile**: `Colors.light` / `Colors.dark` in `packages/mobile/constants/theme.ts`, read via `useColors()`; `userInterfaceStyle: "automatic"` follows the system light/dark setting.
+- **Panoramica** (`home`): hero, avanzamento, mappa delle dieci tappe per fase.
+- **Tappa** (`step`): intro, chiave di lettura, caso disciplinare, riflessione, quiz con spiegazione, scenario con tre prospettive e motivazione.
+- **Approfondimenti** (`resources`): due prospettive, glossario ricercabile, riferimenti bibliografici.
+- **Riepilogo** (`summary`): metriche, esportazione PDF/JSON, nome, sintesi per tappa, analisi IA opzionale con consenso, feedback anonimo.
 
-| Token | Light | Dark | Use |
-|-------|-------|------|-----|
-| primary | #1F1F1F | #E5E5E5 | Buttons, active tab, accents |
-| background | #FFFFFF | #0A0A0A | Page/screen background |
-| card | #FFFFFF | #1A1A1A | Cards, surfaces |
-| foreground | #171717 | #FAFAFA | Primary text |
-| mutedForeground | #737373 | #A3A3A3 | Secondary text |
-| border | #E5E5E5 | #262626 | Hairlines |
-| destructive | #DC2626 | #EF4444 | Delete / errors |
+Le tappe coprono: progettazione, verifica dei materiali, valutazione, processo visibile, regole d’uso, comunicazione, inclusione e dati, accessibilità/UDL, sperimentazione, scelte istituzionali. Restano quiz concettuali e scenari di discussione.
 
-## Typography
+## Lingua e pubblico
 
-Name the display + body pairing here. Web: set font families in `styles.css` (self-hosted files go in `packages/web/public/fonts/`). Mobile: system font by default; load custom fonts with `useFonts` from `expo-font` and reference them via `Fonts` in `constants/theme.ts`.
+- Registro adulto, non moralistico; nessun punto esclamativo e nessuna gamificazione.
+- Terminologia coerente con la secondaria di secondo grado: «studenti», non «alunni».
+- Lessico specialistico (UDL, accountability, automation bias) spiegato nel glossario e, quando serve, nel testo.
+- Ogni tappa include un caso disciplinare per parlare anche a docenti di area scientifica, linguistica e umanistica.
+- Nessuna interpretazione psicologica dei silenzi o dei campi vuoti.
 
-## Pages & Screens
+## Dati e privacy
 
-List each page/screen, its route file, and what it shows. Example:
+- Risposte, nome e avanzamento solo in `localStorage`; nessun account.
+- Esportazione PDF/JSON lato client; cancellazione con conferma.
+- L’analisi IA è **opzionale**, richiede consenso esplicito e invia una sintesi senza il nome. Il servizio esterno può trattenerla secondo le proprie condizioni: il sito non la conserva.
+- Se il backend non è raggiungibile (es. pubblicazione statica), la funzione viene nascosta e il resto del percorso resta utilizzabile.
+- Feedback anonimo inviato a un Google Form; nessun dato personale raccolto dal sito.
+- Vecchie risposte (`restare-umani-v1`) esportabili senza associarle ai nuovi quesiti.
 
-- **Web — Home** (`packages/web/src/web/pages/index.tsx`) — what the user sees first.
-- **Mobile — Home** (`packages/mobile/app/(tabs)/index.tsx`) — main tab.
-- Add web pages under `src/web/pages/` (+ route in `app.tsx`); mobile tabs under `app/(tabs)/`, stack/modal screens under `app/`.
+## Accessibilità
 
-## Key User Flows
+Focus visibile, contrasto, etichette, `aria-live` sui feedback, movimento ridotto, layout responsive, skip link, dialog con gestione del focus e `Escape`.
 
-1. Describe the primary flow end to end (open → action → result).
-2. ...
+## Implementazione
 
-## Architecture
-
-- **API**: typed oRPC client (`lib/api.ts` in each package) → the backend in `@template/web`. Query/mutation hooks live in `queries/` (one file per feature); pages/screens call them with `@tanstack/react-query`.
-- **State/sync**: TanStack Query with optimistic updates for instant-feel interactions.
-- **Auth / payments / uploads**: see `skills/app/references/` when those features are needed.
+- `packages/web/src/web/pages/learning.tsx`: composizione delle viste e stato del percorso.
+- `packages/web/src/web/lib/teacher-content.ts`: contenuti delle dieci tappe, glossario e riferimenti.
+- `packages/web/src/web/lib/export-pdf.ts`: PDF multipagina client-side.
+- `packages/web/src/web/lib/teacher-profile.ts`: profilo locale di riserva (non ancora esposto nell’interfaccia).
+- `packages/web/src/web/components/error-boundary.tsx`: rete di sicurezza dell’interfaccia.
+- `packages/web/src/web/learning.css` e `styles.css`: stile editoriale e token.
+- Backend: `packages/web/src/api/routes/profile-analysis.ts` (oRPC), opzionale.
+- Deploy: GitHub Pages statico (workflow Actions) oppure server Bun/pm2 con API.

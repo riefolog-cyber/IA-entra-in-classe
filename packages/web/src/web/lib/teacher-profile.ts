@@ -32,7 +32,16 @@ const themes = [
   {
     key: "relazione",
     label: "la relazione e il confronto tra colleghi",
-    words: ["relazion", "confront", "colleg", "ascolt", "dialog", "gruppo", "dipartiment", "famigl"],
+    words: [
+      "relazion",
+      "confront",
+      "colleg",
+      "ascolt",
+      "dialog",
+      "gruppo",
+      "dipartiment",
+      "famigl",
+    ],
   },
   {
     key: "sperimentazione",

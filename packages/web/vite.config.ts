@@ -19,12 +19,7 @@ export default defineConfig(({ mode }) => {
     // All env files live at the repo root — keep Vite's own env loading there too,
     // so packages/web/.env* files can never shadow the root .env.
     envDir: root,
-    plugins: [
-      honoDevPlugin(),
-      react(),
-      tailwind(),
-      assetOptimizerPlugin(),
-    ],
+    plugins: [honoDevPlugin(), react(), tailwind(), assetOptimizerPlugin()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src/web"),

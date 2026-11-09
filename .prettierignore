@@ -1,0 +1,4 @@
+docs
+packages/*/dist
+packages/*/dist-electron
+bun.lock

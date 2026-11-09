@@ -1,14 +1,18 @@
 import { Route, Switch } from "wouter";
-import Index from "./pages/index";
+
+import { ErrorBoundary } from "./components/error-boundary";
 import { Provider } from "./components/provider";
+import Index from "./pages/index";
 
 function App() {
   return (
-    <Provider>
-      <Switch>
-        <Route path="*" component={Index} />
-      </Switch>
-    </Provider>
+    <ErrorBoundary>
+      <Provider>
+        <Switch>
+          <Route path="*" component={Index} />
+        </Switch>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 
