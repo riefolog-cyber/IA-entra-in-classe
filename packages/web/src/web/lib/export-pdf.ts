@@ -1,4 +1,3 @@
-import { steps as previousSteps, glossary as previousGlossary } from "./content";
 import {
   steps as teacherSteps,
   glossary as teacherGlossary,
@@ -8,8 +7,8 @@ import {
 
 export async function exportPdf(state: SavedState, previousVersion = false) {
   const { jsPDF } = await import("jspdf");
-  const steps = previousVersion ? previousSteps : teacherSteps;
-  const glossary = previousVersion ? previousGlossary : teacherGlossary;
+  const steps = teacherSteps;
+  const glossary = teacherGlossary;
   const doc = new jsPDF();
   let y = 25;
   const clean = (s: string) =>
