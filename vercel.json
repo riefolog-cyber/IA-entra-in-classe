@@ -1,0 +1,16 @@
+{
+  "buildCommand": "bun run build:web",
+  "outputDirectory": "packages/web/dist",
+  "installCommand": "bun install",
+  "framework": "vite",
+  "functions": {
+    "packages/web/src/server.ts": {
+      "runtime": "bun",
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "packages/web/src/server.ts" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
