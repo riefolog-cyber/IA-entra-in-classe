@@ -63,10 +63,7 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     paragraph(step.intro);
     paragraph("Idea da approfondire", 12, true);
     paragraph(step.concept);
-    if (!previousVersion && "disciplineCase" in step && step.disciplineCase) {
-      paragraph("Un caso nella tua disciplina", 12, true);
-      paragraph(step.disciplineCase, 10);
-    }
+
     step.prompts.forEach((prompt, n) => {
       paragraph(prompt, 11, true);
       paragraph(state.answers[`${i}-p${n}`] || "[Nessuna risposta]");

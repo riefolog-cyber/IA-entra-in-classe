@@ -965,12 +965,7 @@ export default function Learning() {
                   </div>
                 </div>
 
-                {step.disciplineCase && (
-                  <div className="discipline-case">
-                    <strong>Un caso nella tua disciplina</strong>
-                    <p>{step.disciplineCase}</p>
-                  </div>
-                )}
+
 
                 <section className="activity">
                   <div className="activity-visual">

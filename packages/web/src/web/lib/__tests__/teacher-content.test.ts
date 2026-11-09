@@ -15,7 +15,6 @@ describe("contenuti del percorso docenti", () => {
       expect(step.title.length).toBeGreaterThan(0);
       expect(step.intro.length).toBeGreaterThan(0);
       expect(step.concept.length).toBeGreaterThan(0);
-      expect(step.disciplineCase.length).toBeGreaterThan(0);
       expect(step.prompts.length).toBeGreaterThan(0);
       expect(step.options.length).toBeGreaterThanOrEqual(3);
       expect(step.correct).toBeGreaterThanOrEqual(0);

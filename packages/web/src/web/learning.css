@@ -2442,7 +2442,7 @@ dialog.modal {
   gap: 8px;
   align-items: flex-start;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--ink);
   line-height: 1.45;
 }
 .ai-consent input {

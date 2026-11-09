@@ -1,4 +1,6 @@
-export { emptyState, type SavedState } from "./content";
+export type Answers = Record<string, string>;
+export type SavedState = { answers: Answers; completed: number[]; current: number; name: string };
+export const emptyState: SavedState = { answers: {}, completed: [], current: 0, name: "" };
 
 export const steps = [
   {
@@ -9,11 +11,9 @@ export const steps = [
     decisionFocus: "obiettivo di apprendimento vs. efficienza dello strumento",
     phase: "Progettazione",
     intro:
-      "In questo percorso non cerchiamo soltanto modi per lavorare più velocemente. Chiediamoci che cosa l’IA cambia nel nostro modo di insegnare e che cosa deve restare un’esperienza attiva degli studenti. Se non la usi ancora, parti da un’attività che conosci bene.",
+      "In questo percorso non cerchiamo soltanto modi per lavorare più velocemente. Che cosa cambia nel tuo modo di insegnare e che cosa deve restare un’esperienza attiva degli studenti? Se non la usi ancora, parti da un’attività che conosci bene.",
     concept:
-      "Uno strumento è pertinente quando serve un obiettivo di apprendimento osservabile. Produrre più materiali non equivale a far apprendere meglio: occorre decidere quale lavoro cognitivo svolge il docente, quale il sistema e quale lo studente.",
-    disciplineCase:
-      "Matematica: l’IA propone dieci esercizi sui limiti. Prima di assegnarli, risolvi i primi tre e decidi quale passaggio deve restare a carico degli studenti.",
+      "Uno strumento è pertinente quando serve un obiettivo di apprendimento osservabile. Produrre più materiali non equivale a far apprendere meglio: occorre decidere quale lavoro cognitivo resta al docente, quale al sistema e quale allo studente.",
     prompts: ["Quale parte del tuo lavoro non delegherai all’IA, e perché?"],
     question: "Quale criterio è più utile per decidere se integrare l’IA in una lezione?",
     options: [
@@ -45,11 +45,9 @@ export const steps = [
     decisionFocus: "velocità di preparazione vs. accuratezza disciplinare",
     phase: "Progettazione",
     intro:
-      "Un testo plausibile può contenere errori, semplificazioni scorrette o esempi poco adatti alla classe. L’automation bias riguarda anche noi docenti: un formato professionale può farci abbassare la soglia di controllo.",
+      "Un testo plausibile può contenere errori, semplificazioni scorrette o esempi poco adatti alla classe. L’automation bias riguarda anche il docente: un formato professionale può abbassare la soglia di controllo.",
     concept:
       "La revisione didattica controlla almeno correttezza disciplinare, coerenza delle consegne, adeguatezza linguistica e possibili stereotipi. Chiedere al medesimo sistema di confermarsi non è una verifica indipendente.",
-    disciplineCase:
-      "Scienze: una scheda generata confonde correlazione e causalità. Chiedi a un collega di disciplina di rileggerla prima della lezione.",
     prompts: ["Quale controllo non salterai mai, neppure con fretta, e perché?"],
     question:
       "L’IA ha generato esercizi con soluzioni. Quale verifica è più solida prima dell’uso?",
@@ -85,8 +83,6 @@ export const steps = [
       "Una rubrica o una bozza di feedback possono essere supporti. La lettura del processo di apprendimento, l’ascolto dello studente e la motivazione del giudizio non si esauriscono nel testo prodotto da un sistema.",
     concept:
       "Una valutazione solida usa criteri espliciti ed evidenze pertinenti. Un indicatore automatico non è una prova autosufficiente di apprendimento o di uso scorretto dell’IA. Il docente deve poter spiegare e rivedere il proprio giudizio.",
-    disciplineCase:
-      "Italiano: un rilevatore segnala un tema come «generato». Prima di qualsiasi provvedimento, leggi il testo e chiedi allo studente di raccontare le scelte fatte.",
     prompts: [
       "Quale evidenza useresti per capire se uno studente ha davvero appreso, oltre al prodotto finale?",
     ],
@@ -124,8 +120,6 @@ export const steps = [
       "Un buon prodotto finale non mostra sempre come è stato costruito. Se l’IA può contribuire a una fase del lavoro, diventa importante distinguere aiuto consentito, revisione personale e delega del ragionamento.",
     concept:
       "Rendere visibile il processo significa raccogliere tracce utili all’apprendimento: bozze, versioni, annotazioni, scelte, fonti o una breve dichiarazione d’uso. La trasparenza serve a comprendere e migliorare il lavoro, non a sorvegliare gli studenti.",
-    disciplineCase:
-      "Storia: chiedi una bozza con le fonti consultate e una nota sulle parti modificate, non solo la relazione finale.",
     prompts: [
       "In un compito della tua disciplina, quale traccia di processo ti aiuterebbe a capire come lo studente ha usato l’IA?",
     ],
@@ -163,8 +157,6 @@ export const steps = [
       "Nel gruppo di aggiornamento c’è chi vede nell’IA un supporto e chi teme che sostituisca il lavoro degli studenti. Usiamo il confronto per costruire consegne chiare, non per scegliere fra entusiasmo e rifiuto assoluti.",
     concept:
       "Le regole acquistano senso quando si collegano all’obiettivo del compito. Una consegna esplicita quali supporti sono consentiti, che cosa deve essere prodotto autonomamente, come documentare l’aiuto e quale alternativa è disponibile. L’accesso degli studenti va verificato secondo le condizioni del servizio e le procedure dell’istituto.",
-    disciplineCase:
-      "Diritto: distingui nella consegna l’uso consentito per trovare casi, quello per riassumere e ciò che deve restare argomentazione personale.",
     prompts: [
       "Quale obiezione di un collega ti sembra la più forte, e come la risponderesti con rispetto?",
     ],
@@ -201,8 +193,6 @@ export const steps = [
       "Le scelte sull’IA non riguardano solo la preparazione della lezione. Studenti e famiglie hanno bisogno di capire quando uno strumento è usato, perché, con quali limiti e quali alternative sono disponibili.",
     concept:
       "Una comunicazione efficace collega la scelta didattica all’obiettivo, usa un linguaggio adatto al contesto e chiarisce regole, tutele e canali di chiarimento. La trasparenza non richiede di condividere dati sensibili né di descrivere ogni dettaglio tecnico.",
-    disciplineCase:
-      "Scienze umane: spiega alla famiglia perché lo stesso strumento è vietato in un compito e ammesso in un altro, partendo dagli obiettivi.",
     prompts: [
       "Se dovessi spiegare a una famiglia l’uso dell’IA in un compito, quale frase useresti per chiarire obiettivo, limite e alternativa?",
     ],
@@ -239,8 +229,6 @@ export const steps = [
       "L’IA può suggerire versioni alternative di un testo, ma personalizzare non significa caricare documenti degli studenti né ridurre le aspettative. La dignità passa anche da ciò che scegliamo di non comunicare a un sistema.",
     concept:
       "La rimozione del nome non garantisce che una persona non sia riconoscibile. Per progettare, privilegia esempi inventati e descrizioni funzionali generiche. Prima di adottare strumenti, chiarisci con l’istituto finalità, dati, condizioni d’uso e responsabilità; non improvvisare autorizzazioni.",
-    disciplineCase:
-      "Sostegno: descrivi barriere e obiettivi in forma generica, senza caricare il PEI o la diagnosi in un chatbot esterno.",
     prompts: ["Quale dato di uno studente non inseriresti mai in uno strumento esterno, e perché?"],
     question:
       "Vuoi adattare un’attività con un chatbot esterno. Qual è il punto di partenza più prudente?",
@@ -276,8 +264,6 @@ export const steps = [
       "L’IA può aiutare a creare formati alternativi, semplificare un testo o proporre supporti multimodali. Il rischio è confondere accessibilità con semplificazione automatica o con soluzioni uguali per tutti.",
     concept:
       "Nella prospettiva UDL, si riducono barriere offrendo più modi di accesso, azione ed espressione, mantenendo chiari gli obiettivi di apprendimento. Un adattamento generato va verificato: deve essere accessibile, accurato e coerente con le aspettative didattiche.",
-    disciplineCase:
-      "Lingue: l’IA genera un riassunto semplificato del testo. Verifica che il lessico chiave e il compito restino gli stessi, poi offri anche la versione audio.",
     prompts: [
       "Quale barriera ricorrente incontri nella tua disciplina e quale adattamento vorresti provare senza ridurre l’obiettivo?",
     ],
@@ -314,8 +300,6 @@ export const steps = [
       "Il risultato del percorso è una scelta professionale verificabile: una piccola sperimentazione, oppure una decisione motivata di non usare l’IA. Il risparmio di tempo del docente e l’apprendimento degli studenti sono risultati distinti.",
     concept:
       "Una sperimentazione utile dichiara obiettivo, condizioni, tempi, evidenze e criteri di arresto. Non dimostra automaticamente un effetto causale: differenze fra classi, compiti e momenti richiedono cautela. Il valore sta nel rendere le decisioni rivedibili.",
-    disciplineCase:
-      "Fisica: prima di attribuire il miglioramento all’IA, confronta la qualità delle argomentazioni in un compito senza supporto.",
     prompts: [
       "Quale piccola prova potresti fare nelle prossime settimane, e quale evidenza ti porterebbe a modificarla o fermarla?",
     ],
@@ -352,8 +336,6 @@ export const steps = [
       "Le scelte sull’IA raramente restano individuali: coinvolgono strumenti, dati, criteri comuni, famiglie e studenti. Una pratica sostenibile distingue ciò che il docente può decidere in autonomia da ciò che richiede confronto e procedure d’istituto.",
     concept:
       "Governare l’uso dell’IA significa rendere le decisioni condivisibili e rivedibili: finalità, responsabilità, verifiche, alternative e momenti di revisione. L’aggiornamento continuo non è solo conoscere nuovi strumenti, ma imparare a valutare i loro effetti nel proprio contesto.",
-    disciplineCase:
-      "Informatica: prima di adottare un correttore automatico, concordate finalità, dati inviati, alternative e un momento di revisione dopo due settimane.",
     prompts: [
       "Quale decisione sull’IA prenderesti da solo nella tua pratica e quale porteresti in dipartimento o all’istituto? Con quale criterio le distingui?",
     ],
@@ -467,6 +449,7 @@ export const glossary = [
   [
     "Trasparenza d’uso",
     "Spiegare come uno strumento contribuisce al lavoro e che cosa resta autonomo. Serve a rendere comprensibile il processo, non a esigere l’esposizione di dati personali.",
+    [5],
   ],
   [
     "Comunicazione scuola-famiglia",
@@ -504,3 +487,5 @@ export const glossary = [
     [2, 5, 10],
   ],
 ];
+
+
