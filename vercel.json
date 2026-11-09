@@ -3,14 +3,5 @@
   "buildCommand": "cd packages/web && bun run build",
   "outputDirectory": "packages/web/dist",
   "installCommand": "bun install",
-  "framework": "vite",
-  "functions": {
-    "api/index.ts": {
-      "runtime": "bun",
-      "maxDuration": 30
-    }
-  },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" }
-  ]
+  "framework": "vite"
 }
