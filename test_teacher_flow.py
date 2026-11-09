@@ -1,9 +1,11 @@
 import asyncio
+import os
+import tempfile
 from playwright.async_api import async_playwright
 
 async def main():
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
+        browser = await p.chromium.launch(headless=True, args=['--no-sandbox'])
         page = await browser.new_page(viewport={'width': 1440, 'height': 1050})
         errors = []
         page.on('pageerror', lambda err: errors.append(str(err)))
@@ -14,7 +16,7 @@ async def main():
         await page.get_by_text('Le tue risposte precedenti sono conservate.').wait_for()
         async with page.expect_download() as old_download:
             await page.get_by_role('button', name='Esporta il percorso precedente').click()
-        await (await old_download.value).save_as('/home/user/restare-previous-test.pdf')
+        await (await old_download.value).save_as(os.path.join(tempfile.gettempdir(), 'restare-previous-test.pdf'))
         await page.get_by_role('button', name='Inizia il percorso', exact=True).click()
         assert await page.locator('textarea').nth(0).input_value() == '', 'Old responses must not be attached to new prompts'
         correct_answers = [1, 0, 2, 0, 1, 2]
@@ -33,7 +35,7 @@ async def main():
         await page.locator('main input').fill('Docente di prova')
         async with page.expect_download() as new_download:
             await page.get_by_role('button', name='Esporta il percorso in PDF').click()
-        await (await new_download.value).save_as('/home/user/restare-teacher-test.pdf')
+        await (await new_download.value).save_as(os.path.join(tempfile.gettempdir(), 'restare-teacher-test.pdf'))
         stored = await page.evaluate('JSON.parse(localStorage.getItem("restare-umani-docenti-v2"))')
         assert len(stored['completed']) == 6 and len(stored['answers']) == 24
         assert 'Risposta precedente' in await page.evaluate('localStorage.getItem("restare-umani-v1")')
@@ -46,10 +48,10 @@ async def main():
         text = await page.locator('body').inner_text()
         assert 'Per il docente' not in text and 'Fonti e trasparenza editoriale' not in text
         await page.get_by_role('button', name='Il tuo percorso', exact=True).click()
-        await page.screenshot(path='/home/user/restare-teacher-desktop.png', full_page=True, animations='disabled')
+        await page.screenshot(path=os.path.join(tempfile.gettempdir(), 'restare-teacher-desktop.png'), full_page=True, animations='disabled')
         assert await page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         await page.set_viewport_size({'width':390,'height':844})
-        await page.screenshot(path='/home/user/restare-teacher-mobile.png', full_page=True, animations='disabled')
+        await page.screenshot(path=os.path.join(tempfile.gettempdir(), 'restare-teacher-mobile.png'), full_page=True, animations='disabled')
         assert await page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         await page.get_by_role('button',name='Apri menu').click()
         await page.get_by_role('button',name='Cancella i miei dati').click()

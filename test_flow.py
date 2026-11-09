@@ -1,10 +1,12 @@
 import asyncio
+import os
+import tempfile
 from pathlib import Path
 from playwright.async_api import async_playwright
 
 async def main():
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
+        browser = await p.chromium.launch(headless=True, args=['--no-sandbox'])
         page = await browser.new_page(viewport={'width': 1440, 'height': 1000})
         errors = []
         page.on('pageerror', lambda err: errors.append(str(err)))
@@ -27,8 +29,9 @@ async def main():
         async with page.expect_download() as download_info:
             await page.get_by_role('button', name='Esporta il percorso in PDF').click()
         download = await download_info.value
-        await download.save_as('/home/user/restare-test.pdf')
-        assert Path('/home/user/restare-test.pdf').stat().st_size > 10000
+        pdf_path = os.path.join(tempfile.gettempdir(), 'restare-test.pdf')
+        await download.save_as(pdf_path)
+        assert os.path.getsize(pdf_path) > 10000
         await page.get_by_role('button', name='Approfondimenti', exact=True).click()
         await page.get_by_role('textbox', name='Cerca nel glossario').fill('automation')
         assert await page.locator('.glossary details').count() == 1
@@ -39,7 +42,7 @@ async def main():
         await page.get_by_role('button', name='Il tuo percorso', exact=True).click()
         assert await page.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Mobile horizontal overflow'
         await page.wait_for_function("!document.querySelector('.sidebar').classList.contains('mobile-open') && getComputedStyle(document.querySelector('.sidebar')).transform.includes('-265')")
-        await page.screenshot(path='/home/user/restare-mobile.png', full_page=True, animations='disabled')
+        await page.screenshot(path=os.path.join(tempfile.gettempdir(), 'restare-mobile.png'), full_page=True, animations='disabled')
         await page.get_by_role('button', name='Apri menu').click()
         await page.get_by_role('button', name='Cancella i miei dati').click()
         await page.get_by_role('button', name='Annulla', exact=True).click()

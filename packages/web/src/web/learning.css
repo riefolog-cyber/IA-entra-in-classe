@@ -24,7 +24,6 @@
   --ink: #203b32;
   --green: #284c3e;
   --sage: #e5eade;
-  --muted-text: #71786e;
   --line: #e2e4db;
 }
 * {
@@ -148,7 +147,7 @@ a {
 .sidebar-label {
   font-size: 9px;
   letter-spacing: 1.35px;
-  color: #697266;
+  color: var(--ink);
   margin: 36px 12px 13px;
   font-weight: 500;
 }
@@ -159,7 +158,7 @@ a {
   width: 100%;
   padding: 12px 13px;
   background: transparent;
-  color: #646f63;
+  color: var(--ink);
   text-align: left;
   border-radius: 6px;
   font-size: 12px;
@@ -2176,7 +2175,7 @@ dialog.modal {
   color: var(--green-deep);
 }
 .path-phase-head span {
-  color: var(--muted);
+  color: var(--ink);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -2229,7 +2228,7 @@ dialog.modal {
 }
 .profile-option p {
   margin: 0 0 10px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 14px;
   line-height: 1.55;
 }
@@ -3275,7 +3274,7 @@ body {
 .footer {
   border-top: 1px solid rgba(226, 228, 219, 0.7);
   padding-top: 18px;
-  color: #71786e;
+  color: var(--ink);
 }
 .topbar {
   background: rgba(255, 255, 255, 0.7);
