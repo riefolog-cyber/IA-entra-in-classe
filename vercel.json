@@ -1,16 +1,10 @@
 {
-  "buildCommand": "bun run build:web",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd packages/web && bun run build",
   "outputDirectory": "packages/web/dist",
   "installCommand": "bun install",
   "framework": "vite",
-  "functions": {
-    "packages/web/src/server.ts": {
-      "runtime": "bun",
-      "maxDuration": 30
-    }
-  },
-  "routes": [
-    { "src": "/api/(.*)", "dest": "packages/web/src/server.ts" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/rpc/$1" }
   ]
 }
