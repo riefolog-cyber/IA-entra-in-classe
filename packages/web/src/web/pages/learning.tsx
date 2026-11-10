@@ -98,6 +98,14 @@ export default function Learning() {
 
   const [exportError, setExportError] = useState("");
 
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+    document.body.classList.add("dark");
+    try {
+      localStorage.setItem("theme", "dark");
+    } catch {}
+  }, []);
+
   const [toast, setToast] = useState("");
 
   const [openPerspective, setOpenPerspective] = useState<number | null>(null);
@@ -603,10 +611,11 @@ export default function Learning() {
               />
             </div>
 
-            <div className={`save-status ${storageError ? "error" : ""}`}>
-              <span />
-
-              {storageError ? "Salvataggio non disponibile" : "Salvataggio sul dispositivo"}
+            <div className="topbar-right">
+              <div className={`save-status ${storageError ? "error" : ""}`}>
+                <span />
+                {storageError ? "Salvataggio non disponibile" : "Salvataggio sul dispositivo"}
+              </div>
             </div>
           </header>
 
@@ -752,6 +761,11 @@ export default function Learning() {
 
                 <section className="path-section">
                   <div className="section-heading section-heading-with-image">
+                    <div className="section-heading-copy">
+                      <div className="eyebrow">IL PERCORSO</div>
+                      <h2>{stepCount} tappe, dalla riflessione alla pratica.</h2>
+                      <p>Rifletti. Progetta. Verifica. Rivedi.</p>
+                    </div>
                     <div className="section-visual">
                       <img
                         className="section-hero-image"
@@ -761,11 +775,6 @@ export default function Learning() {
                         loading="eager"
                         decoding="async"
                       />
-                    </div>
-                    <div className="eyebrow">IL PERCORSO</div>
-                    <div>
-                      <h2>{stepCount} tappe, dalla riflessione alla pratica.</h2>
-                      <span>Rifletti. Progetta. Verifica. Rivedi.</span>
                     </div>
                   </div>
 
@@ -1209,6 +1218,70 @@ export default function Learning() {
                     decoding="async"
                   />
                 </div>
+
+                <section className="highlight-section" aria-label="In evidenza">
+                  <div className="section-heading">
+                    <div className="eyebrow">IN EVIDENZA</div>
+                    <div>
+                      <h2>Approfondimenti sui confini morali dell'IA</h2>
+                      <span>Due risorse selezionate per estendere la riflessione del percorso.</span>
+                    </div>
+                  </div>
+
+                  <div className="highlight-grid">
+                    <a
+                      className="highlight-card"
+                      href="./confini-morali-dell-ai.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="highlight-media">
+                        <img
+                          src="./images/highlight-confini-mappa.svg"
+                          alt="Anteprima animata della mappa interattiva sui confini morali dell'IA"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                      <span className="highlight-badge">Mappa interattiva</span>
+                      <h3>I confini morali dell'IA</h3>
+                      <p>
+                        Esplora una mappa interattiva per riflettere su responsabilità, limiti e
+                        scelte nell'uso dell'intelligenza artificiale a scuola.
+                      </p>
+                      <span className="highlight-cta">
+                        Apri la risorsa <ArrowUpRight size={16} />
+                      </span>
+                    </a>
+
+                    <a
+                      className="highlight-card highlight-card-video"
+                      href="https://www.youtube.com/watch?v=eCZpmwztYc8"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="highlight-media">
+                        <img
+                          src="https://img.youtube.com/vi/eCZpmwztYc8/hqdefault.jpg"
+                          alt="Anteprima del video YouTube: I confini morali dell'IA"
+                          loading="lazy"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
+                        />
+                        <span className="highlight-play" aria-hidden="true">▶</span>
+                      </div>
+                      <span className="highlight-badge">Video · YouTube</span>
+                      <h3>I confini morali dell'IA</h3>
+                      <p>
+                        Guarda il video per approfondire il tema dei confini morali
+                        dell'intelligenza artificiale e le sue implicazioni educative.
+                      </p>
+                      <span className="highlight-cta">
+                        Guarda su YouTube <ArrowUpRight size={16} />
+                      </span>
+                    </a>
+                  </div>
+                </section>
 
                 <div className="two-perspectives">
                   <article
