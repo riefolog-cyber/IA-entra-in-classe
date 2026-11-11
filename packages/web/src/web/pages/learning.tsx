@@ -1336,7 +1336,7 @@ export default function Learning() {
                       <div className="highlight-media">
                         <img
                           src="https://img.youtube.com/vi/tNyt3EmnpUk/hqdefault.jpg"
-                          alt="Anteprima del video YouTube: I confini morali dell'IA"
+                          alt="Anteprima del video YouTube: IA Generativa e vulnerabilità cognitiva"
                           loading="lazy"
                           decoding="async"
                           referrerPolicy="no-referrer"
@@ -1346,7 +1346,7 @@ export default function Learning() {
                         </span>
                       </div>
                       <span className="highlight-badge">Video · YouTube</span>
-                      <h3>I confini morali dell'IA</h3>
+                      <h3>IA Generativa e vulnerabilità cognitiva</h3>
                       <p>
                         Guarda il video per approfondire il tema dei confini morali
                         dell'intelligenza artificiale e le sue implicazioni educative.
