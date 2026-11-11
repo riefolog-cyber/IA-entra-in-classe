@@ -1329,13 +1329,13 @@ export default function Learning() {
 
                     <a
                       className="highlight-card highlight-card-video"
-                      href="https://www.youtube.com/watch?v=eCZpmwztYc8"
+                      href="https://www.youtube.com/watch?v=tNyt3EmnpUk"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <div className="highlight-media">
                         <img
-                          src="https://img.youtube.com/vi/eCZpmwztYc8/hqdefault.jpg"
+                          src="https://img.youtube.com/vi/tNyt3EmnpUk/hqdefault.jpg"
                           alt="Anteprima del video YouTube: I confini morali dell'IA"
                           loading="lazy"
                           decoding="async"
