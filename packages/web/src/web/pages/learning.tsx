@@ -170,7 +170,13 @@ export default function Learning() {
   useEffect(() => {
     let cancelled = false;
 
-    robustSet(KEY, JSON.stringify(data)).then((mode) => {
+    // Sanifica: consenti solo numeri in completed (protezione da stati corrotti).
+    const safeData: SavedState = {
+      ...data,
+      completed: data.completed.filter((n) => typeof n === "number"),
+    };
+
+    robustSet(KEY, JSON.stringify(safeData)).then((mode) => {
       if (!cancelled) setSaveMode(mode);
     });
 
@@ -259,12 +265,16 @@ export default function Learning() {
   const write = (key: string, value: string) =>
     setData((d) => ({ ...d, answers: { ...d.answers, [key]: value } }));
 
-  const toggleComplete = (i: number = data.current) => {
-    const wasCompleted = data.completed.includes(i);
+  const toggleComplete = (i?: number) => {
+    // Difesa: se arriva un evento (e non un numero), usa la tappa corrente.
+    const target =
+      typeof i === "number" && Number.isInteger(i) && i >= 0 && i < stepCount ? i : data.current;
+
+    const wasCompleted = data.completed.includes(target);
 
     setData((d) => ({
       ...d,
-      completed: wasCompleted ? d.completed.filter((n) => n !== i) : [...d.completed, i],
+      completed: wasCompleted ? d.completed.filter((n) => n !== target) : [...d.completed, target],
     }));
 
     setToast(wasCompleted ? "Tappa riaperta." : "Tappa conclusa. Puoi sempre tornarci.");
@@ -1218,7 +1228,7 @@ export default function Learning() {
                     </strong>
                   </div>
 
-                  <button className="button primary" onClick={toggleComplete}>
+                  <button className="button primary" onClick={() => toggleComplete()}>
                     <Check size={17} />
 
                     {data.completed.includes(data.current)
@@ -1250,7 +1260,7 @@ export default function Learning() {
                 </div>
 
                 <div className="mobile-step-cta">
-                  <button className="button primary" onClick={toggleComplete}>
+                  <button className="button primary" onClick={() => toggleComplete()}>
                     <Check size={16} />
 
                     {data.completed.includes(data.current)
