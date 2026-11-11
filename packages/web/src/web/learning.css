@@ -7700,3 +7700,234 @@ textarea:focus-visible {
     animation: none !important;
   }
 }
+
+/* === Readability hotfix (light text on light bg) + extra polish === */
+/* Dark mode: force dark surfaces on remaining light containers */
+body.dark .profile-header,
+body.dark .profile-panel,
+body.dark .profile-grid,
+body.dark .profile-report,
+body.dark .profile-option,
+body.dark .profile-compare,
+body.dark .ai-result,
+body.dark .ai-badge,
+body.dark .ai-error,
+body.dark .summary-phases .path-phase,
+body.dark .summary-phases .path-phase-head,
+body.dark .resource-heading,
+body.dark .glossary,
+body.dark .references-section,
+body.dark .references-list,
+body.dark .references-list li,
+body.dark .perspectives,
+body.dark .perspectives > div,
+body.dark .concept-box,
+body.dark .scenario-story,
+body.dark .feedback,
+body.dark .completion-box,
+body.dark .quote-band,
+body.dark .quote-band > div,
+body.dark .notice,
+body.dark .mobile-step-cta,
+body.dark .step-head-visual,
+body.dark .activity,
+body.dark .question-block,
+body.dark .prompt-box,
+body.dark details,
+body.dark details[open],
+body.dark .option-list,
+body.dark .text-field,
+.dark .profile-header,
+.dark .profile-panel,
+.dark .ai-result,
+.dark .details,
+.dark details {
+  background: #18221e !important;
+  background-color: #18221e !important;
+  color: #eaf2ec !important;
+  border-color: #2b3d35 !important;
+}
+body.dark .profile-header {
+  background: linear-gradient(180deg, #1c2a25 0%, #18221e 100%) !important;
+}
+body.dark .ai-badge {
+  background: #24352e !important;
+  color: #dff0d8 !important;
+  border: 1px solid #355045 !important;
+}
+body.dark .ai-error {
+  background: #2a1d1a !important;
+  color: #ffd8c9 !important;
+  border-color: #5a3930 !important;
+}
+body.dark .profile-kicker,
+body.dark .activity-label,
+body.dark .page-eyebrow,
+body.dark .glossary-refs,
+body.dark .glossary-refline,
+body.dark .references-section h2,
+body.dark .resource-heading h2 {
+  color: #d6e8cf !important;
+}
+body.dark .profile-header h3,
+body.dark .profile-panel h4,
+body.dark .profile-option h4,
+body.dark .ai-result h4,
+body.dark .concept-box strong,
+body.dark .feedback strong,
+body.dark .completion-box strong,
+body.dark .scenario-story,
+body.dark details summary,
+body.dark .glossary summary,
+body.dark .quote-band blockquote,
+body.dark .quote-band > div {
+  color: #f6fbf7 !important;
+}
+body.dark .profile-header p,
+body.dark .profile-panel li,
+body.dark .profile-option p,
+body.dark .profile-option li,
+body.dark .ai-result p,
+body.dark .ai-result li,
+body.dark .concept-box p,
+body.dark .feedback p,
+body.dark .feedback small,
+body.dark .perspectives p,
+body.dark .perspectives > div,
+body.dark .scenario-story,
+body.dark .glossary p,
+body.dark .glossary-refline,
+body.dark .references-list li,
+body.dark .references-section p,
+body.dark .notice p,
+body.dark .notice strong,
+body.dark .quote-band > div > span,
+body.dark .home-bottom > div > span,
+body.dark .home-bottom small {
+  color: #d7e5db !important;
+}
+/* Inputs and labels */
+body.dark .text-field > span,
+body.dark .text-field label,
+body.dark label {
+  color: #eaf2ec !important;
+}
+body.dark .text-field small {
+  color: #b8c9be !important;
+}
+body.dark .text-field textarea,
+body.dark .text-field input {
+  background: #101915 !important;
+  color: #f4fbf5 !important;
+  border-color: #355045 !important;
+}
+body.dark .text-field textarea::placeholder,
+body.dark .text-field input::placeholder {
+  color: #9fb2a6 !important;
+}
+/* Ensure icons inherit readable color */
+body.dark svg {
+  color: inherit;
+}
+body.dark .concept-box > svg,
+body.dark .home-bottom > div > svg,
+body.dark .profile-panel h4 svg {
+  color: #bfe0b7 !important;
+}
+
+/* Light mode safety (if ever shown): dark text on light surfaces */
+body:not(.dark) .scenario-story,
+body:not(.dark) .feedback,
+body:not(.dark) .completion-box,
+body:not(.dark) .concept-box,
+body:not(.dark) .profile-header,
+body:not(.dark) .profile-panel,
+body:not(.dark) .profile-option,
+body:not(.dark) .ai-result,
+body:not(.dark) .quote-band,
+body:not(.dark) .notice,
+body:not(.dark) details,
+body:not(.dark) .glossary details,
+body:not(.dark) .option {
+  color: #173127;
+}
+body:not(.dark) .scenario-story,
+body:not(.dark) .feedback p,
+body:not(.dark) .concept-box p,
+body:not(.dark) .profile-header p,
+body:not(.dark) .profile-panel li,
+body:not(.dark) .profile-option p,
+body:not(.dark) .ai-result p,
+body:not(.dark) .ai-result li,
+body:not(.dark) .quote-band blockquote {
+  color: #2f4338 !important;
+}
+
+/* Extra beautification */
+.section-heading .eyebrow,
+.page-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(158,196,147,0.12);
+  border: 1px solid rgba(158,196,147,0.18);
+}
+.progress-icon,
+.brand-icon {
+  box-shadow: 0 0 0 1px rgba(158,196,147,0.15), 0 8px 18px rgba(0,0,0,0.18);
+}
+.path-phase-head {
+  position: relative;
+  overflow: hidden;
+}
+.path-phase-head::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -60% auto;
+  width: 180px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(158,196,147,0.18), rgba(158,196,147,0));
+  pointer-events: none;
+}
+.highlight-card h3,
+.path-card h3,
+.perspective-card h2 {
+  text-wrap: balance;
+}
+.card-category {
+  letter-spacing: 1.3px !important;
+}
+.glossary details summary,
+.references-section summary {
+  font-weight: 600;
+}
+.glossary details[open] summary,
+.references-section details[open] summary {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2f4239;
+  margin-bottom: 10px;
+}
+.reading-page h1,
+.section-heading-copy h2,
+.resource-heading h2 {
+  line-height: 1.05;
+}
+body.dark .crumb-slash,
+body.dark .breadcrumb span:first-of-type {
+  color: #b8c9be !important;
+}
+body.dark .save-status {
+  color: #d7e5db !important;
+}
+body.dark .save-status.error {
+  color: #ffc2a8 !important;
+}
+.footer, body.dark .footer {
+  color: #b8c9be !important;
+  border-top-color: #2b3d35 !important;
+}
+body.dark .footer > span > span,
+body.dark .footer button {
+  color: #cfe0d4 !important;
+}
