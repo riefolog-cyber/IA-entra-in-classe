@@ -88,7 +88,9 @@ export default function Learning() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [storageError, setStorageError] = useState(false);
+  const [storageError, setStorageError] = useState<"" | "blocked" | "quota">("");
+
+  const [saveTick, setSaveTick] = useState(0);
 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -147,11 +149,17 @@ export default function Learning() {
     try {
       localStorage.setItem(KEY, JSON.stringify(data));
 
-      setStorageError(false);
-    } catch {
-      setStorageError(true);
+      setStorageError("");
+    } catch (error) {
+      const name = error instanceof Error ? error.name : "";
+      const quota =
+        name === "QuotaExceededError" ||
+        name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+        (typeof DOMException !== "undefined" && error instanceof DOMException && error.code === 22);
+
+      setStorageError(quota ? "quota" : "blocked");
     }
-  }, [data]);
+  }, [data, saveTick]);
 
   useEffect(() => {
     if (!toast) return;
@@ -621,9 +629,28 @@ export default function Learning() {
 
           <main id="main-content">
             {storageError && (
-              <div className="alert">
-                Il browser non permette il salvataggio locale. Non chiudere questa pagina prima di
-                esportare il PDF.
+              <div className="alert" role="alert">
+                {storageError === "quota" ? (
+                  <>
+                    Lo spazio di salvataggio del browser è pieno: le ultime modifiche potrebbero non
+                    essere state memorizzate. Esporta il quaderno in PDF o in JSON, poi cancella le
+                    risposte meno utili dal riepilogo e riprova.
+                  </>
+                ) : (
+                  <>
+                    Il browser non permette il salvataggio locale: le risposte restano a schermo
+                    finché non chiudi la pagina. Per abilitarlo, consenti i cookie e i dati dei siti
+                    nelle impostazioni del browser (in Chrome: Impostazioni sito → Cookie), poi
+                    ricarica. Non chiudere la pagina prima di esportare il PDF.
+                  </>
+                )}{" "}
+                <button
+                  className="text-button"
+                  type="button"
+                  onClick={() => setSaveTick((t) => t + 1)}
+                >
+                  Riprova il salvataggio
+                </button>
               </div>
             )}
 
@@ -974,8 +1001,6 @@ export default function Learning() {
                   </div>
                 </div>
 
-
-
                 <section className="activity">
                   <div className="activity-visual">
                     <img
@@ -1224,7 +1249,9 @@ export default function Learning() {
                     <div className="eyebrow">IN EVIDENZA</div>
                     <div>
                       <h2>Approfondimenti sui confini morali dell'IA</h2>
-                      <span>Due risorse selezionate per estendere la riflessione del percorso.</span>
+                      <span>
+                        Due risorse selezionate per estendere la riflessione del percorso.
+                      </span>
                     </div>
                   </div>
 
@@ -1268,7 +1295,9 @@ export default function Learning() {
                           decoding="async"
                           referrerPolicy="no-referrer"
                         />
-                        <span className="highlight-play" aria-hidden="true">▶</span>
+                        <span className="highlight-play" aria-hidden="true">
+                          ▶
+                        </span>
                       </div>
                       <span className="highlight-badge">Video · YouTube</span>
                       <h3>I confini morali dell'IA</h3>
