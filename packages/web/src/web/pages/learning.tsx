@@ -25,6 +25,15 @@ import { emptyState, glossary, references, steps, type SavedState } from "../lib
 
 import { exportPdf } from "../lib/export-pdf";
 
+import {
+  detectSyncBackend,
+  idbGet,
+  robustGetSync,
+  robustRemove,
+  robustSet,
+  type StorageBackend,
+} from "../lib/safe-storage";
+
 import { client } from "../lib/api";
 
 const KEY = "restare-umani-docenti-v2";
@@ -37,9 +46,9 @@ const stepCount = steps.length;
 
 const answerKeyRe = new RegExp(`^\\d+-(p\\d+|quiz|scenario|reason)$`);
 
-function load(key = KEY): SavedState {
+function parseState(raw: string | null): SavedState {
   try {
-    const parsed = JSON.parse(localStorage.getItem(key) || "null");
+    const parsed = JSON.parse(raw || "null");
 
     if (!parsed || typeof parsed !== "object") return emptyState;
 
@@ -79,6 +88,19 @@ function load(key = KEY): SavedState {
   }
 }
 
+function load(key = KEY): SavedState {
+  return parseState(robustGetSync(key));
+}
+
+function isEmptyState(state: SavedState): boolean {
+  return (
+    Object.keys(state.answers).length === 0 &&
+    state.name === "" &&
+    state.completed.length === 0 &&
+    state.current === 0
+  );
+}
+
 export default function Learning() {
   const [data, setData] = useState<SavedState>(load);
 
@@ -88,7 +110,7 @@ export default function Learning() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [storageError, setStorageError] = useState<"" | "blocked" | "quota">("");
+  const [saveMode, setSaveMode] = useState<StorageBackend>(() => detectSyncBackend());
 
   const [saveTick, setSaveTick] = useState(0);
 
@@ -140,26 +162,44 @@ export default function Learning() {
   const [feedback, setFeedback] = useState({ u: 0, c: 0, open: "" });
 
   const [feedbackSent, setFeedbackSent] = useState(
-    () => localStorage.getItem("restare-umani-feedback") === "1",
+    () => robustGetSync("restare-umani-feedback") === "1",
   );
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(data));
+    let cancelled = false;
 
-      setStorageError("");
-    } catch (error) {
-      const name = error instanceof Error ? error.name : "";
-      const quota =
-        name === "QuotaExceededError" ||
-        name === "NS_ERROR_DOM_QUOTA_REACHED" ||
-        (typeof DOMException !== "undefined" && error instanceof DOMException && error.code === 22);
+    robustSet(KEY, JSON.stringify(data)).then((mode) => {
+      if (!cancelled) setSaveMode(mode);
+    });
 
-      setStorageError(quota ? "quota" : "blocked");
-    }
+    return () => {
+      cancelled = true;
+    };
   }, [data, saveTick]);
+
+  // Se i livelli sincroni sono bloccati, al primo avvio recuperiamo lo stato
+  // precedente da IndexedDB (sessioni salvate in modalità compatibilità).
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const raw = await idbGet(KEY);
+
+      if (cancelled || raw === null) return;
+
+      if (robustGetSync(KEY) !== null) return;
+
+      const parsed = parseState(raw);
+
+      if (!isEmptyState(parsed)) setData(parsed);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!toast) return;
@@ -334,7 +374,7 @@ export default function Learning() {
       // no-cors: la risposta è opaca, ma l'invio è partito
     }
 
-    localStorage.setItem("restare-umani-feedback", "1");
+    void robustSet("restare-umani-feedback", "1");
 
     setFeedbackSent(true);
 
@@ -620,30 +660,26 @@ export default function Learning() {
             </div>
 
             <div className="topbar-right">
-              <div className={`save-status ${storageError ? "error" : ""}`}>
+              <div className={`save-status ${saveMode === "memory" ? "error" : ""}`}>
                 <span />
-                {storageError ? "Salvataggio non disponibile" : "Salvataggio sul dispositivo"}
+                {saveMode === "memory"
+                  ? "Salvataggio non disponibile"
+                  : saveMode === "session"
+                    ? "Salvataggio di sessione"
+                    : saveMode === "idb"
+                      ? "Salvataggio in modalità compatibilità"
+                      : "Salvataggio sul dispositivo"}
               </div>
             </div>
           </header>
 
           <main id="main-content">
-            {storageError && (
+            {saveMode === "memory" && (
               <div className="alert" role="alert">
-                {storageError === "quota" ? (
-                  <>
-                    Lo spazio di salvataggio del browser è pieno: le ultime modifiche potrebbero non
-                    essere state memorizzate. Esporta il quaderno in PDF o in JSON, poi cancella le
-                    risposte meno utili dal riepilogo e riprova.
-                  </>
-                ) : (
-                  <>
-                    Il browser non permette il salvataggio locale: le risposte restano a schermo
-                    finché non chiudi la pagina. Per abilitarlo, consenti i cookie e i dati dei siti
-                    nelle impostazioni del browser (in Chrome: Impostazioni sito → Cookie), poi
-                    ricarica. Non chiudere la pagina prima di esportare il PDF.
-                  </>
-                )}{" "}
+                Il salvataggio automatico non è disponibile in questo browser: le risposte restano a
+                schermo finché non chiudi o ricarichi la pagina, quindi esporta prima il quaderno in
+                PDF o in JSON. Per abilitarlo, consenti i cookie e i dati dei siti nelle
+                impostazioni del browser (in Chrome: Impostazioni sito → Cookie), poi ricarica.{" "}
                 <button
                   className="text-button"
                   type="button"
@@ -1907,7 +1943,7 @@ export default function Learning() {
                     <button
                       className="text-button"
                       onClick={() => {
-                        localStorage.removeItem("restare-umani-feedback");
+                        robustRemove("restare-umani-feedback");
 
                         setFeedbackSent(false);
 
@@ -1992,13 +2028,9 @@ export default function Learning() {
                 <button
                   className="button danger"
                   onClick={() => {
-                    try {
-                      localStorage.removeItem(KEY);
+                    robustRemove(KEY);
 
-                      localStorage.removeItem(PREVIOUS_KEY);
-                    } catch {
-                      /* state cleared regardless */
-                    }
+                    robustRemove(PREVIOUS_KEY);
 
                     setData({ ...emptyState, answers: {}, completed: [] });
 
