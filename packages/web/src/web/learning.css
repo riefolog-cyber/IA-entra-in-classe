@@ -7931,3 +7931,133 @@ body.dark .footer > span > span,
 body.dark .footer button {
   color: #cfe0d4 !important;
 }
+
+/* === Approfondimenti: perspective takeaway fix + extra beauty === */
+body.dark .perspective-takeaway,
+.dark .perspective-takeaway {
+  background: linear-gradient(135deg, rgba(158,196,147,0.18) 0%, rgba(111,145,96,0.12) 100%) !important;
+  color: #f3fbf4 !important;
+  border: 1px solid rgba(158,196,147,0.28) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.perspective-takeaway {
+  font-size: 13.5px !important;
+  line-height: 1.75 !important;
+  font-weight: 500;
+  padding: 14px 16px 14px 18px !important;
+  border-radius: 14px !important;
+  margin-top: 16px !important;
+  position: relative;
+}
+.perspective-takeaway::before {
+  content: "In sintesi";
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #9ec493;
+  color: #102017;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+}
+body:not(.dark) .perspective-takeaway {
+  background: linear-gradient(135deg, #eef5e8 0%, #e3ecd9 100%) !important;
+  color: #1f3a2f !important;
+  border: 1px solid #cfe0c5 !important;
+}
+body.dark .perspective-card.open,
+.dark .perspective-card.open {
+  background: linear-gradient(180deg, #1a2923 0%, #16211d 100%) !important;
+  border-color: #3f5a4c !important;
+}
+body.dark .perspective-body,
+.dark .perspective-body {
+  border-top-color: #31463d !important;
+}
+body.dark .perspective-toggle,
+.dark .perspective-toggle {
+  background: linear-gradient(135deg, #24352e 0%, #1d2b25 100%) !important;
+  color: #eaf2ec !important;
+  border: 1px solid #355045 !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+}
+body.dark .perspective-toggle:hover,
+.dark .perspective-toggle:hover {
+  background: linear-gradient(135deg, #2b4037 0%, #23342d 100%) !important;
+  border-color: #4d6858 !important;
+}
+.perspective-card {
+  background: linear-gradient(180deg, rgba(24,34,30,0.98) 0%, rgba(18,27,23,0.99) 100%) !important;
+}
+.perspective-card > span {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(158,196,147,0.14);
+  border: 1px solid rgba(158,196,147,0.2);
+  color: #dff0d8 !important;
+}
+.perspective-card h2 {
+  margin-top: 10px !important;
+  font-size: clamp(26px, 2.4vw, 32px) !important;
+}
+.perspective-hero-image {
+  border: 1px solid #31463d;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+}
+.two-perspectives {
+  gap: 22px;
+}
+body.dark .perspective-body p,
+.dark .perspective-body p {
+  color: #deebe1 !important;
+  font-size: 15px;
+}
+
+/* More graphic beauty */
+.reading-page .eyebrow {
+  margin-bottom: 8px;
+}
+.step-head-visual {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(24,34,30,0.9), rgba(18,27,23,0.95));
+  border: 1px solid #2f4239;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.22);
+}
+.resource-heading h2::after,
+.section-heading-copy h2::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 3px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #9ec493, rgba(158,196,147,0.1));
+}
+.glossary details,
+.references-section details {
+  border-width: 1px;
+}
+.glossary details:hover summary,
+.references-section details:hover summary {
+  transform: translateX(2px);
+}
+.glossary summary,
+.references-section summary {
+  transition: transform .2s ease, color .2s ease;
+}
+.search {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+}
+.highlight-section .section-heading-copy h2::after { display: none; }
+@media (max-width: 900px) {
+  .step-head-visual {
+    padding: 14px;
+  }
+}
