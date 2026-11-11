@@ -160,15 +160,15 @@ export const steps = [
     intro:
       "Nel confronto tra colleghi emergono posizioni diverse: c’è chi vede nell’IA un supporto utile e chi teme che sostituisca il lavoro degli studenti.\n\nL’obiettivo qui non è “avere tutti la stessa idea”, ma costruire consegne chiare e comprensibili.",
     concept:
-      "Una buona regola nasce dall’obiettivo del compito. Conviene esplicitare: che cosa è consentito, che cosa deve restare autonomo, come dichiarare eventuali aiuti e quale alternativa è disponibile.\n\nSe è previsto l’uso di strumenti, l’accesso degli studenti va verificato secondo le condizioni del servizio e le procedure dell’istituto.",
+      "Idea chiave: una regola chiara nasce dall’obiettivo del compito.\n\nIn pratica, nella consegna esplicita:\n- che cosa è consentito (e in quale fase);\n- che cosa deve restare autonomo;\n- come dichiarare eventuali aiuti;\n- quale alternativa senza IA è disponibile.\n\nSe si usano strumenti, verifica prima accesso e condizioni con le procedure dell’istituto.",
     prompts: [
       "Quale obiezione di un collega ti sembra la più forte, e come la risponderesti con rispetto? (Puoi partire da un esempio concreto di compito.)",
     ],
     question: "Quale consegna rende più chiaro il ruolo dell’IA?",
     options: [
-      "Usate l’IA in modo responsabile; deciderete voi se e come dichiararla.",
-      "L’IA può suggerire domande; l’argomentazione è vostra e documentate gli aiuti. È disponibile un percorso senza IA.",
-      "L’IA è facoltativa: chi la usa lo segnala, ma non serve indicare dove.",
+      "“Usate l’IA in modo responsabile”: decidete voi se e come dichiararla.",
+      "“L’IA può suggerire domande; l’argomentazione è vostra, documentate gli aiuti e c’è un’alternativa senza IA.”",
+      "“L’IA è facoltativa: chi la usa lo segnala, ma non serve indicare dove.”",
     ],
     correct: 1,
     explanation:
@@ -232,7 +232,7 @@ export const steps = [
     intro:
       "L’IA può aiutare a creare versioni alternative di un’attività o di un testo. Ma personalizzare non significa inserire documenti degli studenti in uno strumento esterno, né ridurre le aspettative.\n\nA volte la scelta più professionale è fermarsi prima.",
     concept:
-      "Togliere il nome non basta sempre: diagnosi, contesto e dettagli possono rendere una persona riconoscibile.\n\nPer progettare, spesso è sufficiente descrivere in modo generico obiettivi e barriere (es. “fatica a leggere testi lunghi”, “ha bisogno di consegne segmentate”) usando esempi inventati. Prima di usare un servizio, vanno chiariti con l’istituto finalità, dati, condizioni d’uso e responsabilità.",
+      "Idea chiave: per adattare una proposta non servono dati identificativi degli studenti.\n\nIn pratica, prima di agire:\n- descrivi obiettivi e barriere in modo generico (es. “fatica a leggere testi lunghi”, “serve consegna segmentata”);\n- usa esempi inventati, non documenti reali;\n- verifica con l’istituto finalità, dati, condizioni d’uso e responsabilità.\n\nRicorda: togliere il nome non basta sempre, perché diagnosi e dettagli di contesto possono rendere riconoscibile una persona.",
     prompts: [
       "Quale dato di uno studente non inseriresti mai in uno strumento esterno, e perché? (Es. diagnosi, documenti, dettagli personali o familiari.)",
     ],
@@ -240,8 +240,8 @@ export const steps = [
       "Vuoi adattare un’attività con un chatbot esterno. Qual è il punto di partenza più prudente?",
     options: [
       "Descrivere barriere e obiettivi senza documenti reali, chiarendo prima le condizioni d’uso con l’istituto.",
-      "Caricare il piano individuale dopo aver rimosso nome e data di nascita, chiedendo al sistema di non conservarlo.",
-      "Descrivere il caso in forma anonima, ma includere la diagnosi per ottenere un adattamento più preciso.",
+      "Caricare il piano individuale senza nome e data di nascita, chiedendo al sistema di non conservarlo.",
+      "Descrivere il caso in forma anonima includendo la diagnosi, per ottenere un adattamento più preciso.",
     ],
     correct: 0,
     explanation:
@@ -269,15 +269,15 @@ export const steps = [
     intro:
       "L’IA può aiutare a creare formati alternativi: semplificare un testo, proporre una sintesi, aggiungere domande guida o supporti multimodali.\n\nIl rischio è confondere accessibilità con “rendere tutto più facile” o con una soluzione uguale per tutti.",
     concept:
-      "In una prospettiva UDL (Universal Design for Learning), l’idea è ridurre le barriere offrendo modi diversi di accedere, lavorare e mostrare l’apprendimento — mantenendo però chiaro l’obiettivo.\n\nEsempio: fornire testo + audio o una versione con lessico più chiaro, senza cambiare ciò che si deve imparare. Ogni adattamento generato va verificato: deve essere accurato, accessibile e coerente con le aspettative.",
+      "Idea chiave (UDL): ridurre le barriere, non l’obiettivo di apprendimento.\n\nIn pratica, puoi offrire modi diversi per accedere, lavorare e mostrare ciò che si è imparato (es. testo + audio, lessico più chiaro, domande guida) mantenendo la stessa richiesta.\n\nPrima di usare un materiale generato, verifica:\n- correttezza del contenuto;\n- chiarezza del linguaggio;\n- coerenza con l’obiettivo.",
     prompts: [
       "Quale barriera ricorrente incontri nella tua disciplina e quale adattamento vorresti provare senza ridurre l’obiettivo? (Es. linguaggio, formato, tempi, modalità di risposta.)",
     ],
     question: "Quale uso dell’IA è più coerente con un approccio UDL?",
     options: [
-      "Generare una versione semplificata per gli studenti in difficoltà, lasciando agli altri il testo originale.",
+      "Semplificare i contenuti per chi è in difficoltà, mantenendo una versione più completa per gli altri.",
       "Proporre formati e supporti alternativi verificati, mantenendo lo stesso obiettivo di apprendimento.",
-      "Sostituire la verifica scritta con una presentazione orale per chi ha difficoltà.",
+      "Cambiare il tipo di verifica per chi ha difficoltà, senza mantenere lo stesso obiettivo.",
     ],
     correct: 1,
     explanation:
@@ -341,15 +341,15 @@ export const steps = [
     intro:
       "Le scelte sull’IA raramente riguardano solo il singolo docente: toccano strumenti, dati, criteri comuni, famiglie e studenti.\n\nPer questo è utile distinguere ciò che si può decidere in autonomia da ciò che richiede confronto e procedure d’istituto.",
     concept:
-      "Governare l’uso dell’IA (governance) significa rendere le decisioni chiare e rivedibili: finalità, responsabilità, verifiche, alternative e momenti di revisione.\n\nParlare di accountability, in modo semplice, vuol dire sapere chi decide, chi controlla e chi risponde delle scelte. L’aggiornamento continuo non è solo conoscere nuovi strumenti, ma imparare a valutarne gli effetti nel proprio contesto.",
+      "Idea chiave: le scelte sull’IA vanno rese chiare, condivise quando serve e rivedibili nel tempo.\n\nIn pratica, prima di adottare uno strumento:\n- definisci finalità didattica e limiti;\n- verifica tutele, dati, ruoli e responsabilità (accountability: chi decide, chi controlla, chi risponde);\n- prevedi alternative e una prova circoscritta;\n- stabilisci quando e come rivedere la scelta (governance).\n\nAggiornarsi non è solo conoscere nuovi strumenti, ma valutarne gli effetti nel proprio contesto.",
     prompts: [
       "Quale decisione sull’IA prenderesti da solo nella tua pratica e quale porteresti in dipartimento o all’istituto? Con quale criterio le distingui? (Es. impatto su dati, valutazione, equità, comunicazione.)",
     ],
     question: "Quale approccio è più sostenibile per l’adozione di un nuovo strumento IA a scuola?",
     options: [
-      "Adottarlo subito in tutte le classi per raccogliere dati sufficienti a valutarlo.",
-      "Valutarlo con criteri didattici, tutele, ruoli, alternative e una revisione dopo una prova circoscritta.",
-      "Aspettare che altri istituti lo adottino e riprendere la loro configurazione.",
+      "Adottarlo subito in tutte le classi, per raccogliere rapidamente più dati possibili.",
+      "Fare una prova circoscritta con criteri didattici, tutele, ruoli, alternative e revisione.",
+      "Aspettare che altri istituti lo adottino e poi copiare la loro configurazione.",
     ],
     correct: 1,
     explanation:
@@ -471,11 +471,6 @@ export const glossary = [
     "Governance scolastica",
     "Insieme di criteri, ruoli, procedure e momenti di revisione che rendono condivisibili le scelte sull’IA. Collega la pratica docente alle responsabilità dell’istituto.",
     [10],
-  ],
-  [
-    "Trasparenza del processo",
-    "Insieme di tracce che rendono osservabile il lavoro: bozze, versioni, fonti, scelte e dichiarazioni d’uso. Sostiene l'apprendimento, non il controllo.",
-    [4],
   ],
   [
     "Sostenibilità didattica",
