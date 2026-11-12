@@ -34,7 +34,6 @@ import {
   type StorageBackend,
 } from "../lib/safe-storage";
 
-import { client } from "../lib/api";
 
 const KEY = "restare-umani-docenti-v2";
 
@@ -489,10 +488,38 @@ export default function Learning() {
     try {
       const summary = buildAiSummary();
 
-      const res = await client.analyzeProfile({ summary });
+      // Chiamata diretta all'endpoint RPC: evita dipendenze dal client oRPC
+      // lato browser e usa lo stesso formato richiesta/risposta del server.
+      const response = await fetch(`${window.location.origin}/api/rpc/analyzeProfile`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ json: { summary } }),
+      });
+      const payload = (await response.json().catch(() => null)) as { json?: unknown } | null;
+      const res = payload?.json as
+        | { ok: false; reason?: string; message?: string }
+        | {
+            ok: true;
+            model: string;
+            analysis: {
+              headline: string;
+              narrative: string;
+              strengths: string[];
+              tensions: string[];
+              questions: string[];
+              nextStep: string;
+              caution: string;
+            };
+          }
+        | null;
 
-      if (!res.ok) setAiError(res.message || "Analisi IA non disponibile.");
-      else setAiResult(res);
+      if (!res) {
+        setAiError("Analisi IA non disponibile in questa versione del sito. Puoi comunque esportare il tuo quaderno.");
+      } else if (!res.ok) {
+        setAiError(res.message || "Analisi IA non disponibile.");
+      } else {
+        setAiResult(res);
+      }
     } catch (error) {
       setAiError(
         error instanceof Error
