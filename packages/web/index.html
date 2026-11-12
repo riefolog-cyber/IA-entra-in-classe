@@ -38,7 +38,13 @@
     <div id="root"></div>
     <script type="module" src="/src/web/main.tsx"></script>
     <script>
-      if ("serviceWorker" in navigator) {
+      // Il service worker viene registrato solo in produzione: in sviluppo
+      // (localhost/127.0.0.1) metterebbe in cache i moduli serviti da Vite e
+      // nasconderebbe le modifiche appena salvate.
+      if (
+        "serviceWorker" in navigator &&
+        !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)
+      ) {
         window.addEventListener("load", () => {
           navigator.serviceWorker.register("./sw.js").catch(() => {});
         });

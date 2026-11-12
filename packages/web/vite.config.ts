@@ -2,11 +2,11 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwind from "@tailwindcss/vite";
 import path from "path";
-import honoDevPlugin from "./vite/__plugins/hono-dev-plugin";
-import assetOptimizerPlugin from "./vite/__plugins/asset-optimizer-plugin";
+import honoDevPlugin from "./vite/__plugins/hono-dev-plugin.ts";
+import assetOptimizerPlugin from "./vite/__plugins/asset-optimizer-plugin.ts";
 import ports from "../../__ports.cjs";
 
-const root = path.resolve(__dirname, "../..");
+const root = path.resolve(import.meta.dirname, "../..");
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, root, "");
@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
       // (import("jspdf") in export-pdf) e non vengono scaricati all'avvio.
       rolldownOptions: {
         output: {
-          advancedChunks: {
+          codeSplitting: {
             groups: [
               {
                 name: "vendor",
@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src/web"),
+        "@": path.resolve(import.meta.dirname, "./src/web"),
       },
     },
     server: {
