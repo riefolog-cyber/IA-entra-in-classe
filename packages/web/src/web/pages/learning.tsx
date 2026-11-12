@@ -46,11 +46,16 @@ const stepCount = steps.length;
 
 const answerKeyRe = new RegExp(`^\\d+-(p\\d+|quiz|scenario|reason)$`);
 
+/** Stato vuoto sempre nuovo: condividere un oggetto mutabile è una fonte di bug. */
+function freshState(): SavedState {
+  return { answers: {}, completed: [], current: 0, name: "" };
+}
+
 function parseState(raw: string | null): SavedState {
   try {
     const parsed = JSON.parse(raw || "null");
 
-    if (!parsed || typeof parsed !== "object") return emptyState;
+    if (!parsed || typeof parsed !== "object") return freshState();
 
     const answers = Object.fromEntries(
       Object.entries(parsed.answers || {}).filter(
@@ -84,12 +89,23 @@ function parseState(raw: string | null): SavedState {
           : 0,
     };
   } catch {
-    return emptyState;
+    return freshState();
   }
 }
 
 function load(key = KEY): SavedState {
   return parseState(robustGetSync(key));
+}
+
+const PHASE_FILES: Record<string, string> = {
+  Progettazione: "progettazione",
+  Pratica: "pratica",
+  "Progettazione inclusiva": "inclusione",
+  Revisione: "revisione",
+};
+
+function phaseImage(phase?: string): string {
+  return `./images/theme/fase-${PHASE_FILES[phase ?? ""] ?? "progettazione"}.svg`;
 }
 
 function isEmptyState(state: SavedState): boolean {
@@ -113,6 +129,8 @@ export default function Learning() {
   const [saveMode, setSaveMode] = useState<StorageBackend>(() => detectSyncBackend());
 
   const [saveTick, setSaveTick] = useState(0);
+
+  const [hydrated, setHydrated] = useState(false);
 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -167,7 +185,39 @@ export default function Learning() {
 
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
+  // Un unico effetto di avvio: prima si recupera lo stato da IndexedDB (solo se i
+  // livelli sincroni sono bloccati), poi si abilita il salvataggio. Invertendo
+  // l'ordine, la scrittura iniziale dello stato vuoto sovrascriveva la sessione
+  // recuperata, perdendo le risposte salvate in modalità compatibilità.
   useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      if (robustGetSync(KEY) === null) {
+        const raw = await idbGet(KEY);
+
+        if (cancelled) return;
+
+        if (raw !== null) {
+          const parsed = parseState(raw);
+
+          // Se nel frattempo l'utente ha già scritto, non sovrascrivere nulla.
+          if (!isEmptyState(parsed))
+            setData((current) => (isEmptyState(current) ? parsed : current));
+        }
+      }
+
+      if (!cancelled) setHydrated(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
     let cancelled = false;
 
     // Sanifica: consenti solo numeri in completed (protezione da stati corrotti).
@@ -183,29 +233,7 @@ export default function Learning() {
     return () => {
       cancelled = true;
     };
-  }, [data, saveTick]);
-
-  // Se i livelli sincroni sono bloccati, al primo avvio recuperiamo lo stato
-  // precedente da IndexedDB (sessioni salvate in modalità compatibilità).
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      const raw = await idbGet(KEY);
-
-      if (cancelled || raw === null) return;
-
-      if (robustGetSync(KEY) !== null) return;
-
-      const parsed = parseState(raw);
-
-      if (!isEmptyState(parsed)) setData(parsed);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  }, [data, saveTick, hydrated]);
 
   useEffect(() => {
     if (!toast) return;
@@ -272,9 +300,13 @@ export default function Learning() {
 
     const wasCompleted = data.completed.includes(target);
 
+    // Il toggle usa lo stato precedente passato da React: due clic ravvicinati
+    // non si annullano più a vicenda basandosi su una copia obsoleta.
     setData((d) => ({
       ...d,
-      completed: wasCompleted ? d.completed.filter((n) => n !== target) : [...d.completed, target],
+      completed: d.completed.includes(target)
+        ? d.completed.filter((n) => n !== target)
+        : [...d.completed, target],
     }));
 
     setToast(wasCompleted ? "Tappa riaperta." : "Tappa conclusa. Puoi sempre tornarci.");
@@ -311,27 +343,51 @@ export default function Learning() {
 
     a.download = "restare-umani-dati.json";
 
+    a.rel = "noopener";
+
+    document.body.append(a);
+
     a.click();
 
-    URL.revokeObjectURL(url);
+    a.remove();
+
+    // Safari annulla il download se l'URL viene revocato nello stesso tick.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 
     setToast("Dati esportati in JSON.");
   };
 
   const importJson = (file: File) => {
+    // Un export reale di dieci tappe sta ampiamente sotto questa soglia: un file
+    // enorme è quasi sempre un errore di selezione.
+    if (file.size > 2 * 1024 * 1024) {
+      setExportError("File troppo grande: importa un quaderno esportato da questo sito.");
+      return;
+    }
+
     const reader = new FileReader();
+
+    reader.onerror = () => setExportError("File non valido: impossibile leggere il JSON.");
 
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result));
+        const raw = JSON.parse(String(reader.result ?? "null"));
 
-        if (parsed && typeof parsed === "object" && parsed.answers) {
-          setData(parsed as SavedState);
+        const isNotebook =
+          raw && typeof raw === "object" && raw.answers && typeof raw.answers === "object";
 
-          setToast("Dati importati. Controlla le risposte.");
-        } else {
+        if (!isNotebook) {
           setExportError("File non valido: struttura non riconosciuta.");
+          return;
         }
+
+        // parseState filtra chiavi e indici non validi: un file corrotto non può
+        // più rompere il rendering del quaderno.
+        setData(parseState(JSON.stringify(raw)));
+
+        setExportError("");
+
+        setToast("Dati importati. Controlla le risposte.");
       } catch {
         setExportError("File non valido: impossibile leggere il JSON.");
       }
@@ -858,7 +914,7 @@ export default function Learning() {
                           <div className="path-phase-title">
                             <img
                               className="phase-thumb"
-                              src={`./images/theme/fase-${phase.name === "Progettazione" ? "progettazione" : phase.name === "Pratica" ? "pratica" : phase.name === "Progettazione inclusiva" ? "inclusione" : "revisione"}.svg`}
+                              src={phaseImage(phase.name)}
                               alt=""
                               aria-hidden="true"
                               loading="lazy"
@@ -880,7 +936,12 @@ export default function Learning() {
                               className={`path-card ${i === data.current ? "current-card" : ""} ${data.completed.includes(i) ? "done-card" : ""}`}
                               key={s.title}
                               onClick={() => go("step", i)}
-                              onKeyDown={(e) => e.key === "Enter" && go("step", i)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  go("step", i);
+                                }
+                              }}
                             >
                               <div className="card-top">
                                 <span className="card-number">0{i + 1}</span>
@@ -1004,7 +1065,7 @@ export default function Learning() {
                   </div>
                   <img
                     className="step-visual"
-                    src={`./images/theme/fase-${step.phase === "Progettazione" ? "progettazione" : step.phase === "Pratica" ? "pratica" : step.phase === "Progettazione inclusiva" ? "inclusione" : step.phase === "Revisione" ? "revisione" : "progettazione"}.svg`}
+                    src={phaseImage(step.phase)}
                     alt=""
                     aria-hidden="true"
                     loading="lazy"
@@ -1047,6 +1108,12 @@ export default function Learning() {
                   </div>
                 </div>
 
+                <div className="step-takeaway">
+                  <strong>In sintesi</strong>
+
+                  <p>{step.takeaway}</p>
+                </div>
+
                 <section className="activity">
                   <div className="activity-visual">
                     <img
@@ -1077,7 +1144,7 @@ export default function Learning() {
                   <div className="activity-visual">
                     <img
                       className="activity-hero-image"
-                      src={`./images/theme/fase-${step.phase === "Progettazione" ? "progettazione" : step.phase === "Pratica" ? "pratica" : step.phase === "Progettazione inclusiva" ? "inclusione" : step.phase === "Revisione" ? "revisione" : "progettazione"}.svg`}
+                      src={phaseImage(step.phase)}
                       alt=""
                       aria-hidden="true"
                       loading="eager"

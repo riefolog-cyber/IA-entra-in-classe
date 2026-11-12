@@ -5,6 +5,77 @@ const inputSchema = z.object({
   summary: z.string().max(12000),
 });
 
+// Limite in memoria per processo: serve solo a fermare raffiche abusive che
+// consumerebbero la quota del provider. Le soglie sono volutamente ampie e
+// configurabili, così una normale sessione di lavoro non viene mai interrotta:
+//   AI_ANALYSIS_RATE_LIMIT        richieste al minuto per utente (default 20, 0 = nessun limite)
+//   AI_ANALYSIS_RATE_LIMIT_GLOBAL richieste al minuto in totale (default 120, 0 = nessun limite)
+// Con più istanze il limite complessivo si moltiplica: resta un'ulteriore
+// barriera contro gli abusi, non un sostituto della quota lato provider.
+const WINDOW_MS = 60_000;
+const DEFAULT_PER_CLIENT = 20;
+const DEFAULT_GLOBAL = 120;
+const MAX_TRACKED_CLIENTS = 2000;
+const LIMIT_HINT =
+  "Le risposte sono già salvate: riprova tra poco oppure esporta il quaderno in PDF.";
+
+const perClient = new Map<string, number[]>();
+const globalHits: number[] = [];
+
+function prune(timestamps: number[], now: number) {
+  while (timestamps.length && now - timestamps[0] > WINDOW_MS) timestamps.shift();
+}
+
+function readLimit(key: string, fallback: number): number {
+  const raw = (process.env as Record<string, string | undefined>)[key];
+  if (raw === undefined || raw.trim() === "") return fallback;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 ? Math.floor(value) : fallback;
+}
+
+/** IP del client, oppure null quando non è affidabile (sviluppo locale, assenza di proxy). */
+function clientKey(headers: Headers): string | null {
+  // Dietro un proxy (Vercel, Netlify, nginx) l'IP reale arriva in questi header.
+  // Se il server è esposto direttamente l'header può essere inventato: per
+  // questo esiste anche il tetto globale. Non è un sistema di autenticazione.
+  const ip =
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() || headers.get("x-real-ip")?.trim();
+  if (!ip) return null;
+  // Nessun limite per-utente sul lavoro locale: in sviluppo si prova e si riprova.
+  if (ip === "::1" || ip === "localhost" || ip.startsWith("127.") || ip.startsWith("::ffff:127."))
+    return null;
+  return ip;
+}
+
+function allowRequest(key: string | null, perClientLimit: number, globalLimit: number): boolean {
+  // Limiti entrambi a 0: controllo disattivato dall'ambiente.
+  if (perClientLimit <= 0 && globalLimit <= 0) return true;
+
+  const now = Date.now();
+
+  prune(globalHits, now);
+  if (globalLimit > 0 && globalHits.length >= globalLimit) return false;
+
+  if (key && perClientLimit > 0) {
+    // Evita che la mappa cresca senza limite quando arrivano molti IP diversi.
+    if (!perClient.has(key) && perClient.size >= MAX_TRACKED_CLIENTS) perClient.clear();
+
+    const hits = perClient.get(key) ?? [];
+    prune(hits, now);
+
+    if (hits.length >= perClientLimit) {
+      perClient.set(key, hits);
+      return false;
+    }
+
+    hits.push(now);
+    perClient.set(key, hits);
+  }
+
+  globalHits.push(now);
+  return true;
+}
+
 function buildPrompt(summary: string) {
   return [
     "Sei un formatore che accompagna docenti nella riflessione professionale sull’uso dell’IA a scuola.",
@@ -37,7 +108,7 @@ function extractJson(text: string): Record<string, unknown> | null {
   }
 }
 
-export const analyzeProfile = base.input(inputSchema).handler(async ({ input }) => {
+export const analyzeProfile = base.input(inputSchema).handler(async ({ input, context }) => {
   // Read env through an index access so the same source type-checks in the
   // mobile package, which does not include @types/bun's ProcessEnv.
   const env = (key: string) => (process.env as Record<string, string | undefined>)[key];
@@ -49,6 +120,24 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input }) 
       reason: "missing_config" as const,
       message:
         "Analisi IA non configurata sul server. Imposta AI_GATEWAY_BASE_URL e AI_GATEWAY_API_KEY, poi riavvia il server.",
+    };
+  }
+
+  // Il limite entra in gioco solo quando la richiesta può davvero raggiungere
+  // il provider: una configurazione mancante non consuma quota.
+  const perClientLimit = readLimit("AI_ANALYSIS_RATE_LIMIT", DEFAULT_PER_CLIENT);
+  const globalLimit = readLimit("AI_ANALYSIS_RATE_LIMIT_GLOBAL", DEFAULT_GLOBAL);
+
+  if (!allowRequest(clientKey(context.headers), perClientLimit, globalLimit)) {
+    const scope =
+      perClientLimit > 0
+        ? `max ${perClientLimit} al minuto per utente`
+        : `max ${globalLimit} al minuto in totale`;
+
+    return {
+      ok: false as const,
+      reason: "rate_limited" as const,
+      message: `Troppe richieste di analisi in poco tempo (${scope}). ${LIMIT_HINT}`,
     };
   }
 

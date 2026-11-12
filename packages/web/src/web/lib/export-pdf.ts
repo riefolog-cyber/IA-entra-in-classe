@@ -62,6 +62,8 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
     paragraph(step.intro);
     paragraph("Idea da approfondire", 12, true);
     paragraph(step.concept);
+    paragraph("In sintesi", 12, true);
+    paragraph(step.takeaway);
 
     step.prompts.forEach((prompt, n) => {
       paragraph(prompt, 11, true);

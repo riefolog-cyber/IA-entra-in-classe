@@ -7516,8 +7516,8 @@ body, body.dark, .dark body {
   animation: bgDrift 14s ease-in-out infinite alternate !important;
 }
 @keyframes bgDrift {
-  0% { background-position: 0% 0%, 100% 0%, 50% 100%, 0 0; filter: saturate(1); }
-  100% { background-position: 12% 6%, 88% 8%, 46% 92%, 0 0; filter: saturate(1.08); }
+  0% { background-position: 0% 0%, 100% 0%, 50% 100%, 0 0; }
+  100% { background-position: 12% 6%, 88% 8%, 46% 92%, 0 0; }
 }
 .topbar {
   background: rgba(10, 16, 14, 0.92) !important;
@@ -7950,20 +7950,17 @@ body.dark .perspective-takeaway,
   position: relative;
 }
 .perspective-takeaway::before {
-  content: "In sintesi";
+  content: "";
   position: absolute;
-  top: -10px;
-  left: 14px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 8px;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
   border-radius: 999px;
-  background: #9ec493;
-  color: #102017;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+  background: linear-gradient(180deg, #9ec493, #6f9160);
+  box-shadow: 0 0 12px rgba(158,196,147,0.35);
 }
+.perspective-takeaway { padding-left: 22px !important; }
 body:not(.dark) .perspective-takeaway {
   background: linear-gradient(135deg, #eef5e8 0%, #e3ecd9 100%) !important;
   color: #1f3a2f !important;
@@ -8059,5 +8056,254 @@ body.dark .perspective-body p,
 @media (max-width: 900px) {
   .step-head-visual {
     padding: 14px;
+  }
+}
+/* Chiusura sintetica di ogni tappa */
+.step-takeaway {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 28px;
+  padding: 16px 18px;
+  border-left: 4px solid #9ec493;
+  border-radius: 0 14px 14px 0;
+  background: linear-gradient(135deg, rgba(158,196,147,0.16), rgba(158,196,147,0.05));
+}
+.step-takeaway strong {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ec493;
+}
+.step-takeaway p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+body:not(.dark) .step-takeaway {
+  background: linear-gradient(135deg, #eef5e8 0%, #e3ecd9 100%);
+  border-left-color: #6f9160;
+}
+body:not(.dark) .step-takeaway strong {
+  color: #4d6b41;
+}
+
+/* === Rifinitura visiva === */
+
+::selection {
+  background: rgba(158, 196, 147, 0.32);
+  color: #f6fbf7;
+}
+
+/* Sidebar: card avanzamento leggibile sul tema scuro */
+body.dark .sidebar-progress {
+  background: linear-gradient(160deg, rgba(158, 196, 147, 0.12), rgba(158, 196, 147, 0.03));
+  border-color: #2c4338;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+body.dark .sidebar-progress-info {
+  align-items: baseline;
+}
+body.dark .sidebar-progress-info span {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+body.dark .sidebar-progress-info strong {
+  font-size: 21px;
+  line-height: 1;
+}
+body.dark .sidebar-progress-info strong small {
+  font-size: 11px;
+  letter-spacing: 0;
+}
+body:not(.dark) .sidebar-progress-info span,
+body:not(.dark) .sidebar-progress-info small {
+  color: #5c6b55;
+}
+body:not(.dark) .sidebar-progress-info strong {
+  color: #203b32;
+}
+
+/* Focus della decisione: basta il fondo scuro, il colore del testo arriva
+   dalle regole di tema già presenti */
+body.dark .decision-focus {
+  background: linear-gradient(90deg, rgba(183, 131, 97, 0.16), rgba(183, 131, 97, 0.04));
+  border-left-color: #c98a63;
+}
+
+/* Misura di lettura e ritmo tipografico */
+.intro-text {
+  font-size: 16.5px;
+  line-height: 1.8;
+}
+.reading-page .intro-text,
+.reading-page > p,
+.reading-page .activity > p,
+.reading-page .step-takeaway p,
+.reading-page .concept-box > div > p {
+  max-width: 68ch;
+}
+.reading-page .page-lead {
+  max-width: 62ch;
+  line-height: 1.6;
+}
+.reading-page h1,
+.section-heading-copy h2,
+.resource-heading h2 {
+  text-wrap: balance;
+}
+.reading-page p {
+  text-wrap: pretty;
+}
+
+/* Voce di tappa attiva in sidebar */
+body.dark .step-nav button.selected {
+  background: linear-gradient(90deg, rgba(158, 196, 147, 0.18), rgba(158, 196, 147, 0.03));
+}
+
+/* Indicatori di tappa */
+.step-pills button {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  border: 1px solid #314b3f;
+}
+.step-pills button.active {
+  box-shadow: 0 6px 16px rgba(158, 196, 147, 0.25);
+}
+body.dark .step-pills button:hover {
+  background: #2a4236;
+  color: #f2f8f3;
+  border-color: #456453;
+}
+
+/* Opzioni: feedback su hover e scelta */
+.option {
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease;
+}
+body.dark .option:hover {
+  background: #1c2b24;
+  border-color: #4a6b58;
+  transform: translateY(-1px);
+}
+body.dark .option.chosen {
+  background: rgba(158, 196, 147, 0.14);
+  border-color: #9ec493;
+}
+
+/* Bottoni: area di tocco e profondità (transizione già definita sopra) */
+.button {
+  min-height: 44px;
+  border-radius: 12px;
+}
+.button.primary {
+  box-shadow: 0 10px 24px rgba(158, 196, 147, 0.18);
+}
+.button.primary:hover:not(:disabled) {
+  box-shadow: 0 14px 30px rgba(158, 196, 147, 0.26);
+}
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Il puntino prima dei titoli delle attività finiva a metà di un titolo su
+   due righe: i titoli restano allineati al testo */
+.reading-page .activity h2::before {
+  display: none;
+}
+
+/* Il grafico decorativo del pannello veniva tagliato dal bordo inferiore e
+   finiva dietro la freccia: meglio senza */
+.progress-panel::before {
+  display: none;
+}
+
+/* Immagini delle tappe */
+.step-visual,
+.concept-hero-image,
+.activity-hero-image,
+.scenario-hero-image,
+.completion-hero-image {
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26);
+}
+
+/* Barra superiore: una riga sola, compatta su mobile */
+.topbar {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  height: auto;
+  min-height: 68px;
+  padding: 10px 32px;
+  gap: 18px;
+}
+.topbar .breadcrumb {
+  margin: 0;
+  margin-right: auto;
+  min-width: 0;
+  white-space: nowrap;
+}
+.topbar-progress {
+  flex: 1 1 auto;
+  max-width: 360px;
+  margin: 0;
+}
+.topbar-right {
+  flex: 0 0 auto;
+  margin-left: 0;
+}
+
+@media (max-width: 1180px) {
+  .topbar-right {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: wrap;
+    min-height: 56px;
+    padding: 8px 16px;
+    row-gap: 6px;
+  }
+  .topbar .breadcrumb {
+    flex: 1 1 100%;
+    margin-right: 0;
+  }
+  .topbar-progress {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  .reading-page {
+    padding: 26px 0 40px;
+  }
+  .step-visual {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Su desktop la "chiave di lettura" va a due colonne con il testo a
+   sinistra: centrato su tutta la larghezza era faticoso da leggere */
+@media (min-width: 900px) {
+  .reading-page .concept-box-with-image {
+    flex-direction: row;
+    align-items: center;
+    gap: 26px;
+    text-align: left;
+  }
+  .reading-page .concept-box-with-image .concept-visual {
+    margin: 0;
+    flex: 0 0 150px;
+  }
+  .reading-page .concept-box-with-image > div:last-child {
+    max-width: 68ch;
+  }
+  .reading-page .activity-visual {
+    justify-content: flex-start;
   }
 }

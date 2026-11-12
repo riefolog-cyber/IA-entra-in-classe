@@ -6,6 +6,8 @@ export const steps = [
   {
     title: "Prima l’apprendimento, poi l’IA",
     short: "Progettare con l’IA",
+    takeaway:
+      "L’obiettivo di apprendimento viene prima dello strumento: l’IA entra solo se sostiene il lavoro cognitivo degli studenti.",
     subtitle: "Partire da un obiettivo, non da uno strumento.",
     category: "PROGETTAZIONE DIDATTICA",
     decisionFocus: "obiettivo di apprendimento vs. efficienza dello strumento",
@@ -13,15 +15,15 @@ export const steps = [
     intro:
       "Il punto di partenza non è “cosa può fare l’IA?”, ma “che cosa devono imparare gli studenti?”.\n\nIn questo percorso non cerchiamo solo di lavorare più velocemente: chiediamoci che cosa deve restare un’esperienza attiva per la classe. Se non usi ancora l’IA, parti da un’attività che conosci bene.",
     concept:
-      "Uno strumento è utile quando serve un obiettivo di apprendimento osservabile (per esempio: confrontare, argomentare, risolvere un problema).\n\nProdurre più materiali non significa far apprendere meglio. Conta decidere in anticipo: quale lavoro resta al docente, quale al sistema e quale agli studenti.",
+      "Uno strumento è utile quando serve un obiettivo di apprendimento osservabile (per esempio: confrontare, argomentare, risolvere un problema).\n\nProdurre più materiali non significa far apprendere meglio. Conta decidere in anticipo: quale lavoro resta al docente, quale al sistema e quale agli studenti.\n\nIl limite etico non coincide con ciò che la macchina non sa fare: è una scelta di discernimento professionale.",
     prompts: [
       "Quale parte del tuo lavoro non delegherai all’IA, e perché? (Pensa a una scelta o relazione professionale che vuoi mantenere in prima persona.)",
     ],
     question: "Quale criterio è più utile per decidere se integrare l’IA in una lezione?",
     options: [
-      "Riduce il tempo di preparazione e permette di trattare più contenuti nello stesso numero di ore.",
+      "Riduce il tempo di preparazione e permette di trattare più contenuti nello stesso monte ore.",
       "La proposta sostiene l’obiettivo e mantiene visibile il lavoro cognitivo degli studenti.",
-      "Ha funzionato in un’altra classe, quindi può essere riproposta con gli stessi materiali.",
+      "Ha funzionato in un’altra classe, quindi si può riproporre con gli stessi materiali.",
     ],
     correct: 1,
     explanation:
@@ -42,14 +44,16 @@ export const steps = [
   {
     title: "Prima di portarlo in classe",
     short: "Verificare i materiali",
+    takeaway:
+      "Prima dell’uso, verifica contenuti, consegne ed esempi con fonti indipendenti: il sistema non è una prova di sé.",
     subtitle: "Controllare contenuti, consegne e rappresentazioni.",
     category: "QUALITÀ E PENSIERO CRITICO",
     decisionFocus: "velocità di preparazione vs. accuratezza disciplinare",
     phase: "Progettazione",
     intro:
-      "Un testo generato può sembrare chiaro e ben scritto, ma contenere errori, semplificazioni scorrette o esempi poco adatti alla classe.\n\nQui entra in gioco l’automation bias: la tendenza a fidarsi troppo di un output automatico perché appare professionale (ad esempio, una scheda ordinata o una rubrica ben formattata).",
+      "Un testo prodotto da un’IA generativa può sembrare chiaro e ben scritto, ma contenere errori, semplificazioni scorrette o esempi poco adatti alla classe.\n\nQui entra in gioco l’automation bias: la tendenza a fidarsi troppo di un output automatico perché appare professionale (ad esempio, una scheda ordinata o una rubrica ben formattata).",
     concept:
-      "Prima dell’uso in classe, vale la pena fare una revisione rapida ma mirata: correttezza disciplinare, coerenza delle consegne, chiarezza del linguaggio ed esempi/rappresentazioni inclusivi.\n\nChiedere allo stesso sistema di “confermare” il proprio risultato non è una verifica indipendente.",
+      "Prima dell’uso in classe, vale la pena fare una revisione rapida ma mirata: correttezza disciplinare, coerenza delle consegne, chiarezza del linguaggio ed esempi/rappresentazioni inclusivi.\n\nChiedere allo stesso sistema di “confermare” il proprio risultato non è una verifica indipendente.\n\nUn sistema generativo resta in larga parte una scatola nera: per questo la verifica va fatta con risorse esterne.",
     prompts: [
       "Quale controllo non salterai mai, neppure con fretta, e perché? (Es. contenuti, consegna, esempi, linguaggio, accessibilità.)",
     ],
@@ -57,8 +61,8 @@ export const steps = [
       "L’IA ha generato esercizi con soluzioni. Quale verifica è più solida prima dell’uso?",
     options: [
       "Risolvere gli esercizi e controllare i contenuti con risorse disciplinari indipendenti.",
-      "Chiedere al sistema di dichiarare il proprio livello di sicurezza e correggere solo gli esercizi che segnala come incerti.",
-      "Confrontare il livello di difficoltà con il programma svolto e usare gli esercizi che includono già le soluzioni.",
+      "Chiedere al sistema quali esercizi ritiene incerti e correggere soltanto quelli segnalati.",
+      "Confrontare la difficoltà con il programma svolto e usare gli esercizi già con le soluzioni.",
     ],
     correct: 0,
     explanation:
@@ -79,6 +83,8 @@ export const steps = [
   {
     title: "Valutare senza delegare il giudizio",
     short: "Valutazione e feedback",
+    takeaway:
+      "Il giudizio resta professionale: servono criteri espliciti ed evidenze del processo, non un verdetto automatico.",
     subtitle: "Distinguere un suggerimento dal giudizio professionale.",
     category: "RESPONSABILITÀ VALUTATIVA",
     decisionFocus: "giudizio automatico vs. giudizio professionale",
@@ -93,9 +99,9 @@ export const steps = [
     question:
       "Un rilevatore segnala che un elaborato sarebbe stato generato dall’IA. Qual è l’interpretazione più prudente?",
     options: [
-      "Assegnare una penalizzazione solo se il punteggio supera una soglia concordata nel dipartimento.",
-      "Chiedere allo studente di riscrivere l’elaborato in classe, senza discuterne prima.",
-      "La segnalazione non basta: occorrono criteri chiari e un confronto sul processo.",
+      "Penalizzare solo se il punteggio del rilevatore supera la soglia concordata in dipartimento.",
+      "Chiedere allo studente di riscrivere l’elaborato in classe, senza ascoltarlo prima.",
+      "La segnalazione non basta: servono criteri chiari e un confronto sul processo di lavoro.",
     ],
     correct: 2,
     explanation:
@@ -116,6 +122,8 @@ export const steps = [
   {
     title: "Processo, non solo prodotto",
     short: "Processo visibile",
+    takeaway:
+      "Rendere visibile il processo serve a capire e migliorare, non a sorvegliare: poche tracce scelte con criterio.",
     subtitle: "Rendere trasparente il lavoro quando l’IA è coinvolta.",
     category: "INTEGRITÀ E TRASPARENZA",
     decisionFocus: "trasparenza del percorso vs. sorveglianza degli studenti",
@@ -130,8 +138,8 @@ export const steps = [
     question:
       "Quale richiesta rende più visibile il processo senza ridurre il compito a controllo?",
     options: [
-      "Chiedere soltanto il prodotto finale e un colloquio orale a campione.",
-      "Chiedere la cronologia completa delle modifiche del file insieme al prodotto finale.",
+      "Chiedere soltanto il prodotto finale e un colloquio orale soltanto su un piccolo campione.",
+      "Chiedere la cronologia completa delle modifiche del file di lavoro, insieme al prodotto finale.",
       "Chiedere una bozza, una breve nota sulle scelte o sulle revisioni e il prodotto finale.",
     ],
     correct: 2,
@@ -153,22 +161,24 @@ export const steps = [
   {
     title: "Una consegna, regole comprensibili",
     short: "Regole condivise",
+    takeaway:
+      "Una regola è chiara quando dice che cosa è consentito, che cosa resta autonomo e quale alternativa senza IA esiste.",
     subtitle: "Rendere trasparente che cosa è consentito e perché.",
     category: "CONFRONTO PROFESSIONALE",
     decisionFocus: "chiarezza delle consegne vs. flessibilità del docente",
     phase: "Pratica",
     intro:
-      "Nel confronto tra colleghi emergono posizioni diverse: c’è chi vede nell’IA un supporto utile e chi teme che sostituisca il lavoro degli studenti.\n\nL’obiettivo qui non è “avere tutti la stessa idea”, ma costruire consegne chiare e comprensibili.",
+      "Nel confronto tra colleghi emergono posizioni diverse: c’è chi vede nell’IA un supporto utile e chi teme che sostituisca il lavoro degli studenti.\n\nL’obiettivo qui non è “avere tutti la stessa idea”, ma costruire consegne chiare e comprensibili.\n\nIl confronto tra colleghi può diventare revisione tra pari di materiali, consegne e criteri.",
     concept:
-      "Idea chiave: una regola chiara nasce dall’obiettivo del compito.\n\nIn pratica, nella consegna esplicita:\n- che cosa è consentito (e in quale fase);\n- che cosa deve restare autonomo;\n- come dichiarare eventuali aiuti;\n- quale alternativa senza IA è disponibile.\n\nSe si usano strumenti, verifica prima accesso e condizioni con le procedure dell’istituto.",
+      "Idea chiave: una regola chiara nasce dall’obiettivo del compito.\n\nIn pratica, nella consegna esplicita:\n- che cosa è consentito (e in quale fase);\n- che cosa deve restare autonomo;\n- come dichiarare eventuali aiuti;\n- quale alternativa senza IA è disponibile.\n\nLa trasparenza d’uso riguarda gli aiuti dichiarati, non i dati personali degli studenti.\n\nSe si usano strumenti, verifica prima accesso e condizioni con le procedure dell’istituto.",
     prompts: [
       "Quale obiezione di un collega ti sembra la più forte, e come la risponderesti con rispetto? (Puoi partire da un esempio concreto di compito.)",
     ],
     question: "Quale consegna rende più chiaro il ruolo dell’IA?",
     options: [
-      "“Usate l’IA in modo responsabile”: decidete voi se e come dichiararla.",
-      "“L’IA può suggerire domande; l’argomentazione è vostra, documentate gli aiuti e c’è un’alternativa senza IA.”",
-      "“L’IA è facoltativa: chi la usa lo segnala, ma non serve indicare dove.”",
+      "“Usate l’IA in modo responsabile”: sta a voi decidere se e come dichiararla nel compito.",
+      "“L’IA può suggerire domande; l’argomentazione è vostra e gli aiuti vanno dichiarati.”",
+      "“L’IA è facoltativa: chi la usa lo segnala, ma non deve indicare in quale parte l’ha usata.”",
     ],
     correct: 1,
     explanation:
@@ -189,22 +199,24 @@ export const steps = [
   {
     title: "Comunicare con studenti e famiglie",
     short: "Comunicazione chiara",
+    takeaway:
+      "A studenti e famiglie servono poche informazioni legate al compito: obiettivo, limiti, tutele e alternative.",
     subtitle: "Rendere comprensibili aspettative, limiti e tutele.",
     category: "PATTO EDUCATIVO",
     decisionFocus: "trasparenza verso famiglie vs. complessità tecnica",
     phase: "Pratica",
     intro:
-      "Le scelte sull’IA non restano solo “in classe”. Studenti e famiglie hanno bisogno di capire poche cose essenziali: quando si usa, perché, con quali limiti e quali alternative ci sono.",
+      "Le scelte sull’IA non restano solo “in classe”. Studenti e famiglie hanno bisogno di capire poche cose essenziali: quando si usa, perché, con quali limiti e quali alternative senza IA ci sono.",
     concept:
-      "Comunicare bene significa essere chiari e pertinenti al compito. Aiuta indicare: obiettivo didattico, uso consentito/non consentito, tutele (ad esempio sui dati) e a chi rivolgersi per chiarimenti.\n\nTrasparenza non vuol dire entrare in dettagli tecnici o condividere informazioni sensibili.",
+      "La comunicazione con studenti e famiglie è utile quando è chiara e pertinente al compito. Aiuta indicare: obiettivo didattico, uso consentito/non consentito, tutele (ad esempio sui dati) e a chi rivolgersi per chiarimenti.\n\nTrasparenza non vuol dire entrare in dettagli tecnici o condividere informazioni sensibili.",
     prompts: [
       "Se dovessi spiegare a una famiglia l’uso dell’IA in un compito, quale frase useresti per chiarire obiettivo, limite e alternativa? (Prova a scriverla in 2-3 righe.)",
     ],
     question: "Quale comunicazione è più utile per famiglie e studenti?",
     options: [
-      "Un avviso generico che invita a un uso consapevole, senza dettagli sul singolo compito.",
-      "Una spiegazione che indica obiettivo, uso consentito o non consentito, tutele e alternativa disponibile.",
-      "Una nota tecnica sul modello e sui suoi limiti, con il link alla documentazione.",
+      "Un avviso generico che invita a un uso consapevole, senza alcun dettaglio sul compito assegnato.",
+      "Una spiegazione con obiettivo, uso consentito o vietato, tutele e alternativa disponibile.",
+      "Una nota tecnica sul modello e sui suoi limiti, con il rimando alla documentazione online.",
     ],
     correct: 1,
     explanation:
@@ -225,6 +237,8 @@ export const steps = [
   {
     title: "Inclusione e dati: fermarsi prima",
     short: "Inclusione e dati",
+    takeaway:
+      "Per adattare un’attività non servono dati identificativi: descrivi barriere e obiettivi, e fermati prima se serve.",
     subtitle: "Personalizzare senza esporre o etichettare gli studenti.",
     category: "CURA E TUTELA",
     decisionFocus: "personalizzazione vs. esposizione di dati",
@@ -232,15 +246,15 @@ export const steps = [
     intro:
       "L’IA può aiutare a creare versioni alternative di un’attività o di un testo. Ma personalizzare non significa inserire documenti degli studenti in uno strumento esterno, né ridurre le aspettative.\n\nA volte la scelta più professionale è fermarsi prima.",
     concept:
-      "Idea chiave: per adattare una proposta non servono dati identificativi degli studenti.\n\nIn pratica, prima di agire:\n- descrivi obiettivi e barriere in modo generico (es. “fatica a leggere testi lunghi”, “serve consegna segmentata”);\n- usa esempi inventati, non documenti reali;\n- verifica con l’istituto finalità, dati, condizioni d’uso e responsabilità.\n\nRicorda: togliere il nome non basta sempre, perché diagnosi e dettagli di contesto possono rendere riconoscibile una persona.",
+      "Idea chiave: per adattare una proposta non servono dati identificativi degli studenti.\n\nLa minimizzazione dei dati è il criterio: si usa solo ciò che serve alla finalità didattica.\n\nIn pratica, prima di agire:\n- descrivi obiettivi e barriere in modo generico (es. “fatica a leggere testi lunghi”, “serve consegna segmentata”);\n- usa esempi inventati, non documenti reali;\n- verifica con l’istituto finalità, dati, condizioni d’uso e responsabilità.\n\nRicorda: togliere il nome non basta sempre, perché diagnosi e dettagli di contesto possono rendere riconoscibile una persona.",
     prompts: [
       "Quale dato di uno studente non inseriresti mai in uno strumento esterno, e perché? (Es. diagnosi, documenti, dettagli personali o familiari.)",
     ],
     question:
       "Vuoi adattare un’attività con un chatbot esterno. Qual è il punto di partenza più prudente?",
     options: [
-      "Descrivere barriere e obiettivi senza documenti reali, chiarendo prima le condizioni d’uso con l’istituto.",
-      "Caricare il piano individuale senza nome e data di nascita, chiedendo al sistema di non conservarlo.",
+      "Descrivere barriere e obiettivi senza documenti reali, chiarendo prima le condizioni con l’istituto.",
+      "Caricare il piano individuale senza nome né data di nascita, chiedendo di non conservarlo.",
       "Descrivere il caso in forma anonima includendo la diagnosi, per ottenere un adattamento più preciso.",
     ],
     correct: 0,
@@ -262,6 +276,8 @@ export const steps = [
   {
     title: "Accessibilità e UDL con l’IA",
     short: "Progettazione inclusiva",
+    takeaway:
+      "Accessibilità significa ridurre le barriere, non l’obiettivo: più modi per accedere, lavorare e dimostrare.",
     subtitle: "Ridurre barriere senza abbassare obiettivi.",
     category: "PROGETTAZIONE INCLUSIVA",
     decisionFocus: "riduzione delle barriere vs. abbassamento delle aspettative",
@@ -269,14 +285,14 @@ export const steps = [
     intro:
       "L’IA può aiutare a creare formati alternativi: semplificare un testo, proporre una sintesi, aggiungere domande guida o supporti multimodali.\n\nIl rischio è confondere accessibilità con “rendere tutto più facile” o con una soluzione uguale per tutti.",
     concept:
-      "Idea chiave (UDL): ridurre le barriere, non l’obiettivo di apprendimento.\n\nIn pratica, puoi offrire modi diversi per accedere, lavorare e mostrare ciò che si è imparato (es. testo + audio, lessico più chiaro, domande guida) mantenendo la stessa richiesta.\n\nPrima di usare un materiale generato, verifica:\n- correttezza del contenuto;\n- chiarezza del linguaggio;\n- coerenza con l’obiettivo.",
+      "Idea chiave (UDL, Universal Design for Learning: progettazione universale per l’apprendimento): ridurre le barriere, non l’obiettivo di apprendimento.\n\nIn pratica, puoi offrire modi diversi per accedere, lavorare e mostrare ciò che si è imparato (es. testo + audio, lessico più chiaro, domande guida) mantenendo la stessa richiesta.\n\nPrima di usare un materiale generato, verifica:\n- correttezza del contenuto;\n- chiarezza del linguaggio;\n- coerenza con l’obiettivo.",
     prompts: [
       "Quale barriera ricorrente incontri nella tua disciplina e quale adattamento vorresti provare senza ridurre l’obiettivo? (Es. linguaggio, formato, tempi, modalità di risposta.)",
     ],
     question: "Quale uso dell’IA è più coerente con un approccio UDL?",
     options: [
-      "Semplificare i contenuti per chi è in difficoltà, mantenendo una versione più completa per gli altri.",
-      "Proporre formati e supporti alternativi verificati, mantenendo lo stesso obiettivo di apprendimento.",
+      "Semplificare i contenuti per chi è in difficoltà e lasciare agli altri la versione completa.",
+      "Proporre supporti alternativi verificati, con lo stesso obiettivo di apprendimento.",
       "Cambiare il tipo di verifica per chi ha difficoltà, senza mantenere lo stesso obiettivo.",
     ],
     correct: 1,
@@ -298,6 +314,8 @@ export const steps = [
   {
     title: "Una prova piccola, evidenze chiare",
     short: "Sperimentare e rivedere",
+    takeaway:
+      "Una prova piccola ma chiara: obiettivo, evidenze da osservare e un criterio per modificare o fermare la scelta.",
     subtitle: "Portare il corso nel lavoro quotidiano.",
     category: "PIANO DI AZIONE",
     decisionFocus: "evidenze di apprendimento vs. tempo risparmiato",
@@ -305,15 +323,15 @@ export const steps = [
     intro:
       "Alla fine del percorso conta una scelta professionale concreta e verificabile: una piccola sperimentazione, oppure una decisione motivata di non usare l’IA.\n\nAttenzione: il tempo risparmiato dal docente e l’apprendimento degli studenti sono risultati diversi, da osservare separatamente.",
     concept:
-      "Una prova utile è “piccola ma chiara”: indica obiettivo, contesto, tempi, evidenze da osservare e criteri per modificare o fermare la scelta.\n\nNon serve dimostrare tutto. Il valore sta nel rendere la decisione rivedibile nel tempo, con cautela (classi, compiti e momenti diversi possono influenzare i risultati).",
+      "Una prova utile è “piccola ma chiara”: indica obiettivo, contesto, tempi, evidenze da osservare e criteri per modificare o fermare la scelta.\n\nNon serve dimostrare tutto. Il valore sta nel rendere la decisione rivedibile nel tempo, con cautela (classi, compiti e momenti diversi possono influenzare i risultati).\n\nLa sostenibilità didattica si misura sull’equilibrio tra apprendimento e carico di lavoro, non solo sul tempo risparmiato.",
     prompts: [
       "Quale piccola prova potresti fare nelle prossime settimane, e quale evidenza ti porterebbe a modificarla o fermarla? (Indica: obiettivo, attività, segnale da osservare.)",
     ],
     question: "Quale evidenza documenta meglio un obiettivo di argomentazione?",
     options: [
-      "La classe ha concluso il programma in anticipo rispetto alla pianificazione.",
-      "Gli studenti hanno prodotto elaborati più lunghi e con meno errori formali.",
-      "Negli elaborati e nel confronto gli studenti motivano le tesi con evidenze, secondo criteri espliciti.",
+      "La classe ha concluso il programma in anticipo rispetto alla pianificazione iniziale.",
+      "Gli studenti hanno prodotto elaborati più lunghi e con meno errori formali e ortografici.",
+      "Gli studenti motivano le tesi con evidenze, secondo criteri espliciti condivisi.",
     ],
     correct: 2,
     explanation:
@@ -332,8 +350,10 @@ export const steps = [
     ],
   },
   {
-    title: "Policy, comunità e aggiornamento continuo",
+    title: "Decidere insieme, rivedere nel tempo",
     short: "Scelte condivise",
+    takeaway:
+      "Le scelte sull’IA si rendono esplicite, condivise quando serve e rivedibili nel tempo, dentro le procedure dell’istituto.",
     subtitle: "Collegare la pratica alla scuola e alla revisione nel tempo.",
     category: "SCELTE ISTITUZIONALI",
     decisionFocus: "iniziativa individuale vs. scelta condivisa e rivedibile",
@@ -341,15 +361,15 @@ export const steps = [
     intro:
       "Le scelte sull’IA raramente riguardano solo il singolo docente: toccano strumenti, dati, criteri comuni, famiglie e studenti.\n\nPer questo è utile distinguere ciò che si può decidere in autonomia da ciò che richiede confronto e procedure d’istituto.",
     concept:
-      "Idea chiave: le scelte sull’IA vanno rese chiare, condivise quando serve e rivedibili nel tempo.\n\nIn pratica, prima di adottare uno strumento:\n- definisci finalità didattica e limiti;\n- verifica tutele, dati, ruoli e responsabilità (accountability: chi decide, chi controlla, chi risponde);\n- prevedi alternative e una prova circoscritta;\n- stabilisci quando e come rivedere la scelta (governance).\n\nAggiornarsi non è solo conoscere nuovi strumenti, ma valutarne gli effetti nel proprio contesto.",
+      "Idea chiave: le scelte sull’IA vanno rese chiare, condivise quando serve e rivedibili nel tempo.\n\nIn pratica, prima di adottare uno strumento:\n- definisci finalità didattica e limiti;\n- verifica tutele, dati, ruoli e responsabilità (accountability: chi decide, chi controlla, chi risponde);\n- prevedi alternative e una prova circoscritta;\n- stabilisci quando e come rivedere la scelta (governance: criteri, ruoli e momenti di revisione condivisi).\n\nAggiornarsi non è solo conoscere nuovi strumenti, ma valutarne gli effetti nel proprio contesto.",
     prompts: [
       "Quale decisione sull’IA prenderesti da solo nella tua pratica e quale porteresti in dipartimento o all’istituto? Con quale criterio le distingui? (Es. impatto su dati, valutazione, equità, comunicazione.)",
     ],
     question: "Quale approccio è più sostenibile per l’adozione di un nuovo strumento IA a scuola?",
     options: [
-      "Adottarlo subito in tutte le classi, per raccogliere rapidamente più dati possibili.",
+      "Adottarlo subito in tutte le classi, per raccogliere in fretta il maggior numero possibile di dati.",
       "Fare una prova circoscritta con criteri didattici, tutele, ruoli, alternative e revisione.",
-      "Aspettare che altri istituti lo adottino e poi copiare la loro configurazione.",
+      "Aspettare che altri istituti lo adottino, per poi copiare la loro configurazione e le loro regole.",
     ],
     correct: 1,
     explanation:
@@ -400,12 +420,12 @@ export const glossary = [
   [
     "IA generativa",
     "Sistema che produce contenuti sulla base di regolarità apprese nei dati. Una scheda fluida può contenere errori: il docente ne verifica contenuti e adeguatezza.",
-    [1, 2],
+    [2],
   ],
   [
     "Automation bias",
     "Fiducia eccessiva nel suggerimento automatico. Nel lavoro docente può emergere quando si adottano soluzioni, rubriche o feedback senza revisione.",
-    [2, 5],
+    [2],
   ],
   [
     "Allineamento didattico",
@@ -430,17 +450,17 @@ export const glossary = [
   [
     "Discernimento professionale",
     "Valutazione di obiettivi, conseguenze e valori per scegliere se, dove e come usare l’IA, assumendosi la responsabilità della decisione.",
-    [1, 5],
+    [1],
   ],
   [
     "Limite etico",
     "Confine motivato su ciò che non si delega o non si comunica a un sistema, anche quando è tecnicamente possibile farlo.",
-    [7],
+    [1],
   ],
   [
     "Accountability",
     "Possibilità di chiarire chi decide, chi controlla e chi risponde di un uso. Il docente non può sostituire una procedura istituzionale con una scelta isolata.",
-    [5, 10],
+    [10],
   ],
   [
     "Minimizzazione dei dati",
@@ -475,7 +495,7 @@ export const glossary = [
   [
     "Sostenibilità didattica",
     "Equilibrio tra qualità dell’apprendimento, carico di lavoro del docente e tempi disponibili. Un uso sostenibile è rivedibile e non automatizza ogni fase.",
-    [9, 10],
+    [9],
   ],
   [
     "Alternativa senza IA",
@@ -485,8 +505,6 @@ export const glossary = [
   [
     "Revisione tra pari",
     "Confronto professionale strutturato tra colleghi per verificare materiali, regole e conseguenze delle scelte sull’IA.",
-    [2, 5, 10],
+    [5],
   ],
 ];
-
-

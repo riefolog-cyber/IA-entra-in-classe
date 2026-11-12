@@ -71,8 +71,14 @@ function removeFromSyncChain(key: string): void {
   memory.delete(key);
 }
 
+// Una sola connessione per sessione: aprire il database a ogni lettura/scrittura
+// (come faceva la prima versione) rallentava il salvataggio a ogni tasto premuto.
+let dbPromise: Promise<IDBDatabase> | null = null;
+
 function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  if (dbPromise) return dbPromise;
+
+  dbPromise = new Promise((resolve, reject) => {
     let request: IDBOpenDBRequest;
     try {
       request = indexedDB.open("restare-umani", 1);
@@ -83,10 +89,23 @@ function openDb(): Promise<IDBDatabase> {
     request.onupgradeneeded = () => {
       if (!request.result.objectStoreNames.contains("kv")) request.result.createObjectStore("kv");
     };
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      const db = request.result;
+      db.onclose = () => {
+        dbPromise = null;
+      };
+      resolve(db);
+    };
     request.onerror = () => reject(request.error ?? new Error("indexedDB non disponibile"));
     request.onblocked = () => reject(new Error("indexedDB bloccato"));
   });
+
+  // Un fallimento non deve restare in cache: il prossimo tentativo riapre il db.
+  dbPromise.catch(() => {
+    dbPromise = null;
+  });
+
+  return dbPromise;
 }
 
 export async function idbGet(key: string): Promise<string | null> {
