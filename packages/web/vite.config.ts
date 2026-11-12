@@ -16,10 +16,28 @@ export default defineConfig(({ mode }) => {
     // Relative base so the built app works on any host path (GitHub Pages, Vercel,
     // Netlify) without hard-coding the repository name.
     base: "./",
-    // All env files live at the repo root — keep Vite's own env loading there too,
+    // All env files live at the repo root - keep Vite's own env loading there too,
     // so packages/web/.env* files can never shadow the root .env.
     envDir: root,
     plugins: [honoDevPlugin(), react(), tailwind(), assetOptimizerPlugin()],
+    build: {
+      // Separa le librerie sempre caricate (React, oRPC, lucide) dal codice
+      // dell'app: dopo un deploy i visitatori che tornano riutilizzano la cache
+      // del vendor chunk. jspdf e html2canvas restano nei chunk dinamici
+      // (import("jspdf") in export-pdf) e non vengono scaricati all'avvio.
+      rolldownOptions: {
+        output: {
+          advancedChunks: {
+            groups: [
+              {
+                name: "vendor",
+                test: /[\\/]node_modules[\\/](react|react-dom|scheduler|@orpc|@tanstack|lucide-react|wouter|zod)[\\/]/,
+              },
+            ],
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src/web"),

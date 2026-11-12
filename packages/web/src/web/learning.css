@@ -8307,3 +8307,13 @@ body.dark .option.chosen {
     justify-content: flex-start;
   }
 }
+
+/* === Correzione a-capo: i testi con righe vuote (\n\n) e gli elenchi dei
+   concetti devono essere mostrati come paragraphi, non appiattiti su una riga === */
+.intro-text,
+.concept-box p,
+.feedback p,
+.scenario-story {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
