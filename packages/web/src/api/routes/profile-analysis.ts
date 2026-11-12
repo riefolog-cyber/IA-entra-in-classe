@@ -16,6 +16,9 @@ const WINDOW_MS = 60_000;
 const DEFAULT_PER_CLIENT = 20;
 const DEFAULT_GLOBAL = 120;
 const MAX_TRACKED_CLIENTS = 2000;
+// Il gateway a volte impiega 50-60 s (latenza del provider, non del prompt):
+// con 45 s la lettura falliva proprio mentre stava arrivando la risposta.
+const REQUEST_TIMEOUT_MS = 90_000;
 const LIMIT_HINT =
   "Le risposte sono già salvate: riprova tra poco oppure esporta il quaderno in PDF.";
 
@@ -108,6 +111,40 @@ function extractJson(text: string): Record<string, unknown> | null {
   }
 }
 
+/** Nome, messaggio e codice causa: quanto basta per capire un errore di rete. */
+function describeError(error: unknown): string {
+  if (error instanceof Error) {
+    const cause = (error as Error & { cause?: { code?: string } }).cause;
+    return `${error.name}: ${error.message}${cause?.code ? ` (${cause.code})` : ""}`;
+  }
+  return String(error);
+}
+
+function isAbort(error: unknown): boolean {
+  return (error as { name?: string } | null)?.name === "AbortError";
+}
+
+type ProviderResponse = { status: number; ok: boolean; raw: string };
+
+async function callProvider(url: string, apiKey: string, body: string): Promise<ProviderResponse> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body,
+      signal: controller.signal,
+    });
+    return { status: res.status, ok: res.ok, raw: await res.text() };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export const analyzeProfile = base.input(inputSchema).handler(async ({ input, context }) => {
   // Read env through an index access so the same source type-checks in the
   // mobile package, which does not include @types/bun's ProcessEnv.
@@ -143,82 +180,93 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
 
   const model = env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini";
   const url = baseUrl.includes("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 45000);
+  const body = JSON.stringify({
+    model,
+    temperature: 0.3,
+    messages: [
+      { role: "system", content: "Rispondi solo con JSON valido." },
+      { role: "user", content: buildPrompt(input.summary) },
+    ],
+  });
+
+  let response: ProviderResponse;
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.3,
-        messages: [
-          { role: "system", content: "Rispondi solo con JSON valido." },
-          { role: "user", content: buildPrompt(input.summary) },
-        ],
-      }),
-      signal: controller.signal,
-    });
-    const raw = await res.text();
-    if (!res.ok) {
+    response = await callProvider(url, apiKey, body);
+  } catch (firstError) {
+    // Un timeout non si ritenta: raddoppierebbe l'attesa senza cambiare esito.
+    if (isAbort(firstError)) {
+      console.error(`[analisi-ia] timeout dopo ${REQUEST_TIMEOUT_MS / 1000}s`);
       return {
         ok: false as const,
-        reason: "provider_error" as const,
-        message: `Errore dal servizio IA (${res.status}). Verifica configurazione/modello o riprova.`,
+        reason: "timeout" as const,
+        message: `La lettura IA ha impiegato troppo tempo (oltre ${REQUEST_TIMEOUT_MS / 1000} secondi). Riprova tra poco. ${LIMIT_HINT}`,
       };
     }
-    type ChatResponse = {
-      choices?: Array<{ message?: { content?: string } }>;
-      output_text?: string;
-    };
-    let data: ChatResponse | null = null;
+
+    console.error("[analisi-ia] errore di rete:", describeError(firstError));
+
+    // Un secondo tentativo per una caduta di rete immediata (Wi‑Fi, DNS, proxy).
+    await new Promise((resolve) => setTimeout(resolve, 700));
     try {
-      data = JSON.parse(raw) as ChatResponse;
-    } catch {
-      data = null;
-    }
-    const content =
-      data?.choices?.[0]?.message?.content ??
-      data?.output_text ??
-      (typeof raw === "string" ? raw : "");
-    const parsed = extractJson(String(content));
-    if (!parsed) {
+      response = await callProvider(url, apiKey, body);
+    } catch (secondError) {
+      console.error("[analisi-ia] errore di rete (secondo tentativo):", describeError(secondError));
       return {
         ok: false as const,
-        reason: "invalid_response" as const,
+        reason: "network_error" as const,
         message:
-          "La risposta IA non era in un formato utilizzabile. Riprova più tardi o esporta il quaderno in PDF.",
+          "Richiesta IA non riuscita per un problema di rete. Controlla la connessione e riprova: le risposte sono già salvate e puoi esportare il quaderno.",
       };
     }
-    const arr = (v: unknown): string[] =>
-      Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 4) : [];
-    return {
-      ok: true as const,
-      model,
-      analysis: {
-        headline: typeof parsed.headline === "string" ? parsed.headline : "Lettura del percorso",
-        narrative: typeof parsed.narrative === "string" ? parsed.narrative : "",
-        strengths: arr(parsed.strengths),
-        tensions: arr(parsed.tensions),
-        questions: arr(parsed.questions),
-        nextStep: typeof parsed.nextStep === "string" ? parsed.nextStep : "",
-        caution:
-          typeof parsed.caution === "string"
-            ? parsed.caution
-            : "Interpretazione probabilistica: rileggi criticamente e verifica nel tuo contesto.",
-      },
-    };
-  } catch {
+  }
+
+  if (!response.ok) {
     return {
       ok: false as const,
-      reason: "network_error" as const,
-      message:
-        "Richiesta IA non riuscita (rete, timeout o configurazione). Puoi comunque esportare il quaderno.",
+      reason: "provider_error" as const,
+      message: `Errore dal servizio IA (${response.status}). Verifica configurazione/modello o riprova.`,
     };
-  } finally {
-    clearTimeout(timeout);
   }
+
+  type ChatResponse = {
+    choices?: Array<{ message?: { content?: string } }>;
+    output_text?: string;
+  };
+  let data: ChatResponse | null = null;
+  try {
+    data = JSON.parse(response.raw) as ChatResponse;
+  } catch {
+    data = null;
+  }
+  const content =
+    data?.choices?.[0]?.message?.content ??
+    data?.output_text ??
+    (typeof response.raw === "string" ? response.raw : "");
+  const parsed = extractJson(String(content));
+  if (!parsed) {
+    return {
+      ok: false as const,
+      reason: "invalid_response" as const,
+      message:
+        "La risposta IA non era in un formato utilizzabile. Riprova più tardi o esporta il quaderno in PDF.",
+    };
+  }
+  const arr = (v: unknown): string[] =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 4) : [];
+  return {
+    ok: true as const,
+    model,
+    analysis: {
+      headline: typeof parsed.headline === "string" ? parsed.headline : "Lettura del percorso",
+      narrative: typeof parsed.narrative === "string" ? parsed.narrative : "",
+      strengths: arr(parsed.strengths),
+      tensions: arr(parsed.tensions),
+      questions: arr(parsed.questions),
+      nextStep: typeof parsed.nextStep === "string" ? parsed.nextStep : "",
+      caution:
+        typeof parsed.caution === "string"
+          ? parsed.caution
+          : "Interpretazione probabilistica: rileggi criticamente e verifica nel tuo contesto.",
+    },
+  };
 });
