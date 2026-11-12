@@ -539,6 +539,16 @@ export default function Learning() {
     [],
   );
 
+  const progressPct = totalFields ? Math.round((answered / totalFields) * 100) : 0;
+  const nextStepIndex = steps.findIndex((_, i) => !data.completed.includes(i));
+  const nextStep = nextStepIndex >= 0 ? nextStepIndex : data.current;
+  const summaryStatus =
+    data.completed.length === 0 && answered === 0
+      ? "empty"
+      : data.completed.length === stepCount
+        ? "complete"
+        : "progress";
+
   const phases = useMemo(() => {
     const order: string[] = [];
 
@@ -879,19 +889,21 @@ export default function Learning() {
 
                   <div className="progress-copy">
                     <strong>
-                      {data.completed.length
-                        ? "Ogni domanda è un passo avanti."
-                        : "Il tuo percorso comincia da qui."}
+                      {summaryStatus === "complete"
+                        ? "Percorso completato: puoi rivedere e esportare il tuo quaderno."
+                        : summaryStatus === "progress"
+                          ? `Prossimo passo: tappa ${nextStep + 1} — ${steps[nextStep]?.title}`
+                          : "Il tuo percorso comincia da qui."}
                     </strong>
 
                     <span>
-                      {stepCount} tappe, circa 50–70 minuti, con un quaderno finale esportabile.
+                      {stepCount} tappe, circa 50-70 minuti. Le risposte restano salvate in questo browser.
                     </span>
                   </div>
 
                   <div className="progress-detail">
                     <div>
-                      <span>Il tuo avanzamento</span>
+                      <span>Avanzamento</span>
 
                       <strong>
                         {data.completed.length} <small>/ {stepCount} tappe</small>
@@ -904,12 +916,14 @@ export default function Learning() {
                       value={data.completed.length}
                       max={stepCount}
                     />
+                    <small className="progress-caption">{progressPct}% dei campi compilati · {answered}/{totalFields}</small>
                   </div>
 
                   <button
                     className="icon-button progress-arrow"
-                    onClick={() => go("summary")}
-                    aria-label="Apri riepilogo"
+                    onClick={() => go(summaryStatus === "empty" ? "step" : "summary", summaryStatus === "empty" ? 0 : undefined)}
+                    aria-label={summaryStatus === "empty" ? "Inizia dalla prima tappa" : "Apri riepilogo"}
+                    title={summaryStatus === "empty" ? "Inizia" : "Apri riepilogo"}
                   >
                     <ArrowRight size={20} />
                   </button>
@@ -1669,6 +1683,42 @@ export default function Learning() {
                   />
                 </div>
 
+                <section
+                  className={`summary-status summary-status-${summaryStatus}`}
+                  aria-label="Stato del percorso"
+                >
+                  <div className="summary-status-copy">
+                    <strong>
+                      {summaryStatus === "empty"
+                        ? "Il quaderno è ancora vuoto"
+                        : summaryStatus === "complete"
+                          ? "Percorso completato"
+                          : "Percorso in corso"}
+                    </strong>
+                    <p>
+                      {summaryStatus === "empty"
+                        ? "Puoi iniziare da una tappa qualsiasi: le risposte si salvano automaticamente in questo browser e puoi esportare il PDF in ogni momento."
+                        : summaryStatus === "complete"
+                          ? "Hai concluso tutte le tappe. Rivedi le risposte e scarica il PDF come traccia del tuo aggiornamento."
+                          : `Hai compilato il ${progressPct}% dei campi (${answered}/${totalFields}) e concluso ${data.completed.length}/${stepCount} tappe. Puoi continuare da dove eri rimasto.`}
+                    </p>
+                  </div>
+                  <div className="summary-status-actions">
+                    {summaryStatus !== "complete" && (
+                      <button className="button primary" onClick={() => go("step", summaryStatus === "empty" ? 0 : nextStep)}>
+                        {summaryStatus === "empty" ? "Inizia dalla prima tappa" : `Continua: tappa ${nextStep + 1}`}
+                        <ArrowRight size={16} />
+                      </button>
+                    )}
+                    <button className="button outline" onClick={() => document.querySelector<HTMLElement>(".summary-export-pdf")?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+                      Vai all’export PDF
+                    </button>
+                  </div>
+                  <div className="summary-progress-bar" aria-hidden="true">
+                    <span style={{ width: `${progressPct}%` }} />
+                  </div>
+                </section>
+
                 <div className="summary-metrics">
                   <div>
                     <strong>
@@ -1689,6 +1739,14 @@ export default function Learning() {
 
                     <span>Domande e scelte compilate</span>
                   </div>
+                  <div>
+                    <strong>
+                      {progressPct}
+                      <small>%</small>
+                    </strong>
+
+                    <span>Campi compilati</span>
+                  </div>
                 </div>
 
                 <div className="path-phases summary-phases">
@@ -1706,11 +1764,12 @@ export default function Learning() {
                   ))}
                 </div>
 
-                <div className="concept-box">
+                <div className="concept-box summary-export-pdf">
                   <Download size={24} />
 
                   <div>
-                    <strong>Un PDF con tutta l’attività</strong>
+                    <span className="summary-cta-badge">Consigliato</span>
+                    <strong>Esporta il quaderno in PDF</strong>
 
                     <p>
                       Include le {stepCount} tappe, le domande, le tue risposte, i quiz con
@@ -1774,7 +1833,13 @@ export default function Learning() {
                   />
                 </label>
 
-                {steps.map((s, i) => (
+                {steps.map((s, i) => {
+                  const stepAnswered =
+                    s.prompts.some((_, n) => (data.answers[`${i}-p${n}`] || "").trim()) ||
+                    data.answers[`${i}-quiz`] !== undefined ||
+                    data.answers[`${i}-scenario`] !== undefined ||
+                    (data.answers[`${i}-reason`] || "").trim();
+                  return (
                   <details className="summary-step" key={s.title}>
                     <summary>
                       <span>
@@ -1786,8 +1851,10 @@ export default function Learning() {
                       <span>
                         {data.completed.includes(i) ? (
                           <CheckCircle2 size={18} />
+                        ) : stepAnswered ? (
+                          <span className="pending">In corso</span>
                         ) : (
-                          <span className="pending">Da concludere</span>
+                          <span className="pending">Non iniziata</span>
                         )}
 
                         <ChevronDown size={16} />
@@ -1795,6 +1862,14 @@ export default function Learning() {
                     </summary>
 
                     <div>
+                      {!stepAnswered && (
+                        <div className="summary-step-empty">
+                          <p>Nessuna risposta ancora per questa tappa.</p>
+                          <button className="text-button" onClick={() => go("step", i)}>
+                            Vai alla tappa <ArrowRight size={15} />
+                          </button>
+                        </div>
+                      )}
                       {s.prompts.map((p, n) => (
                         <div key={p}>
                           <h4>{p}</h4>
@@ -1832,7 +1907,8 @@ export default function Learning() {
                       </button>
                     </div>
                   </details>
-                ))}
+                  );
+                })}
 
                 <div className="activity">
                   <h2>Il mio profilo e l’autocomprensione</h2>
