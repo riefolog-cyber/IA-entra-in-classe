@@ -221,10 +221,14 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   }
 
   if (!response.ok) {
+    const message =
+      response.status === 429
+        ? "Il servizio IA ha raggiunto il limite di richieste o la quota disponibile (429). Attendi qualche minuto e riprova; se il problema persiste, verifica quota/limiti e configurazione del modello."
+        : `Errore dal servizio IA (${response.status}). Verifica configurazione/modello o riprova.`;
     return {
       ok: false as const,
       reason: "provider_error" as const,
-      message: `Errore dal servizio IA (${response.status}). Verifica configurazione/modello o riprova.`,
+      message,
     };
   }
 
