@@ -1910,7 +1910,13 @@ export default function Learning() {
                           aria-label="Dati inviati per l’analisi IA"
                         />
                       )}
-                      {aiError && <div className="ai-error">{aiError}</div>}
+                      {aiLoading && (
+                        <div className="ai-loading" role="status" aria-live="polite">
+                          <span className="ai-loading-dot" aria-hidden="true" />
+                          <span>Sto preparando la lettura del tuo percorso… può richiedere qualche secondo.</span>
+                        </div>
+                      )}
+                      {aiError && <div className="ai-error" role="alert">{aiError}</div>}
                       {aiResult?.analysis && (
                         <div className="ai-result">
                           <div className="ai-badge">
