@@ -95,6 +95,7 @@ export const steps = [
       "Valutare in modo solido significa usare criteri espliciti ed evidenze pertinenti (non solo il prodotto finale).\n\nUn indicatore automatico — ad esempio un “rilevatore” di IA — non è una prova sufficiente, né di apprendimento né di uso scorretto. Il docente deve poter spiegare e, se serve, rivedere il proprio giudizio.",
     prompts: [
       "Quale evidenza useresti per capire se uno studente ha davvero appreso, oltre al prodotto finale? (Es. spiegazione orale, bozza, revisione, applicazione in classe.)",
+      "Quale parte del tuo giudizio non lasceresti mai a un suggerimento automatico?",
     ],
     question:
       "Un rilevatore segnala che un elaborato sarebbe stato generato dall’IA. Qual è l’interpretazione più prudente?",
@@ -211,6 +212,7 @@ export const steps = [
       "La comunicazione con studenti e famiglie è utile quando è chiara e pertinente al compito. Aiuta indicare: obiettivo didattico, uso consentito/non consentito, tutele (ad esempio sui dati) e a chi rivolgersi per chiarimenti.\n\nTrasparenza non vuol dire entrare in dettagli tecnici o condividere informazioni sensibili.",
     prompts: [
       "Se dovessi spiegare a una famiglia l’uso dell’IA in un compito, quale frase useresti per chiarire obiettivo, limite e alternativa? (Prova a scriverla in 2-3 righe.)",
+      "Quale obiezione prevedi di ricevere, e come risponderesti?",
     ],
     question: "Quale comunicazione è più utile per famiglie e studenti?",
     options: [
@@ -249,6 +251,7 @@ export const steps = [
       "Idea chiave: per adattare una proposta non servono dati identificativi degli studenti.\n\nLa minimizzazione dei dati è il criterio: si usa solo ciò che serve alla finalità didattica.\n\nIn pratica, prima di agire:\n- descrivi obiettivi e barriere in modo generico (es. “fatica a leggere testi lunghi”, “serve consegna segmentata”);\n- usa esempi inventati, non documenti reali;\n- verifica con l’istituto finalità, dati, condizioni d’uso e responsabilità.\n\nRicorda: togliere il nome non basta sempre, perché diagnosi e dettagli di contesto possono rendere riconoscibile una persona.",
     prompts: [
       "Quale dato di uno studente non inseriresti mai in uno strumento esterno, e perché? (Es. diagnosi, documenti, dettagli personali o familiari.)",
+      "Quale barriera descriveresti senza nominare lo studente?",
     ],
     question:
       "Vuoi adattare un’attività con un chatbot esterno. Qual è il punto di partenza più prudente?",
@@ -387,6 +390,20 @@ export const steps = [
       "Aspettare condizioni ideali può proteggere da errori, ma anche bloccare il confronto. Quale passo minimo e prudente permetterebbe di iniziare a decidere?",
     ],
   },
+];
+
+/** Riferimenti utili per ogni tappa: indici dell'elenco `references`. */
+export const stepSources: number[][] = [
+  [0, 1],
+  [0, 2],
+  [1, 0],
+  [0, 1],
+  [0, 3],
+  [0, 1],
+  [0, 1],
+  [1, 3],
+  [1, 0],
+  [0, 2],
 ];
 
 export const references = [

@@ -67,7 +67,9 @@ function countOccurrences(text: string, word: string) {
 }
 
 export function buildTeacherProfile(data: SavedState): TeacherProfile {
-  const promptTexts = steps.map((_, i) => (data.answers[`${i}-p0`] || "").trim());
+  const promptTexts = steps.flatMap((step, i) =>
+    step.prompts.map((_, n) => (data.answers[`${i}-p${n}`] || "").trim()),
+  );
   const reasonTexts = steps.map((_, i) => (data.answers[`${i}-reason`] || "").trim());
   const quizAnswers = steps.map((_, i) => data.answers[`${i}-quiz`]);
   const allText = normalize([...promptTexts, ...reasonTexts].join(" "));
@@ -205,7 +207,7 @@ export function buildTeacherProfile(data: SavedState): TeacherProfile {
   }
   if (!presentKeys.has("dati")) {
     questions.push(
-      "Quali dati o dettagli degli alunni non inseriresti in uno strumento esterno, e perché?",
+      "Quali dati o dettagli degli studenti non inseriresti in uno strumento esterno, e perché?",
     );
   }
   if (!presentKeys.has("valutazione")) {

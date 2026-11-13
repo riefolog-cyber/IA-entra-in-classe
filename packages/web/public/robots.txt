@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://riefolog-cyber.github.io/IA-entra-in-classe/sitemap.xml
+Sitemap: https://ia-entra-in-classe.onrender.com/sitemap.xml

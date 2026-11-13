@@ -1,4 +1,7 @@
-const CACHE = "restare-umani-v5";
+// Il segnaposto viene sostituito in build da vite.config.ts (plugin sw-version):
+// ogni deploy invalida la cache senza dover ricordare di cambiare un numero a mano.
+const BUILD_ID = "__BUILD_ID__";
+const CACHE = `restare-umani-${BUILD_ID.startsWith("__") ? "dev" : BUILD_ID}`;
 const PRECACHE = ["./", "./manifest.json"];
 
 self.addEventListener("install", (event) => {

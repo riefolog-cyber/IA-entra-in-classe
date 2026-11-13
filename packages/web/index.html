@@ -9,19 +9,18 @@
     />
     <meta name="theme-color" content="#284c3e" />
     <link rel="manifest" href="./manifest.json" />
+    <link rel="canonical" href="https://ia-entra-in-classe.onrender.com/" />
     <link rel="icon" href="./favicon.ico" />
     <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <title>Restare umani · IA a scuola, aggiornamento docenti</title>
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ia-entra-in-classe.onrender.com/" />
     <meta property="og:title" content="Restare umani · IA a scuola, aggiornamento docenti" />
     <meta
       property="og:description"
       content="Un percorso di aggiornamento per docenti sull'IA a scuola: progettazione, verifica, valutazione, inclusione, dati, regole d'uso e sperimentazione."
     />
-    <meta
-      property="og:image"
-      content="https://riefolog-cyber.github.io/IA-entra-in-classe/og-image.png"
-    />
+    <meta property="og:image" content="https://ia-entra-in-classe.onrender.com/og-image.png" />
     <meta property="og:locale" content="it_IT" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Restare umani · IA a scuola, aggiornamento docenti" />
@@ -29,12 +28,22 @@
       name="twitter:description"
       content="Un percorso di aggiornamento per docenti sull'IA a scuola."
     />
-    <meta
-      name="twitter:image"
-      content="https://riefolog-cyber.github.io/IA-entra-in-classe/og-image.png"
-    />
+    <meta name="twitter:image" content="https://ia-entra-in-classe.onrender.com/og-image.png" />
   </head>
   <body class="dark">
+    <script>
+      // Tema scelto dall'utente prima del primo paint, senza sfarfallio.
+      (function () {
+        try {
+          var light = localStorage.getItem("restare-umani-theme") === "light";
+          document.documentElement.classList.toggle("light", light);
+          document.documentElement.classList.toggle("dark", !light);
+          document.body.classList.toggle("light", light);
+          document.body.classList.toggle("dark", !light);
+          document.documentElement.style.colorScheme = light ? "light" : "dark";
+        } catch (error) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/web/main.tsx"></script>
     <script>

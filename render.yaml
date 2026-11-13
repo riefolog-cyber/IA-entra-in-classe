@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ia-entra-in-classe
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: bun install && bun run build:web
+    startCommand: bun packages/web/src/__server.ts
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: BUN_VERSION
+        value: "1.3.14"
+      - key: NODE_ENV
+        value: production
+      # Analisi IA: valori da impostare nel dashboard Render (sync: false = segreto)
+      - key: AI_GATEWAY_BASE_URL
+        sync: false
+      - key: AI_GATEWAY_API_KEY
+        sync: false
+      - key: AI_PROFILE_MODEL
+        value: openai/gpt-4.1-mini
+      - key: AI_ANALYSIS_RATE_LIMIT
+        value: "20"
+      - key: AI_ANALYSIS_RATE_LIMIT_GLOBAL
+        value: "120"

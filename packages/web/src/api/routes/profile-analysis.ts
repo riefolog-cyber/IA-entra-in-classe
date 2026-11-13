@@ -160,6 +160,17 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     };
   }
 
+  // Un quaderno quasi vuoto non produce una lettura utile: meglio dirlo subito,
+  // senza occupare quota del provider.
+  if (input.summary.trim().length < 40) {
+    return {
+      ok: false as const,
+      reason: "empty_summary" as const,
+      message:
+        "Il quaderno è ancora troppo vuoto per un’analisi utile. Compila almeno una tappa e riprova.",
+    };
+  }
+
   // Il limite entra in gioco solo quando la richiesta può davvero raggiungere
   // il provider: una configurazione mancante non consuma quota.
   const perClientLimit = readLimit("AI_ANALYSIS_RATE_LIMIT", DEFAULT_PER_CLIENT);
@@ -183,6 +194,8 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   const body = JSON.stringify({
     model,
     temperature: 0.3,
+    // Un tetto esplicito evita risposte lunghe (e costose) fuori formato.
+    max_tokens: 900,
     messages: [
       { role: "system", content: "Rispondi solo con JSON valido." },
       { role: "user", content: buildPrompt(input.summary) },

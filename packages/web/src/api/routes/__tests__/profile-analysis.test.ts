@@ -12,7 +12,9 @@ function setEnv(values: Record<string, string | undefined>) {
   }
 }
 
-function makeRequest(summary = "prova") {
+function makeRequest(
+  summary = "Tappa 1: riflessione professionale sull’uso dell’IA nella progettazione didattica.",
+) {
   return new Request("http://localhost/api/rpc/analyzeProfile", {
     method: "POST",
     headers: { "content-type": "application/json" },
