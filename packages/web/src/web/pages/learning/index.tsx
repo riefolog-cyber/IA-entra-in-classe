@@ -9,9 +9,7 @@ import {
   Feather,
   LayoutGrid,
   Menu,
-  Moon,
   ShieldCheck,
-  Sun,
   Trash2,
   X,
 } from "lucide-react";
@@ -43,13 +41,6 @@ export default function Learning() {
   const view = route.view;
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    try {
-      return localStorage.getItem("restare-umani-theme") === "light" ? "light" : "dark";
-    } catch {
-      return "dark";
-    }
-  });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [search, setSearch] = useState("");
@@ -88,18 +79,14 @@ export default function Learning() {
         : "progress";
 
   useEffect(() => {
-    const light = theme === "light";
-    document.documentElement.classList.toggle("light", light);
-    document.documentElement.classList.toggle("dark", !light);
-    document.body.classList.toggle("light", light);
-    document.body.classList.toggle("dark", !light);
-    document.documentElement.style.colorScheme = theme;
-    try {
-      localStorage.setItem("restare-umani-theme", theme);
-    } catch {
-      // Preferenza non memorizzabile: il tema resta valido per la sessione.
-    }
-  }, [theme]);
+    // Il percorso è pubblicato solo in tema scuro: la scelta è dichiarata nel
+    // markup (classi `dark` su html/body), così non viene riscritta nel browser.
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+    document.body.classList.remove("light");
+    document.body.classList.add("dark");
+    document.documentElement.style.colorScheme = "dark";
+  }, []);
 
   const go: Go = (nextView, target) => {
     const stepTarget =
@@ -295,15 +282,6 @@ export default function Learning() {
             </div>
 
             <div className="topbar-right">
-              <button
-                className="icon-button theme-toggle"
-                type="button"
-                onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
-                aria-label={theme === "dark" ? "Passa al tema chiaro" : "Passa al tema scuro"}
-                title={theme === "dark" ? "Tema chiaro" : "Tema scuro"}
-              >
-                {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
               <div className={`save-status ${saveMode === "memory" ? "error" : ""}`}>
                 <span />
                 {saveMode === "memory"

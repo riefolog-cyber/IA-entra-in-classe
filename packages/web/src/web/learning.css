@@ -9565,3 +9565,135 @@ body.dark,
 .home-value .section-heading .section-heading-copy {
   display: block;
 }
+
+/* ============================================================
+   P7 · Leggibilità del testo
+   Nessun testo funzionale sotto gli 11px, corpo più alto di un
+   gradino, interlinea più ariosa. I secondari restano
+   distinguibili dai titoli senza spegnersi sul fondo scuro.
+   ============================================================ */
+
+/* Corpo del testo: un gradino in più e interlinea da lettura lunga. */
+body {
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+/* Etichette, metadati e note: pavimento a 11px, mai sotto.
+   Il prefisso `body.dark` serve a superare le regole più specifiche
+   delle passate precedenti (es. `.topbar-right .save-status`). */
+body.dark .footer button,
+body.dark .footer > span > span,
+body.dark .card-current-badge,
+body.dark .quote-band > div > span,
+body.dark .home-bottom small,
+body.dark .home-bottom > div > span,
+body.dark .hero-meta,
+body.dark .reset-link,
+body.dark .perspective-card > span,
+body.dark .profile-kicker,
+body.dark .text-field small,
+body.dark .step-emblem-number,
+body.dark .home-credit-label,
+body.dark .card-category,
+body.dark .sidebar-label,
+body.dark .card-time,
+body.dark .pending,
+body.dark .save-status,
+body.dark .card-number,
+body.dark .step-dot,
+body.dark .local-note p,
+body.dark .local-note strong,
+body.dark .sidebar-progress-info span,
+body.dark .sidebar-progress-info small,
+body.dark .sidebar-progress-info strong,
+body.dark .progress-copy > span,
+body.dark .progress-text span,
+body.dark .progress-detail small {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+body.dark .eyebrow,
+body.dark .page-eyebrow,
+body.dark .activity-label,
+body.dark .glossary-refs,
+body.dark .highlight-badge,
+body.dark .keyword-label,
+body.dark .home-meta,
+body.dark .how-list span {
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+/* Testi di lettura nelle schede e nelle sezioni: più grandi, non più stretti. */
+body.dark .how-list p,
+body.dark .faq-item p,
+body.dark .home-audience p {
+  font-size: 15px;
+}
+body.dark .step-sources p {
+  font-size: 14px;
+}
+body.dark .step-sources span {
+  font-size: 13.5px;
+}
+body.dark .plain-list li {
+  font-size: 15.5px;
+}
+
+/* A capo più equilibrati: nessuna parola orfana nei titoli. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p,
+li {
+  text-wrap: pretty;
+}
+
+/* Tema scuro: il testo secondario resta secondario, ma non spento. */
+body.dark p,
+body.dark li,
+body.dark label,
+body.dark .path-card p,
+body.dark .highlight-card p,
+body.dark .perspective-card p,
+body.dark .perspective-body p,
+body.dark .glossary details p,
+body.dark .reference-item p,
+body.dark .step-head-visual p {
+  color: #dbe7df;
+}
+body.dark .muted,
+body.dark small,
+body.dark .card-time,
+body.dark .section-heading > div > span {
+  color: #c5d3c9;
+}
+body.dark .step-sources p,
+body.dark .step-sources span,
+body.dark .how-list p,
+body.dark .faq-item p,
+body.dark .home-audience p,
+body.dark .plain-list li,
+body.dark .glossary details p,
+body.dark .reference-item p {
+  color: #cfdccd;
+}
+body.dark .page-meta,
+body.dark .home-meta,
+body.dark .keyword-label,
+body.dark .footer-meta {
+  color: #b6c8b4;
+}
+body.dark .footer button,
+body.dark .footer > span > span {
+  color: #b6c8b4;
+}
+
+/* Il badge verde della sintesi: testo inchiostro, non bianco sul verde chiaro. */
+body.dark .summary-cta-badge {
+  color: #102017;
+}

@@ -6,7 +6,7 @@ Percorso di aggiornamento professionale in italiano per **docenti della scuola s
 
 Palette: carta `#f7f6f0`, inchiostro `#203b32`, verde `#284c3e`, salvia `#e4e9dd`, terracotta `#c07d5b`. Georgia per titoli, Poppins per corpo e controlli.
 
-**Tema:** il sito è pubblicato in tema scuro (classi `dark` su `html`/`body` nell’`index.html`). Non c’è più un effetto che impone il tema a ogni avvio: la scelta è dichiarata nel markup, così non viene scritta silenziosamente nel browser. La palette chiara resta nei token di base; un eventuale tema chiaro richiederebbe un interruttore e una revisione del contrasto.
+**Tema:** il sito è pubblicato solo in tema scuro (classi `dark` su `html` e `body`). Non c'è un interruttore: la scelta è dichiarata nel markup e non viene scritta nel browser. La palette chiara resta nei token di base (`--paper`, `--ink`): un eventuale tema chiaro richiederebbe un interruttore nuovo e una revisione del contrasto, non solo l'attivazione di una classe.
 
 Sidebar desktop, navigazione compatta mobile, hero asimmetrico con specchio geometrico CSS. Spazi 8/16/24/32/48/64 px, bordi sottili, ombre minime, icone Lucide.
 
@@ -43,6 +43,7 @@ Le tappe coprono: progettazione, verifica dei materiali, valutazione, processo v
 ## Accessibilità
 
 - Focus visibile, contrasto, etichette, `aria-live` sui feedback, movimento ridotto, layout responsive, skip link.
+- Leggibilità: nessun testo funzionale sotto gli 11px, corpo 17px con interlinea 1.7, secondari abbastanza chiari da restare leggibili sul fondo scuro, titoli e paragrafi con a capo bilanciati (`text-wrap`).
 - Le card delle tappe sono un link reale con un pulsante separato per segnare la conclusione: nessun controllo interattivo annidato.
 - Quiz e scenari usano radio native dentro un `fieldset`: semantica di gruppo, navigazione con frecce, stato letto correttamente.
 - La conferma di cancellazione è un `<dialog>` aperto con `showModal()`: focus trap, `Escape` e sfondo inerte gestiti dal browser.

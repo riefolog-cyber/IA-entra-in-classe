@@ -31,19 +31,6 @@
     <meta name="twitter:image" content="https://ia-entra-in-classe.onrender.com/og-image.png" />
   </head>
   <body class="dark">
-    <script>
-      // Tema scelto dall'utente prima del primo paint, senza sfarfallio.
-      (function () {
-        try {
-          var light = localStorage.getItem("restare-umani-theme") === "light";
-          document.documentElement.classList.toggle("light", light);
-          document.documentElement.classList.toggle("dark", !light);
-          document.body.classList.toggle("light", light);
-          document.body.classList.toggle("dark", !light);
-          document.documentElement.style.colorScheme = light ? "light" : "dark";
-        } catch (error) {}
-      })();
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/web/main.tsx"></script>
     <script>
