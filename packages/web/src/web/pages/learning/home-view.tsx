@@ -404,7 +404,6 @@ export function HomeView(props: HomeProps) {
             <span>Responsabilità, relazione, discernimento</span>
           </div>
         </section>
-
       </>
     </>
   );
