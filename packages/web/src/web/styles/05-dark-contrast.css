@@ -1,0 +1,661 @@
+/* === Theme toggle + dark mode === */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid #d2dcc8;
+  background: rgba(255, 255, 255, 0.7);
+  color: #284c3e;
+  box-shadow: 0 4px 10px rgba(32, 59, 50, 0.08);
+}
+.theme-toggle:hover {
+  background: #e9f0e2;
+}
+body.dark,
+.dark body {
+  background:
+    radial-gradient(circle at top right, #1a2a24 0%, rgba(26, 42, 36, 0) 30%),
+    radial-gradient(circle at top left, #18231f 0%, rgba(24, 35, 31, 0) 24%), #121917;
+  color: #e7efe8;
+}
+body.dark .sidebar,
+.dark .sidebar {
+  background: linear-gradient(180deg, #16211d 0%, #131c19 100%);
+  border-right-color: #263630;
+  box-shadow: inset -1px 0 0 #263630;
+}
+body.dark .main-shell,
+.dark .main-shell {
+  background: transparent;
+}
+body.dark .topbar,
+.dark .topbar {
+  background: rgba(18, 25, 23, 0.88);
+  border-bottom-color: #263630;
+}
+body.dark .brand,
+body.dark .brand > span:last-child,
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark strong,
+body.dark .hero h1,
+body.dark .section-heading-copy h2,
+body.dark .highlight-card h3,
+body.dark .path-card h3,
+body.dark .path-phase-head h3,
+body.dark .path-phase-title h3,
+.dark .brand,
+.dark .brand > span:last-child,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark strong {
+  color: #f1f6f2;
+}
+body.dark p,
+body.dark span,
+body.dark .hero p,
+body.dark .section-heading-copy p,
+body.dark .progress-copy > span,
+body.dark .progress-detail > div:first-child,
+body.dark .path-card p,
+body.dark .highlight-card p,
+body.dark .breadcrumb,
+body.dark .save-status,
+body.dark .card-category,
+body.dark .page-lead,
+.dark p,
+.dark span {
+  color: #b8c7bc;
+}
+body.dark .nav-item,
+body.dark .step-nav button,
+body.dark .sidebar-label,
+.dark .nav-item,
+.dark .step-nav button {
+  color: #c7d4cc;
+}
+body.dark .nav-item.active,
+body.dark .step-nav button.selected,
+.dark .nav-item.active {
+  background: #22332c;
+  color: #f1f6f2;
+  box-shadow: inset 3px 0 0 #8eb18c;
+}
+body.dark .nav-item:hover,
+body.dark .step-nav button:hover,
+.dark .nav-item:hover {
+  background: #1d2b25;
+}
+body.dark .hero-visual,
+body.dark .progress-panel,
+body.dark .highlight-section,
+body.dark .path-phase,
+body.dark .section-heading-with-image,
+body.dark .quote-band,
+body.dark .home-bottom,
+body.dark .notice,
+body.dark .concept-box,
+body.dark .prompt-box,
+body.dark .activity,
+body.dark .perspective-card,
+body.dark details,
+body.dark .summary-card,
+body.dark .resource-card,
+body.dark .path-card,
+body.dark .highlight-card,
+.dark .hero-visual,
+.dark .progress-panel,
+.dark .highlight-section,
+.dark .path-phase,
+.dark .section-heading-with-image,
+.dark .path-card,
+.dark .highlight-card,
+.dark .quote-band,
+.dark .home-bottom,
+.dark .notice,
+.dark .perspective-card,
+.dark details {
+  background: #18221e;
+  border-color: #2b3d35;
+  box-shadow: none;
+}
+body.dark .highlight-section,
+.dark .highlight-section {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(142, 177, 140, 0.16), rgba(142, 177, 140, 0) 35%),
+    linear-gradient(135deg, #18231f 0%, #1b2923 100%);
+}
+body.dark .path-phase-head,
+.dark .path-phase-head {
+  background: #1e2d27;
+  border-color: #30453b;
+}
+body.dark .path-phase-head span,
+.dark .path-phase-head span {
+  background: #14201c;
+  color: #dce8df;
+  border-color: #355045;
+}
+body.dark .phase-thumb,
+body.dark .section-hero-image,
+body.dark .step-visual,
+body.dark .highlight-media,
+.dark .phase-thumb,
+.dark .section-hero-image {
+  background: #22312b;
+  border-color: #31463d;
+}
+body.dark .button.primary,
+.dark .button.primary {
+  background: linear-gradient(135deg, #6f9160, #4f7257);
+  color: #0f1714;
+}
+body.dark .button.primary:hover,
+.dark .button.primary:hover {
+  background: linear-gradient(135deg, #84a874, #5d8466);
+}
+body.dark .text-button,
+body.dark .card-bottom span,
+body.dark .highlight-cta,
+.dark .text-button,
+.dark .highlight-cta {
+  color: #b9d7b2;
+}
+body.dark .highlight-badge,
+.dark .highlight-badge {
+  background: #294136;
+  color: #dff0d8;
+}
+body.dark .theme-toggle,
+.dark .theme-toggle {
+  background: #1c2924;
+  border-color: #31463d;
+  color: #e7efe8;
+}
+body.dark .theme-toggle:hover,
+.dark .theme-toggle:hover {
+  background: #24352e;
+}
+body.dark .progress-bar,
+body.dark .progress-track,
+body.dark .sidebar-progress-bar,
+.dark .progress-bar,
+.dark .progress-track {
+  background: #2a3a33;
+}
+body.dark .progress-bar::-webkit-progress-bar,
+body.dark .sidebar-progress-bar::-webkit-progress-bar {
+  background: #2a3a33;
+}
+body.dark .progress-bar::-webkit-progress-value,
+body.dark .sidebar-progress-bar::-webkit-progress-value,
+body.dark .progress-bar::-moz-progress-bar,
+body.dark .sidebar-progress-bar::-moz-progress-bar,
+.dark .progress-bar::-webkit-progress-value {
+  background: linear-gradient(90deg, #8eb18c, #6f9160);
+}
+body.dark .step-dot,
+.dark .step-dot {
+  border-color: #395046;
+  color: #d7e3da;
+  background: #18221e;
+}
+body.dark .step-dot.done,
+.dark .step-dot.done {
+  background: #8eb18c;
+  color: #122019;
+  border-color: #8eb18c;
+}
+body.dark .card-number,
+.dark .card-number {
+  color: #a9c3a2;
+}
+body.dark .card-complete-toggle,
+.dark .card-complete-toggle {
+  background: #1a2722;
+  border-color: #355045;
+  color: #d7e3da;
+}
+body.dark .card-complete-toggle[aria-pressed="true"],
+.dark .card-complete-toggle[aria-pressed="true"] {
+  background: #8eb18c;
+  border-color: #8eb18c;
+  color: #122019;
+}
+body.dark .path-card.current-card,
+.dark .path-card.current-card {
+  background: #1d2b25;
+  border-color: #6f9160;
+  box-shadow: inset 0 0 0 1px #6f9160;
+}
+body.dark .path-card.done-card,
+.dark .path-card.done-card {
+  background: #1a2923;
+  border-color: #5f7f56;
+}
+body.dark .home-credit-banner,
+.dark .home-credit-banner {
+  background: #1d2b25;
+  border-color: #31463d;
+  color: #e7efe8;
+}
+body.dark .home-credit-banner small,
+.dark .home-credit-banner small {
+  color: #b8c7bc;
+}
+body.dark input,
+body.dark textarea,
+body.dark .search input,
+.dark input,
+.dark textarea {
+  background: #141d1a;
+  color: #e7efe8;
+  border-color: #31463d;
+}
+body.dark .search,
+.dark .search {
+  background: #141d1a;
+  border-color: #31463d;
+  color: #b8c7bc;
+}
+body.dark .glossary details summary,
+body.dark .glossary details p,
+.dark .glossary details summary,
+.dark .glossary details p {
+  color: #dce8df;
+}
+body.dark .alert,
+.dark .alert {
+  background: #2a2418;
+  border-color: #5a4930;
+  color: #f3e4bf;
+}
+body.dark .eyebrow,
+.dark .eyebrow {
+  color: #b9d7b2;
+}
+body.dark .eyebrow > span,
+.dark .eyebrow > span {
+  background: #d1a06b;
+}
+body.dark .section-heading-copy h2,
+body.dark .section-heading-copy p,
+body.dark .path-phase-title h3,
+.dark .section-heading-copy h2,
+.dark .path-phase-title h3 {
+  color: #f3f8f4 !important;
+  opacity: 1 !important;
+}
+body.dark .path-phase-title,
+.dark .path-phase-title {
+  color: #f3f8f4;
+}
+body.dark a,
+.dark a {
+  color: #b9d7b2;
+}
+body.dark .mobile-menu,
+body.dark .close-mobile,
+body.dark .icon-button,
+.dark .icon-button {
+  color: #dce8df;
+}
+@media (max-width: 720px) {
+  .topbar-actions {
+    gap: 8px;
+  }
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* === Contrast fixes (light & dark) === */
+body:not(.dark) {
+  color: #193229;
+}
+body:not(.dark) .path-phase-title h3,
+body:not(.dark) .path-phase-head h3,
+body:not(.dark) .section-heading-copy h2,
+body:not(.dark) .section-heading-copy p,
+body:not(.dark) .path-card h3,
+body:not(.dark) .highlight-card h3,
+body:not(.dark) .progress-copy strong,
+body:not(.dark) .hero h1 {
+  color: #173127;
+}
+body:not(.dark) .path-card p,
+body:not(.dark) .highlight-card p,
+body:not(.dark) .hero p,
+body:not(.dark) .progress-copy > span,
+body:not(.dark) .progress-detail > div:first-child,
+body:not(.dark) .progress-detail small,
+body:not(.dark) .card-category,
+body:not(.dark) .card-bottom span,
+body:not(.dark) .section-heading-copy p,
+body:not(.dark) .breadcrumb,
+body:not(.dark) .save-status,
+body:not(.dark) .page-lead {
+  color: #33473d;
+}
+body:not(.dark) .path-phase-head span {
+  color: #173127;
+}
+body:not(.dark) .nav-item,
+body:not(.dark) .step-nav button {
+  color: #244235;
+}
+body:not(.dark) .step-nav button {
+  color: #355543;
+}
+body:not(.dark) .eyebrow {
+  color: #355543;
+}
+
+/* Dark mode: ensure readable defaults on all surfaces */
+body.dark main,
+body.dark .reading-page,
+body.dark .step-reading,
+body.dark .summary-page,
+body.dark .resources-page,
+.dark main,
+.dark .reading-page {
+  color: #e7efe8;
+}
+body.dark .reading-page,
+body.dark .step-reading,
+body.dark .summary-page,
+body.dark .resources-page,
+body.dark .glossary,
+body.dark .references-section,
+body.dark .two-perspectives,
+.dark .reading-page,
+.dark .step-reading,
+.dark .summary-page {
+  background: transparent;
+}
+body.dark .card,
+body.dark .step-card,
+body.dark .resource-item,
+body.dark .reference-item,
+body.dark .feedback-card,
+body.dark .ai-card,
+body.dark .question-block,
+body.dark .scenario-box,
+body.dark .result-box,
+body.dark .intro-box,
+body.dark .step-box,
+body.dark .mobile-step-cta,
+.dark .card,
+.dark .question-block {
+  background: #18221e;
+  border-color: #2b3d35;
+  color: #e7efe8;
+}
+body.dark p,
+body.dark li,
+body.dark label,
+body.dark .path-card p,
+body.dark .highlight-card p,
+body.dark .perspective-card p,
+body.dark .perspective-body p,
+body.dark .glossary details p,
+body.dark .reference-item p,
+body.dark .step-head-visual p,
+.dark p,
+.dark li,
+.dark label {
+  color: #c7d5cb;
+}
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark .path-card h3,
+body.dark .highlight-card h3,
+body.dark .path-phase-title h3,
+body.dark .section-heading-copy h2,
+body.dark summary,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark summary {
+  color: #f4f8f5;
+}
+body.dark .muted,
+body.dark small,
+body.dark .card-time,
+body.dark .section-heading > div > span,
+.dark small,
+.dark .card-time {
+  color: #afc0b5;
+}
+/* Avoid overly-broad span dimming breaking nested elements */
+body.dark span {
+  color: inherit;
+}
+body.dark .highlight-badge span,
+body.dark .card-current-badge {
+  color: inherit;
+}
+body.dark .icon-button,
+body.dark button.icon-button {
+  color: #dce8df;
+}
+body.dark .nav-item span,
+body.dark .step-nav button span {
+  color: inherit;
+}
+body.dark .progress-panel .progress-copy > span,
+body.dark .progress-panel .progress-detail > div:first-child,
+body.dark .path-card p,
+body.dark .highlight-card p {
+  color: #c7d5cb;
+}
+body.dark .path-card .card-category,
+body.dark .path-card .card-bottom span {
+  color: #d3e0d6;
+}
+body.dark .path-phase-head span {
+  color: #e7efe8;
+  background: #14201c;
+}
+
+/* === Deep contrast/debug pass === */
+body:not(.dark) .crumb-slash {
+  color: #6f7a65;
+}
+body:not(.dark) .local-note p,
+body:not(.dark) .sidebar-label,
+body:not(.dark) .step-nav button,
+body:not(.dark) .reset-link,
+body:not(.dark) .sidebar-progress-info span,
+body:not(.dark) .sidebar-progress-info small,
+body:not(.dark) .progress-text span,
+body:not(.dark) .card-time,
+body:not(.dark) .home-bottom > div,
+body:not(.dark) .home-bottom small,
+body:not(.dark) .footer,
+body:not(.dark) .footer > span > span,
+body:not(.dark) .footer button,
+body:not(.dark) .quote-band > div,
+body:not(.dark) .quote-band > div > span,
+body:not(.dark) .art-caption,
+body:not(.dark) .profile-footnote,
+body:not(.dark) .text-field small,
+body:not(.dark) .step-pills button:not(.active),
+body:not(.dark) .perspective-toggle,
+body:not(.dark) .glossary-refs,
+body:not(.dark) .glossary-refline,
+body:not(.dark) .references-section p,
+body:not(.dark) .search,
+body:not(.dark) .search input::placeholder {
+  color: #415246 !important;
+}
+body:not(.dark) .text-field textarea::placeholder,
+body:not(.dark) .text-field input::placeholder {
+  color: #6a7865 !important;
+}
+body:not(.dark) .activity > p,
+body:not(.dark) .perspectives p,
+body:not(.dark) .feedback p,
+body:not(.dark) .page-lead,
+body:not(.dark) .intro-text,
+body:not(.dark) .concept-box p,
+body:not(.dark) .profile-header p,
+body:not(.dark) .profile-panel li,
+body:not(.dark) .scenario-story,
+body:not(.dark) details summary,
+body:not(.dark) details p,
+body:not(.dark) .glossary summary,
+body:not(.dark) .glossary p,
+body:not(.dark) .option,
+body:not(.dark) .option span,
+body:not(.dark) .completion-box p,
+body:not(.dark) .completion-box span {
+  color: #2f4338 !important;
+}
+body:not(.dark) .step-pills button.active,
+body:not(.dark) .button.primary,
+body:not(.dark) .card-current-badge {
+  color: #fff !important;
+}
+body:not(.dark) .step-pills button:not(.active) {
+  background: #e3eadc;
+  color: #2f4a3d !important;
+}
+body:not(.dark) .text-field textarea,
+body:not(.dark) .text-field input,
+body:not(.dark) .option {
+  background: #fffefb;
+  color: #203b32;
+}
+body:not(.dark) .perspective-card,
+body:not(.dark) .perspectives,
+body:not(.dark) details {
+  color: #203b32;
+}
+body:not(.dark) .path-phase-head h3,
+body:not(.dark) .path-phase-title h3 {
+  color: #173127 !important;
+  opacity: 1 !important;
+}
+
+/* Dark mode: fix remaining low-contrast cases */
+body.dark .crumb-slash,
+body.dark .local-note p,
+body.dark .sidebar-progress-info span,
+body.dark .sidebar-progress-info small,
+body.dark .progress-text span,
+body.dark .art-caption,
+body.dark .footer,
+body.dark .footer button,
+body.dark .home-bottom small,
+body.dark .quote-band > div,
+body.dark .profile-footnote,
+body.dark .text-field small,
+body.dark .glossary-refs,
+body.dark .glossary-refline,
+body.dark .perspective-toggle,
+body.dark .search,
+body.dark .search input::placeholder {
+  color: #c3d2c8 !important;
+}
+body.dark .step-nav button,
+body.dark .sidebar-label,
+body.dark .reset-link {
+  color: #d4e0d7 !important;
+}
+body.dark .step-pills button:not(.active) {
+  background: #22332c;
+  color: #e7efe8 !important;
+}
+body.dark .step-pills button.active {
+  background: #8eb18c;
+  color: #122019 !important;
+}
+body.dark .option,
+body.dark .perspectives,
+body.dark .perspective-card,
+body.dark .text-field textarea,
+body.dark .text-field input,
+body.dark .scenario-story,
+body.dark .feedback,
+body.dark .completion-box,
+body.dark details {
+  background: #18221e !important;
+  color: #e7efe8 !important;
+  border-color: #2b3d35 !important;
+}
+body.dark .option span,
+body.dark .perspectives p,
+body.dark .feedback p,
+body.dark .completion-box p,
+body.dark .scenario-story,
+body.dark .text-field textarea,
+body.dark .text-field input,
+body.dark .text-field textarea::placeholder,
+body.dark .text-field input::placeholder {
+  color: #dce8df !important;
+}
+body.dark .text-field textarea::placeholder,
+body.dark .text-field input::placeholder {
+  color: #9fb2a6 !important;
+}
+body.dark .option:hover {
+  border-color: #6f9160 !important;
+  background: #1d2b25 !important;
+}
+body.dark .option.chosen {
+  background: #22382d !important;
+  border-color: #8eb18c !important;
+}
+body.dark .radio-dot {
+  border-color: #7fa27a !important;
+}
+body.dark .chosen .radio-dot {
+  border-color: #8eb18c !important;
+  background: #122019 !important;
+}
+body.dark .feedback {
+  background: #1d2b25 !important;
+  border-left-color: #8eb18c !important;
+}
+body.dark .perspectives > div {
+  border-top-color: #2b3d35 !important;
+}
+body.dark .brand-icon {
+  border-color: #7fa27a !important;
+  color: #e7efe8 !important;
+}
+body.dark .save-status > span {
+  background: #8eb18c !important;
+}
+body.dark .save-status.error {
+  color: #ffb38f !important;
+}
+body.dark .save-status.error > span {
+  background: #ff8f66 !important;
+}
+body.dark .path-card .card-number {
+  color: #b9d7b2 !important;
+}
+body.dark .mobile-menu.icon-button,
+body.dark .close-mobile.icon-button {
+  color: #e7efe8 !important;
+}

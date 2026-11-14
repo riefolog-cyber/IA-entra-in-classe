@@ -111,7 +111,9 @@ export function PrivacyView({ go }: { go: Go }) {
           <summary>Dove finiscono le mie risposte?</summary>
           <p>
             Nel browser che stai usando, su questo dispositivo. Il sito non le invia a un server. Se
-            cancelli i dati del browser, spariscono: esporta prima il PDF o il JSON.
+            cancelli i dati del browser, spariscono: esporta prima il PDF o il JSON. Prima di
+            un’importazione il quaderno viene copiato fino a tre volte nello stesso spazio locale:
+            anche quelle copie si rimuovono con «Cancella i miei dati».
           </p>
         </details>
 

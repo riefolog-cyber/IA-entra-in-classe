@@ -2,7 +2,15 @@ import { steps, type SavedState } from "./teacher-content";
 
 export const KEY = "restare-umani-docenti-v2";
 export const PREVIOUS_KEY = "restare-umani-v1";
+export const BACKUP_KEY = "restare-umani-copie-v1";
+export const MAX_BACKUPS = 3;
 export const stepCount = steps.length;
+
+/** Tetto per una singola risposta: un incolla enorme non deve pesare su storage, PDF e sintesi IA. */
+export const MAX_ANSWER_LENGTH = 4000;
+
+/** Il nome compare solo nel PDF: uno spazio breve è sufficiente. */
+export const MAX_NAME_LENGTH = 80;
 
 /** Campi totali del quaderno: 1 riflessione + quiz + scenario + motivazione per tappa. */
 export const totalFields = steps.reduce((n, s) => n + s.prompts.length + 3, 0);
@@ -46,19 +54,26 @@ export function parseState(raw: string | null): SavedState {
     if (!parsed || typeof parsed !== "object") return freshState();
 
     const answers = Object.fromEntries(
-      Object.entries(parsed.answers || {}).filter(
-        ([k, v]) => typeof v === "string" && isAnswerKey(k),
-      ),
-    );
+      Object.entries(parsed.answers || {})
+        .filter(([k, v]) => typeof v === "string" && isAnswerKey(k))
+        .map(([k, v]) => [k, (v as string).slice(0, MAX_ANSWER_LENGTH)]),
+    ) as Record<string, string>;
 
     // Un valore di quiz/scenario fuori range non deve rompere il rendering.
-    for (const k of Object.keys(answers))
-      if (/(quiz|scenario)$/.test(k) && !["0", "1", "2"].includes(answers[k] as string))
-        delete answers[k];
+    // Il limite è il numero di opzioni della tappa: se i contenuti cambiano
+    // (una scelta in più o in meno) le risposte salvate restano coerenti.
+    for (const [k, value] of Object.entries(answers)) {
+      const field = /^(\d+)-(quiz|scenario)$/.exec(k);
+      if (!field) continue;
+      const target = steps[Number(field[1])];
+      const count = (field[2] === "quiz" ? target.options : target.choices).length;
+      const choice = Number(value);
+      if (!Number.isInteger(choice) || choice < 0 || choice >= count) delete answers[k];
+    }
 
     return {
       answers: answers as Record<string, string>,
-      name: typeof parsed.name === "string" ? parsed.name : "",
+      name: typeof parsed.name === "string" ? parsed.name.slice(0, MAX_NAME_LENGTH) : "",
       completed: Array.isArray(parsed.completed)
         ? [
             ...new Set<number>(
@@ -77,6 +92,48 @@ export function parseState(raw: string | null): SavedState {
   } catch {
     return freshState();
   }
+}
+
+/** Copia di sicurezza locale, creata prima di importare un file nel quaderno. */
+export type NotebookBackup = {
+  savedAt: number;
+  reason: "manuale" | "importazione";
+  state: SavedState;
+};
+
+/** Le copie seguono le stesse regole di sanificazione del quaderno: nessun dato in più. */
+export function parseBackups(raw: string | null): NotebookBackup[] {
+  try {
+    const parsed: unknown = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .filter(
+        (item): item is { savedAt: number; reason?: unknown; state?: unknown } =>
+          Boolean(item) && typeof item === "object" && typeof item.savedAt === "number",
+      )
+      .map((item) => ({
+        savedAt: item.savedAt,
+        reason: item.reason === "importazione" ? ("importazione" as const) : ("manuale" as const),
+        state: parseState(JSON.stringify(item.state ?? {})),
+      }))
+      .slice(0, MAX_BACKUPS);
+  } catch {
+    return [];
+  }
+}
+
+/** La copia più recente sta in cima; oltre il limite le più vecchie escono. */
+export function pushBackup(
+  list: NotebookBackup[],
+  state: SavedState,
+  reason: NotebookBackup["reason"],
+): NotebookBackup[] {
+  // Timestamp crescente: due copie ravvicinate non devono condividere la chiave
+  // (il ripristino cerca la copia per data).
+  const savedAt = Math.max(Date.now(), (list[0]?.savedAt ?? 0) + 1);
+
+  return [{ savedAt, reason, state: serializableState(state) }, ...list].slice(0, MAX_BACKUPS);
 }
 
 /** Sanifica prima di scrivere: solo numeri interi nell'elenco delle tappe concluse. */

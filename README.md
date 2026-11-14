@@ -11,7 +11,8 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `bun run dev` avvia il sito in sviluppo.
 - `bun run dev:desktop` e `bun run dev:mobile` avviano i client di piattaforma (scaffolding, non necessari al sito).
 - `bun run build` compila tutti i pacchetti.
-- `bun run build:web` compila il sito e rigenera `docs/` (output statico versionato per la pubblicazione).
+- `bun run build:web` compila il sito in `packages/web/dist`.
+- `bun run --filter @template/web build:pages` compila il sito e rigenera `docs/` (output statico versionato per la pubblicazione).
 - `bun run start` / `bun run stop` avviano o fermano il server Bun di produzione con pm2.
 - `bun run start:server` avvia il server Bun in primo piano (comando usato da Render).
 - `bun run lint` verifica formattazione (oxfmt) e regole di correttezza (oxlint).
@@ -25,7 +26,8 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `packages/web/src/web/pages/learning/` — shell, viste (`home`, `step`, `resources`, `summary`, `privacy`) e rotte con hash.
 - `packages/web/src/web/hooks/` — quaderno locale (`useNotebook`), esportazione (`useExportPdf`), analisi IA (`useAiAnalysis`), feedback.
 - `packages/web/src/web/lib/` — contenuti delle tappe, stato e sua sanificazione, sintesi inviata all'IA, profilo locale, PDF.
-- `packages/web/src/api/` — API Hono + oRPC: `/api/health` e `analyzeProfile`.
+- `packages/web/src/http-server.ts` — server Bun di produzione: file statici, fallback SPA, `Cache-Control` e header di sicurezza (fuori dai file `__` protetti dal template).
+- `packages/web/src/api/` — API Hono + oRPC: `/api/health`, `/api/status` e `analyzeProfile`; `security.ts` applica a tutte le route la stessa regola di origine.
 - `packages/web/public/` — asset statici, immagini, font WOFF2, service worker.
 - `docs/` — build statica committata, rigenerata da `build:web`.
 
@@ -35,7 +37,8 @@ Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/priv
 
 - Risposte, nome facoltativo e avanzamento solo in `localStorage` (con ripiego su `sessionStorage`/IndexedDB se bloccati).
 - Nessun account, nessun analytics, nessuna profilazione.
-- PDF e JSON generati nel browser; cancellazione con conferma.
+- PDF, attestazione di partecipazione e JSON generati nel browser; cancellazione con conferma.
+- Copie di sicurezza locali (fino a tre) create prima di un'importazione: stessa sede del quaderno, rimosse con lo stesso pulsante di cancellazione.
 - L'analisi IA è opzionale, richiede consenso e invia una sintesi senza il nome. Se il backend non risponde, la vista mostra un'analisi locale deterministica.
 - La sintesi informativa è nella pagina `#/privacy`.
 
@@ -49,16 +52,21 @@ AI_GATEWAY_API_KEY=
 AI_PROFILE_MODEL=openai/gpt-4.1-mini
 AI_ANALYSIS_RATE_LIMIT=20
 AI_ANALYSIS_RATE_LIMIT_GLOBAL=120
+AI_ANALYSIS_DAILY_LIMIT=500
+AI_ALLOWED_ORIGINS=
 ```
 
-Senza queste variabili l'endpoint risponde `missing_config` e il sito resta utilizzabile, ma senza analisi IA. Su Render vanno inserite nel pannello Environment del servizio: `render.yaml` le dichiara come `sync: false` proprio per non versionare la chiave. I limiti sono in memoria di processo: proteggono da raffiche, non sostituiscono un limite condiviso o la quota del provider. L'endpoint è pubblico per scelta (nessun account): se lo esponi su un host con traffico reale, metti davanti un limite condiviso o una verifica anti-bot.
+Senza queste variabili l'endpoint risponde `missing_config` e il sito resta utilizzabile, ma senza analisi IA. Su Render vanno inserite nel pannello Environment del servizio: `render.yaml` le dichiara come `sync: false` proprio per non versionare la chiave. I limiti sono in memoria di processo: proteggono da raffiche, non sostituiscono un limite condiviso o la quota del provider. `AI_ANALYSIS_DAILY_LIMIT` limita la spesa su una giornata intera (0 = nessun limite). Le richieste con `Origin` diverso da quello del sito vengono rifiutate con `forbidden_origin`: per aggiungere un'origine fidata (per esempio un dominio personalizzato) usare `AI_ALLOWED_ORIGINS`, separando i valori con una virgola. L'endpoint resta senza account per scelta: se lo esponi su un host con traffico reale, metti davanti un limite condiviso o una verifica anti-bot.
 
 ## Pubblicazione
 
-- **Render (host principale, con IA)**: `render.yaml` descrive il servizio. Build `bun install && bun run build:web`, avvio `bun packages/web/src/__server.ts`, health check `/api/health`. Le variabili `AI_GATEWAY_BASE_URL` e `AI_GATEWAY_API_KEY` vanno impostate in Render → Environment (non nel repository). Con queste variabili l'analisi IA resta attiva; senza, l'endpoint risponde `missing_config` e il riquadro IA mostra l'errore al momento della richiesta.
+- **Render (host principale, con IA)**: `render.yaml` descrive il servizio. Build `bun install && bun run build:web`, avvio `bun packages/web/src/server.ts`, health check `/api/health`. Le variabili `AI_GATEWAY_BASE_URL` e `AI_GATEWAY_API_KEY` vanno impostate in Render → Environment (non nel repository). Con queste variabili l'analisi IA resta attiva; senza, l'endpoint risponde `missing_config` e il riquadro IA mostra l'errore al momento della richiesta.
 - **GitHub Pages**: workflow `.github/workflows/deploy.yml` con job `check` che blocca il deploy se typecheck, lint o test falliscono. È un mirror statico: l'analisi IA non è disponibile lì e la vista ripiega sulla lettura locale con pulsante di riprova.
-- **Vercel / Netlify**: configurazioni statiche, senza API né analisi IA.
 - **Server Bun + pm2**: `bun run start`, con API e analisi IA.
+
+## Sicurezza
+
+`http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. Il mirror statico in `docs/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header. `GET /api/status` dichiara se l'analisi IA è configurata, il modello, i limiti e il consumo del giorno, con la stessa regola di origine delle procedure e senza alcun segreto.
 
 ## Verifiche
 

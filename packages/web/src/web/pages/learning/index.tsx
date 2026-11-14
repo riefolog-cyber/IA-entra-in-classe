@@ -51,6 +51,9 @@ export default function Learning() {
     data,
     setData,
     previousData,
+    backups,
+    backupNow,
+    restoreBackup,
     saveMode,
     toast,
     notify,
@@ -60,14 +63,27 @@ export default function Learning() {
     clearAll,
   } = useNotebook();
 
-  const { exporting, exportError, download, exportJson, importJson, fileInputRef } = useExportPdf({
+  const {
+    exporting,
+    exportError,
+    download,
+    downloadStep,
+    downloadAttestation,
+    exportJson,
+    importJson,
+    fileInputRef,
+  } = useExportPdf({
     data,
     previousData,
     setData,
     notify,
+    backup: () => backupNow("importazione"),
   });
 
-  const step = steps[route.step ?? data.current] ?? steps[0];
+  // La rotta vince: la vista usa lo stesso indice per titolo, risposte e pulsanti,
+  // anche nel primo frame dopo un deep link, prima che l'effetto allinei lo stato.
+  const stepIndex = Math.min(route.step ?? data.current, stepCount - 1);
+  const step = steps[stepIndex] ?? steps[0];
   const answered = Object.entries(data.answers).filter(([, value]) => value.trim()).length;
   const progressPct = totalFields ? Math.round((answered / totalFields) * 100) : 0;
   const nextStepIndex = steps.findIndex((_, i) => !data.completed.includes(i));
@@ -113,7 +129,7 @@ export default function Learning() {
   }, [route.step, current, setData]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "auto" });
     requestAnimationFrame(() => {
       const target = document.querySelector("main");
       if (target) {
@@ -347,9 +363,11 @@ export default function Learning() {
               <StepView
                 data={data}
                 step={step}
+                stepIndex={stepIndex}
                 phaseImage={phaseImage}
                 go={go}
                 toggleComplete={toggleComplete}
+                downloadStep={downloadStep}
                 write={write}
                 openGlossary={openGlossary}
               />
@@ -379,7 +397,10 @@ export default function Learning() {
                 exportJson={exportJson}
                 importJson={importJson}
                 fileInputRef={fileInputRef}
+                downloadAttestation={downloadAttestation}
                 notify={notify}
+                backups={backups}
+                restoreBackup={restoreBackup}
               />
             )}
             {view === "privacy" && <PrivacyView go={go} />}

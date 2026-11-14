@@ -18,8 +18,11 @@ const ENTRIES = {
 export function useFeedback(notify: (message: string) => void) {
   const [feedback, setFeedback] = useState({ u: 0, c: 0, open: "" });
   const [feedbackSent, setFeedbackSent] = useState(() => robustGetSync(SENT_KEY) === "1");
+  const [feedbackError, setFeedbackError] = useState("");
 
   const submitFeedback = async () => {
+    setFeedbackError("");
+
     const params = new URLSearchParams();
     if (feedback.u) params.set(ENTRIES.utility, String(feedback.u));
     if (feedback.c) params.set(ENTRIES.clarity, String(feedback.c));
@@ -33,7 +36,10 @@ export function useFeedback(notify: (message: string) => void) {
         body: params.toString(),
       });
     } catch {
-      // no-cors: la risposta è opaca, ma l'invio è partito
+      // no-cors: qui la richiesta non è nemmeno partita (rete assente).
+      // Segnare il feedback come inviato sarebbe una bugia: si invita a riprovare.
+      setFeedbackError("Feedback non inviato: controlla la connessione e riprova.");
+      return;
     }
 
     void robustSet(SENT_KEY, "1");
@@ -44,8 +50,9 @@ export function useFeedback(notify: (message: string) => void) {
   const resetFeedback = () => {
     robustRemove(SENT_KEY);
     setFeedbackSent(false);
+    setFeedbackError("");
     setFeedback({ u: 0, c: 0, open: "" });
   };
 
-  return { feedback, setFeedback, feedbackSent, submitFeedback, resetFeedback };
+  return { feedback, setFeedback, feedbackSent, feedbackError, submitFeedback, resetFeedback };
 }

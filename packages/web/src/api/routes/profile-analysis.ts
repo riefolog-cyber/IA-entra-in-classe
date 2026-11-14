@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { base } from "../__core/app";
+import { FORBIDDEN_ORIGIN_MESSAGE, isForeignOrigin } from "../security";
 
 const inputSchema = z.object({
   summary: z.string().max(12000),
@@ -15,6 +16,9 @@ const inputSchema = z.object({
 const WINDOW_MS = 60_000;
 const DEFAULT_PER_CLIENT = 20;
 const DEFAULT_GLOBAL = 120;
+// Budget giornaliero per processo: il limite al minuto ferma le raffiche, non
+// una spesa distribuita su tutta la giornata. 0 = nessun limite.
+const DEFAULT_DAILY = 500;
 const MAX_TRACKED_CLIENTS = 2000;
 // Il gateway a volte impiega 50-60 s (latenza del provider, non del prompt):
 // con 45 s la lettura falliva proprio mentre stava arrivando la risposta.
@@ -77,6 +81,75 @@ function allowRequest(key: string | null, perClientLimit: number, globalLimit: n
 
   globalHits.push(now);
   return true;
+}
+
+// Analisi identiche entro 24 ore non raggiungono il provider: chi riapre il
+// quaderno nello stesso giorno non paga due volte la stessa lettura.
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const MAX_CACHE_ENTRIES = 200;
+
+type CachedAnalysis = { at: number; model: string; analysis: Record<string, unknown> };
+const analysisCache = new Map<string, CachedAnalysis>();
+
+/** SHA-256 via Web Crypto: niente import di `node:*` (il file è condiviso con il pacchetto mobile). */
+async function cacheKey(summary: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(summary));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function rememberAnalysis(key: string, model: string, analysis: Record<string, unknown>) {
+  if (analysisCache.size >= MAX_CACHE_ENTRIES) {
+    const oldest = analysisCache.keys().next().value;
+    if (oldest) analysisCache.delete(oldest);
+  }
+  analysisCache.set(key, { at: Date.now(), model, analysis });
+}
+
+/** Solo per i test: la cache è di processo e non deve attraversare gli scenari. */
+export function clearAnalysisCache() {
+  analysisCache.clear();
+}
+
+let dailyDate = "";
+let dailyCount = 0;
+
+/** Conta solo le richieste che superano i limiti al minuto e raggiungono il provider. */
+function allowDaily(limit: number): boolean {
+  if (limit <= 0) return true;
+
+  const today = new Date().toISOString().slice(0, 10);
+  if (dailyDate !== today) {
+    dailyDate = today;
+    dailyCount = 0;
+  }
+
+  if (dailyCount >= limit) return false;
+  dailyCount += 1;
+  return true;
+}
+
+/** Stato del servizio IA senza segreti: serve a capire un errore dal browser. */
+export function analysisStatus() {
+  const env = (key: string) => (process.env as Record<string, string | undefined>)[key];
+  const today = new Date().toISOString().slice(0, 10);
+
+  return {
+    ok: true,
+    ai: {
+      configured: Boolean(env("AI_GATEWAY_BASE_URL") && env("AI_GATEWAY_API_KEY")),
+      model: env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini",
+      limits: {
+        perMinute: readLimit("AI_ANALYSIS_RATE_LIMIT", DEFAULT_PER_CLIENT),
+        globalPerMinute: readLimit("AI_ANALYSIS_RATE_LIMIT_GLOBAL", DEFAULT_GLOBAL),
+        daily: readLimit("AI_ANALYSIS_DAILY_LIMIT", DEFAULT_DAILY),
+      },
+      usage: {
+        dailyDate: today,
+        dailyUsed: dailyDate === today ? dailyCount : 0,
+        cachedAnalyses: analysisCache.size,
+      },
+    },
+  };
 }
 
 function buildPrompt(summary: string) {
@@ -149,26 +222,37 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   // Read env through an index access so the same source type-checks in the
   // mobile package, which does not include @types/bun's ProcessEnv.
   const env = (key: string) => (process.env as Record<string, string | undefined>)[key];
+  // Riferimento breve e cercabile nei log: l'utente può citarlo in una segnalazione.
+  const requestId = crypto.randomUUID().slice(0, 8);
+  // `requestId` è un campo, non parte del messaggio: la vista lo mostra una volta sola.
+  const fail = (reason: string, message: string) => ({
+    ok: false as const,
+    reason,
+    message,
+    requestId,
+  });
+
+  // Prima di ogni altra cosa: una chiamata cross-origin non deve consumare quota.
+  if (isForeignOrigin(context.headers)) {
+    return fail("forbidden_origin", FORBIDDEN_ORIGIN_MESSAGE);
+  }
+
   const baseUrl = (env("AI_GATEWAY_BASE_URL") || "").replace(/\/$/, "");
   const apiKey = env("AI_GATEWAY_API_KEY") || "";
   if (!baseUrl || !apiKey) {
-    return {
-      ok: false as const,
-      reason: "missing_config" as const,
-      message:
-        "Analisi IA non configurata sul server. Imposta AI_GATEWAY_BASE_URL e AI_GATEWAY_API_KEY, poi riavvia il server.",
-    };
+    return fail(
+      "missing_config",
+      "Analisi IA non configurata sul server. Imposta AI_GATEWAY_BASE_URL e AI_GATEWAY_API_KEY, poi riavvia il server.",
+    );
   }
 
   // Un quaderno quasi vuoto non produce una lettura utile: meglio dirlo subito,
   // senza occupare quota del provider.
   if (input.summary.trim().length < 40) {
-    return {
-      ok: false as const,
-      reason: "empty_summary" as const,
-      message:
-        "Il quaderno è ancora troppo vuoto per un’analisi utile. Compila almeno una tappa e riprova.",
-    };
+    return fail(
+      "empty_summary",
+      "Il quaderno è ancora troppo vuoto per un’analisi utile. Compila almeno una tappa e riprova.",
+    );
   }
 
   // Il limite entra in gioco solo quando la richiesta può davvero raggiungere
@@ -182,11 +266,31 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
         ? `max ${perClientLimit} al minuto per utente`
         : `max ${globalLimit} al minuto in totale`;
 
+    return fail(
+      "rate_limited",
+      `Troppe richieste di analisi in poco tempo (${scope}). ${LIMIT_HINT}`,
+    );
+  }
+
+  // Una lettura già fatta oggi non consuma né budget né quota.
+  const key = await cacheKey(input.summary);
+  const cached = analysisCache.get(key);
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
     return {
-      ok: false as const,
-      reason: "rate_limited" as const,
-      message: `Troppe richieste di analisi in poco tempo (${scope}). ${LIMIT_HINT}`,
+      ok: true as const,
+      model: cached.model,
+      analysis: cached.analysis,
+      cached: true,
+      requestId,
     };
+  }
+
+  const dailyLimit = readLimit("AI_ANALYSIS_DAILY_LIMIT", DEFAULT_DAILY);
+  if (!allowDaily(dailyLimit)) {
+    return fail(
+      "daily_limit",
+      `Il budget giornaliero di analisi IA del sito è esaurito (max ${dailyLimit} al giorno). Riprova domani, oppure esporta il quaderno in PDF: le risposte sono già salvate.`,
+    );
   }
 
   const model = env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini";
@@ -208,28 +312,28 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   } catch (firstError) {
     // Un timeout non si ritenta: raddoppierebbe l'attesa senza cambiare esito.
     if (isAbort(firstError)) {
-      console.error(`[analisi-ia] timeout dopo ${REQUEST_TIMEOUT_MS / 1000}s`);
-      return {
-        ok: false as const,
-        reason: "timeout" as const,
-        message: `La lettura IA ha impiegato troppo tempo (oltre ${REQUEST_TIMEOUT_MS / 1000} secondi). Riprova tra poco. ${LIMIT_HINT}`,
-      };
+      console.error(`[analisi-ia ${requestId}] timeout dopo ${REQUEST_TIMEOUT_MS / 1000}s`);
+      return fail(
+        "timeout",
+        `La lettura IA ha impiegato troppo tempo (oltre ${REQUEST_TIMEOUT_MS / 1000} secondi). Riprova tra poco. ${LIMIT_HINT}`,
+      );
     }
 
-    console.error("[analisi-ia] errore di rete:", describeError(firstError));
+    console.error(`[analisi-ia ${requestId}] errore di rete:`, describeError(firstError));
 
     // Un secondo tentativo per una caduta di rete immediata (Wi‑Fi, DNS, proxy).
     await new Promise((resolve) => setTimeout(resolve, 700));
     try {
       response = await callProvider(url, apiKey, body);
     } catch (secondError) {
-      console.error("[analisi-ia] errore di rete (secondo tentativo):", describeError(secondError));
-      return {
-        ok: false as const,
-        reason: "network_error" as const,
-        message:
-          "Richiesta IA non riuscita per un problema di rete. Controlla la connessione e riprova: le risposte sono già salvate e puoi esportare il quaderno.",
-      };
+      console.error(
+        `[analisi-ia ${requestId}] errore di rete (secondo tentativo):`,
+        describeError(secondError),
+      );
+      return fail(
+        "network_error",
+        "Richiesta IA non riuscita per un problema di rete. Controlla la connessione e riprova: le risposte sono già salvate e puoi esportare il quaderno.",
+      );
     }
   }
 
@@ -238,11 +342,7 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
       response.status === 429
         ? "Il servizio IA ha raggiunto il limite di richieste o la quota disponibile (429). Attendi qualche minuto e riprova; se il problema persiste, verifica quota/limiti e configurazione del modello."
         : `Errore dal servizio IA (${response.status}). Verifica configurazione/modello o riprova.`;
-    return {
-      ok: false as const,
-      reason: "provider_error" as const,
-      message,
-    };
+    return fail("provider_error", message);
   }
 
   type ChatResponse = {
@@ -261,29 +361,26 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     (typeof response.raw === "string" ? response.raw : "");
   const parsed = extractJson(String(content));
   if (!parsed) {
-    return {
-      ok: false as const,
-      reason: "invalid_response" as const,
-      message:
-        "La risposta IA non era in un formato utilizzabile. Riprova più tardi o esporta il quaderno in PDF.",
-    };
+    return fail(
+      "invalid_response",
+      "La risposta IA non era in un formato utilizzabile. Riprova più tardi o esporta il quaderno in PDF.",
+    );
   }
   const arr = (v: unknown): string[] =>
     Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 4) : [];
-  return {
-    ok: true as const,
-    model,
-    analysis: {
-      headline: typeof parsed.headline === "string" ? parsed.headline : "Lettura del percorso",
-      narrative: typeof parsed.narrative === "string" ? parsed.narrative : "",
-      strengths: arr(parsed.strengths),
-      tensions: arr(parsed.tensions),
-      questions: arr(parsed.questions),
-      nextStep: typeof parsed.nextStep === "string" ? parsed.nextStep : "",
-      caution:
-        typeof parsed.caution === "string"
-          ? parsed.caution
-          : "Interpretazione probabilistica: rileggi criticamente e verifica nel tuo contesto.",
-    },
+  const analysis = {
+    headline: typeof parsed.headline === "string" ? parsed.headline : "Lettura del percorso",
+    narrative: typeof parsed.narrative === "string" ? parsed.narrative : "",
+    strengths: arr(parsed.strengths),
+    tensions: arr(parsed.tensions),
+    questions: arr(parsed.questions),
+    nextStep: typeof parsed.nextStep === "string" ? parsed.nextStep : "",
+    caution:
+      typeof parsed.caution === "string"
+        ? parsed.caution
+        : "Interpretazione probabilistica: rileggi criticamente e verifica nel tuo contesto.",
   };
+
+  rememberAnalysis(key, model, analysis);
+  return { ok: true as const, model, analysis, requestId };
 });

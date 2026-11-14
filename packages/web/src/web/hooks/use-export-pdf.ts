@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 
+import { exportAttestation } from "../lib/export-attestation";
 import { exportPdf } from "../lib/export-pdf";
 import { parseState } from "../lib/notebook-state";
 import type { SavedState } from "../lib/teacher-content";
@@ -9,9 +10,11 @@ type Options = {
   previousData: SavedState;
   setData: (updater: (d: SavedState) => SavedState) => void;
   notify: (message: string) => void;
+  /** Salva una copia del quaderno attuale prima di sostituirlo. */
+  backup: () => boolean;
 };
 
-export function useExportPdf({ data, previousData, setData, notify }: Options) {
+export function useExportPdf({ data, previousData, setData, notify, backup }: Options) {
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,6 +33,40 @@ export function useExportPdf({ data, previousData, setData, notify }: Options) {
       setExportError(
         "Il PDF non è stato generato. Riprova o usa un altro browser. Le risposte restano qui.",
       );
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  /** Estratto di una sola tappa: utile per portare un caso in dipartimento. */
+  const downloadStep = async (index: number) => {
+    setExporting(true);
+    setExportError("");
+
+    try {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      await exportPdf(data, false, index);
+      notify(`PDF della tappa ${index + 1} generato.`);
+    } catch {
+      setExportError(
+        "Il PDF non è stato generato. Riprova o usa un altro browser. Le risposte restano qui.",
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  /** Attestazione di partecipazione: un documento breve, non un certificato. */
+  const downloadAttestation = async () => {
+    setExporting(true);
+    setExportError("");
+
+    try {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      await exportAttestation(data);
+      notify("Attestazione generata. Controlla i download del browser.");
+    } catch {
+      setExportError("L'attestazione non è stata generata. Riprova o usa un altro browser.");
     } finally {
       setExporting(false);
     }
@@ -73,9 +110,15 @@ export function useExportPdf({ data, previousData, setData, notify }: Options) {
 
         // parseState filtra chiavi e indici non validi: un file corrotto non può
         // più rompere il rendering del quaderno.
+        // Un'importazione sostituisce tutto: prima si salva una copia locale.
+        const saved = backup();
         setData(() => parseState(JSON.stringify(raw)));
         setExportError("");
-        notify("Dati importati. Controlla le risposte.");
+        notify(
+          saved
+            ? "Dati importati. La copia del quaderno precedente è in «Copie di sicurezza»."
+            : "Dati importati. Controlla le risposte.",
+        );
       } catch {
         setExportError("File non valido: impossibile leggere il JSON.");
       }
@@ -84,5 +127,14 @@ export function useExportPdf({ data, previousData, setData, notify }: Options) {
     reader.readAsText(file);
   };
 
-  return { exporting, exportError, download, exportJson, importJson, fileInputRef };
+  return {
+    exporting,
+    exportError,
+    download,
+    downloadStep,
+    downloadAttestation,
+    exportJson,
+    importJson,
+    fileInputRef,
+  };
 }

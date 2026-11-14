@@ -7,10 +7,11 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import type { ReactNode, RefObject } from "react";
+import { useState, type ReactNode, type RefObject } from "react";
 
 import { useAiAnalysis } from "../../hooks/use-ai-analysis";
 import { useFeedback } from "../../hooks/use-feedback";
+import { MAX_NAME_LENGTH, type NotebookBackup } from "../../lib/notebook-state";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { buildTeacherProfile } from "../../lib/teacher-profile";
 import type { Go } from "./navigation";
@@ -29,7 +30,15 @@ type SummaryProps = {
   exportJson: () => void;
   importJson: (file: File) => void;
   fileInputRef: RefObject<HTMLInputElement | null>;
+  downloadAttestation: () => void;
   notify: (message: string) => void;
+  backups: NotebookBackup[];
+  restoreBackup: (savedAt: number) => void;
+};
+
+const backupReason: Record<NotebookBackup["reason"], string> = {
+  manuale: "copia manuale",
+  importazione: "prima di un'importazione",
 };
 
 export function SummaryView(props: SummaryProps) {
@@ -47,9 +56,13 @@ export function SummaryView(props: SummaryProps) {
     exportJson,
     importJson,
     fileInputRef,
+    downloadAttestation,
     notify,
+    backups,
+    restoreBackup,
   } = props;
   const stepCount = steps.length;
+  const [pendingImport, setPendingImport] = useState<File | null>(null);
 
   const {
     apiAvailable,
@@ -60,12 +73,15 @@ export function SummaryView(props: SummaryProps) {
     aiLoading,
     aiError,
     aiResult,
+    aiRequestId,
+    aiSummary,
+    online,
     runAiAnalysis,
+    cancelAiAnalysis,
     recheckApi,
-    buildAiSummary,
   } = useAiAnalysis(data);
 
-  const { feedback, setFeedback, feedbackSent, submitFeedback, resetFeedback } =
+  const { feedback, setFeedback, feedbackSent, feedbackError, submitFeedback, resetFeedback } =
     useFeedback(notify);
 
   // Analisi deterministica calcolata nel browser: sostituisce il servizio
@@ -137,6 +153,9 @@ export function SummaryView(props: SummaryProps) {
           >
             Vai all’export PDF
           </button>
+          <button className="button outline" onClick={() => window.print()}>
+            Stampa il riepilogo
+          </button>
         </div>
         <div className="summary-progress-bar" aria-hidden="true">
           <span style={{ width: `${progressPct}%` }} />
@@ -202,6 +221,15 @@ export function SummaryView(props: SummaryProps) {
           </p>
 
           {exportButton}
+
+          <button className="button outline" onClick={downloadAttestation}>
+            Scarica l’attestazione di partecipazione
+          </button>
+
+          <p className="page-meta">
+            Autocertificazione di ciò che hai svolto: non è una certificazione e non attribuisce
+            crediti formativi.
+          </p>
         </div>
       </div>
 
@@ -234,11 +262,69 @@ export function SummaryView(props: SummaryProps) {
             onChange={(e) => {
               const f = e.target.files?.[0];
 
-              if (f) importJson(f);
+              if (f) setPendingImport(f);
 
               e.target.value = "";
             }}
           />
+
+          {pendingImport && (
+            <div className="notice" role="alert">
+              <strong>Sostituire il quaderno con «{pendingImport.name}»?</strong>
+              <p>
+                Le risposte attuali restano in questo browser come copia di sicurezza: potrai
+                ripristinarle da «Copie di sicurezza». Il file importato prende il loro posto.
+              </p>
+              <div className="hero-actions">
+                <button
+                  className="button primary"
+                  onClick={() => {
+                    importJson(pendingImport);
+                    setPendingImport(null);
+                  }}
+                >
+                  Importa e salva copia
+                </button>
+                <button className="button outline" onClick={() => setPendingImport(null)}>
+                  Annulla
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="concept-box">
+        <ShieldCheck size={24} />
+
+        <div>
+          <strong>Copie di sicurezza</strong>
+
+          <p>
+            Prima di un’importazione il quaderno viene copiato in questo browser: fino a tre copie,
+            le più recenti. Restano sul dispositivo e spariscono con «Cancella i miei dati».
+          </p>
+
+          {backups.length === 0 ? (
+            <p className="page-meta">Nessuna copia: verrà creata alla prima importazione.</p>
+          ) : (
+            <ul className="plain-list">
+              {backups.map((item) => (
+                <li key={item.savedAt}>
+                  {new Date(item.savedAt).toLocaleString("it-IT")} · {backupReason[item.reason]} ·{" "}
+                  {Object.values(item.state.answers).filter((answer) => answer.trim()).length}{" "}
+                  risposte{" "}
+                  <button
+                    className="text-button"
+                    type="button"
+                    onClick={() => restoreBackup(item.savedAt)}
+                  >
+                    Ripristina
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
@@ -248,6 +334,7 @@ export function SummaryView(props: SummaryProps) {
         <input
           aria-label="Nome"
           value={data.name}
+          maxLength={MAX_NAME_LENGTH}
           placeholder="Inserisci il tuo nome"
           onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
         />
@@ -417,17 +504,22 @@ export function SummaryView(props: SummaryProps) {
               <button
                 className="button primary"
                 type="button"
-                disabled={aiLoading || apiAvailable === null || !aiConsent}
+                disabled={aiLoading || apiAvailable === null || !aiConsent || !online}
                 onClick={runAiAnalysis}
               >
                 {aiLoading ? "Lettura in corso…" : "Leggi il mio percorso"}
               </button>
+              {aiLoading && (
+                <button className="text-button" type="button" onClick={cancelAiAnalysis}>
+                  Annulla la lettura
+                </button>
+              )}
             </div>
             {showAiPreview && (
               <textarea
                 className="ai-preview"
                 readOnly
-                value={buildAiSummary()}
+                value={aiSummary}
                 aria-label="Dati inviati per l’analisi IA"
               />
             )}
@@ -439,9 +531,29 @@ export function SummaryView(props: SummaryProps) {
                 </span>
               </output>
             )}
+            {!online && (
+              <p className="page-meta">
+                Sei offline: l’analisi IA richiede una connessione. Le risposte restano salvate e
+                puoi esportare il quaderno.
+              </p>
+            )}
             {aiError && (
               <div className="ai-error" role="alert">
                 {aiError}
+                {aiRequestId && (
+                  <p className="profile-footnote">
+                    Riferimento per l’assistenza: {aiRequestId}{" "}
+                    <button
+                      className="text-button"
+                      type="button"
+                      onClick={() => {
+                        void navigator.clipboard?.writeText(aiRequestId);
+                      }}
+                    >
+                      Copia
+                    </button>
+                  </p>
+                )}
               </div>
             )}
             {aiResult?.analysis && (
@@ -560,6 +672,12 @@ export function SummaryView(props: SummaryProps) {
                 Invia feedback
               </button>
             </div>
+
+            {feedbackError && (
+              <div className="ai-error" role="alert">
+                {feedbackError}
+              </div>
+            )}
 
             <p className="feedback-privacy">
               Il feedback è anonimo e viene inviato a un modulo Google esterno: il servizio può

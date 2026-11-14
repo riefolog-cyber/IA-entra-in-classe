@@ -28,9 +28,25 @@ const phaseColor = (phase?: string): [number, number, number] => {
   }
 };
 
-export async function exportPdf(state: SavedState, previousVersion = false) {
+/**
+ * `stepIndex` limita l'esportazione a una sola tappa (stesso layout, meno pagine):
+ * serve a chi vuole portare un singolo caso in dipartimento.
+ */
+export async function exportPdf(state: SavedState, previousVersion = false, stepIndex?: number) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF();
+
+  // Metadati del documento: senza titolo e autore un quaderno di venti pagine
+  // finisce negli archivi personali come «Senza titolo».
+  doc.setProperties({
+    title: previousVersion
+      ? "Restare umani · percorso precedente"
+      : `Restare umani · quaderno del docente${typeof stepIndex === "number" ? ` · tappa ${stepIndex + 1}` : ""}`,
+    subject: "Percorso di aggiornamento sull'IA a scuola",
+    author: siteMeta.author,
+    creator: "Restare umani",
+    keywords: "IA, scuola, docenti, aggiornamento professionale, quaderno",
+  });
   const steps = teacherSteps;
   const glossary = teacherGlossary;
   const pageWidth = 210;
@@ -185,8 +201,16 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
   );
 
   // --------------------------------------------------------------- le tappe
-  steps.forEach((step, i) => {
+  const stepIndices =
+    typeof stepIndex === "number" && steps[stepIndex]
+      ? [stepIndex]
+      : steps.map((_, index) => index);
+
+  stepIndices.forEach((i) => {
+    const step = steps[i];
     newPage();
+    // Indice navigabile (segnalibri): jsPDF lo espone dai lettori PDF.
+    doc.outline?.add?.(null, `${i + 1}. ${step.title}`, { pageNumber: doc.getNumberOfPages() });
     const color = phaseColor(step.phase);
 
     doc.setFillColor(...color);
@@ -260,31 +284,34 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
       sectionTitle("Riferimenti per questa tappa", 11);
       sources.forEach((reference) => {
         para(reference.title, 9.5, "bold");
-        doc.setTextColor(...MUTED);
         para(reference.url, 8.5, "normal", MUTED);
       });
     }
   });
 
-  // ------------------------------------------------------------- glossario
-  newPage();
-  sectionTitle("Glossario", 17);
-  glossary.forEach(([term, definition]) => {
-    para(term, 10.5, "bold", GREEN, "helvetica", 1);
-    para(definition, 9.5, "normal", INK, "helvetica", 5);
-  });
-
-  if (!previousVersion) {
+  // Glossario e riferimenti appartengono al quaderno completo: un estratto di
+  // tappa si ferma alla tappa.
+  if (typeof stepIndex !== "number") {
+    // ----------------------------------------------------------- glossario
     newPage();
-    sectionTitle("Riferimenti", 17);
-    teacherReferences.forEach((reference) => {
-      para(reference.title, 10.5, "bold", GREEN, "helvetica", 1);
-      para(reference.description, 9.5, "normal", MUTED, "helvetica", 1);
-      doc.setTextColor(...INK);
-      doc.setFontSize(8.5);
-      doc.textWithLink(reference.url, margin, y, { url: reference.url });
-      y += 9;
+    sectionTitle("Glossario", 17);
+    glossary.forEach(([term, definition]) => {
+      para(term, 10.5, "bold", GREEN, "helvetica", 1);
+      para(definition, 9.5, "normal", INK, "helvetica", 5);
     });
+
+    if (!previousVersion) {
+      newPage();
+      sectionTitle("Riferimenti", 17);
+      teacherReferences.forEach((reference) => {
+        para(reference.title, 10.5, "bold", GREEN, "helvetica", 1);
+        para(reference.description, 9.5, "normal", MUTED, "helvetica", 1);
+        doc.setTextColor(...INK);
+        doc.setFontSize(8.5);
+        doc.textWithLink(reference.url, margin, y, { url: reference.url });
+        y += 9;
+      });
+    }
   }
 
   // ---------------------------------------------------------------- footer
@@ -305,6 +332,8 @@ export async function exportPdf(state: SavedState, previousVersion = false) {
   doc.save(
     previousVersion
       ? "restare-umani-percorso-precedente.pdf"
-      : "restare-umani-quaderno-docente.pdf",
+      : typeof stepIndex === "number"
+        ? `restare-umani-tappa-${stepIndex + 1}.pdf`
+        : "restare-umani-quaderno-docente.pdf",
   );
 }

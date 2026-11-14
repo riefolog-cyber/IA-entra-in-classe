@@ -4,6 +4,7 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  Download,
   Feather,
   MessageCircle,
 } from "lucide-react";
@@ -11,6 +12,7 @@ import {
 import type { ReactElement } from "react";
 
 import { StepEmblem } from "../../components/step-emblem";
+import { MAX_ANSWER_LENGTH } from "../../lib/notebook-state";
 import {
   glossary,
   references,
@@ -24,9 +26,12 @@ import type { Go } from "./navigation";
 type StepProps = {
   data: SavedState;
   step: Step;
+  /** Indice della tappa mostrata: viene dalla rotta, non dallo stato salvato. */
+  stepIndex: number;
   phaseImage: (phase?: string) => string;
   go: Go;
   toggleComplete: (i?: number) => void;
+  downloadStep: (index: number) => void;
   write: (key: string, value: string) => void;
   openGlossary: (term: string) => void;
 };
@@ -34,14 +39,16 @@ type StepProps = {
 export function StepView({
   data,
   step,
+  stepIndex,
   phaseImage,
   go,
   toggleComplete,
+  downloadStep,
   write,
   openGlossary,
 }: StepProps) {
   const stepCount = steps.length;
-  const sources = (stepSources[data.current] ?? []).map((i) => references[i]).filter(Boolean);
+  const sources = (stepSources[stepIndex] ?? []).map((i) => references[i]).filter(Boolean);
   const stepText = [
     step.title,
     step.subtitle,
@@ -54,7 +61,7 @@ export function StepView({
     .toLowerCase();
   const keywords = glossary
     .filter(
-      ([term, , refs]) => stepText.includes(term.toLowerCase()) || refs.includes(data.current + 1),
+      ([term, , refs]) => stepText.includes(term.toLowerCase()) || refs.includes(stepIndex + 1),
     )
     .slice(0, 6)
     .map(([term]) => term);
@@ -71,6 +78,7 @@ export function StepView({
         value={data.answers[key] || ""}
         onChange={(e) => write(key, e.target.value)}
         placeholder={placeholder}
+        maxLength={MAX_ANSWER_LENGTH}
         rows={4}
       />
       <small>Riflessione professionale · niente nomi o dati identificativi degli studenti</small>
@@ -80,7 +88,7 @@ export function StepView({
   return (
     <div className="reading-page step-reading">
       <div className="page-eyebrow">
-        TAPPA {data.current + 1} / {stepCount}
+        TAPPA {stepIndex + 1} / {stepCount}
         {step.phase ? <span>{step.phase}</span> : null}
       </div>
 
@@ -89,14 +97,14 @@ export function StepView({
           <h1>{step.title}</h1>
           <p className="page-lead">{step.subtitle}</p>
         </div>
-        <StepEmblem index={data.current} />
+        <StepEmblem index={stepIndex} />
       </div>
 
       <div className="step-pills" aria-label="Avanzamento tappe">
         {steps.map((_, i) => (
           <button
             key={i}
-            className={`${data.current === i ? "active" : ""} ${data.completed.includes(i) ? "done" : ""}`.trim()}
+            className={`${stepIndex === i ? "active" : ""} ${data.completed.includes(i) ? "done" : ""}`.trim()}
             onClick={() => go("step", i)}
             aria-label={`Apri tappa ${i + 1}`}
             title={`Tappa ${i + 1}`}
@@ -174,7 +182,7 @@ export function StepView({
 
         <p>Una domanda per il tuo contesto. La tua risposta entrerà nel quaderno finale.</p>
 
-        {step.prompts.map((p, i) => field(`${data.current}-p${i}`, p))}
+        {step.prompts.map((p, i) => field(`${stepIndex}-p${i}`, p))}
       </section>
 
       <section className="activity">
@@ -202,14 +210,14 @@ export function StepView({
           {step.options.map((o, i) => (
             <label
               key={o}
-              className={`option ${data.answers[`${data.current}-quiz`] === String(i) ? "chosen" : ""}`}
+              className={`option ${data.answers[`${stepIndex}-quiz`] === String(i) ? "chosen" : ""}`}
             >
               <input
                 type="radio"
-                name={`quiz-${data.current}`}
+                name={`quiz-${stepIndex}`}
                 value={i}
-                checked={data.answers[`${data.current}-quiz`] === String(i)}
-                onChange={() => write(`${data.current}-quiz`, String(i))}
+                checked={data.answers[`${stepIndex}-quiz`] === String(i)}
+                onChange={() => write(`${stepIndex}-quiz`, String(i))}
               />
 
               <span className="radio-dot" aria-hidden="true" />
@@ -219,10 +227,10 @@ export function StepView({
           ))}
         </fieldset>
 
-        {data.answers[`${data.current}-quiz`] !== undefined && (
+        {data.answers[`${stepIndex}-quiz`] !== undefined && (
           <output className="feedback" aria-live="polite">
             <strong>
-              {Number(data.answers[`${data.current}-quiz`]) === step.correct
+              {Number(data.answers[`${stepIndex}-quiz`]) === step.correct
                 ? "Hai individuato il concetto."
                 : "Un’occasione per approfondire."}
             </strong>
@@ -282,14 +290,14 @@ export function StepView({
           {step.choices.map((c, i) => (
             <label
               key={c}
-              className={`option ${data.answers[`${data.current}-scenario`] === String(i) ? "chosen" : ""}`}
+              className={`option ${data.answers[`${stepIndex}-scenario`] === String(i) ? "chosen" : ""}`}
             >
               <input
                 type="radio"
-                name={`scenario-${data.current}`}
+                name={`scenario-${stepIndex}`}
                 value={i}
-                checked={data.answers[`${data.current}-scenario`] === String(i)}
-                onChange={() => write(`${data.current}-scenario`, String(i))}
+                checked={data.answers[`${stepIndex}-scenario`] === String(i)}
+                onChange={() => write(`${stepIndex}-scenario`, String(i))}
               />
 
               <span className="radio-dot" aria-hidden="true" />
@@ -299,16 +307,16 @@ export function StepView({
           ))}
         </div>
 
-        {data.answers[`${data.current}-scenario`] !== undefined && (
+        {data.answers[`${stepIndex}-scenario`] !== undefined && (
           <div className="feedback">
             <strong>Una domanda per andare oltre</strong>
 
-            <p>{step.perspectives[Number(data.answers[`${data.current}-scenario`])]}</p>
+            <p>{step.perspectives[Number(data.answers[`${stepIndex}-scenario`])]}</p>
           </div>
         )}
 
         {field(
-          `${data.current}-reason`,
+          `${stepIndex}-reason`,
 
           "Quali condizioni rendono sostenibile la mia scelta? Quale rischio o obiezione discuterei con un collega?",
         )}
@@ -344,16 +352,21 @@ export function StepView({
 
         <div>
           <strong>
-            {data.completed.includes(data.current)
+            {data.completed.includes(stepIndex)
               ? "Questa tappa è segnata come conclusa."
               : "Hai dedicato del tempo a questa tappa?"}
           </strong>
         </div>
 
-        <button className="button primary" onClick={() => toggleComplete()}>
+        <button className="button primary" onClick={() => toggleComplete(stepIndex)}>
           <Check size={17} />
 
-          {data.completed.includes(data.current) ? "Riapri la tappa" : "Segna come conclusa"}
+          {data.completed.includes(stepIndex) ? "Riapri la tappa" : "Segna come conclusa"}
+        </button>
+
+        <button className="button outline" onClick={() => downloadStep(stepIndex)}>
+          <Download size={16} />
+          Esporta questa tappa
         </button>
       </div>
 
@@ -377,30 +390,28 @@ export function StepView({
       <div className="page-navigation">
         <button
           className="text-button"
-          onClick={() => (data.current ? go("step", data.current - 1) : go("home"))}
+          onClick={() => (stepIndex ? go("step", stepIndex - 1) : go("home"))}
         >
           <ArrowLeft size={16} />
 
-          {data.current ? "Tappa precedente" : "Il percorso"}
+          {stepIndex ? "Tappa precedente" : "Il percorso"}
         </button>
 
         <button
           className="button outline"
-          onClick={() =>
-            data.current < stepCount - 1 ? go("step", data.current + 1) : go("summary")
-          }
+          onClick={() => (stepIndex < stepCount - 1 ? go("step", stepIndex + 1) : go("summary"))}
         >
-          {data.current < stepCount - 1 ? "Tappa successiva" : "Vai al riepilogo"}
+          {stepIndex < stepCount - 1 ? "Tappa successiva" : "Vai al riepilogo"}
 
           <ArrowRight size={16} />
         </button>
       </div>
 
       <div className="mobile-step-cta">
-        <button className="button primary" onClick={() => toggleComplete()}>
+        <button className="button primary" onClick={() => toggleComplete(stepIndex)}>
           <Check size={16} />
 
-          {data.completed.includes(data.current) ? "Riapri questa tappa" : "Concludi questa tappa"}
+          {data.completed.includes(stepIndex) ? "Riapri questa tappa" : "Concludi questa tappa"}
         </button>
       </div>
     </div>

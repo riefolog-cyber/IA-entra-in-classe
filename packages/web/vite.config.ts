@@ -35,6 +35,65 @@ function serviceWorkerVersion(): Plugin {
   };
 }
 
+/**
+ * CSP in modalità report-only durante lo sviluppo: una violazione si vede in
+ * console prima del deploy, quando è ancora gratis.
+ */
+function devCspPlugin(): Plugin {
+  const policy = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' ws: wss: http: https:",
+    "frame-src https:",
+    "object-src 'none'",
+  ].join("; ");
+
+  return {
+    name: "dev-csp-report-only",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((_req, res, next) => {
+        res.setHeader("Content-Security-Policy-Report-Only", policy);
+        next();
+      });
+    },
+  };
+}
+
+/**
+ * Il mirror statico (`docs/`) non può inviare header: la policy stretta arriva
+ * come <meta> nell'index compilato, così l'anteprima su GitHub Pages ha le
+ * stesse regole del server Bun (tranne `frame-ancestors`, non supportato in meta).
+ */
+function mirrorCspPlugin(): Plugin {
+  const policy = [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://img.youtube.com",
+    "font-src 'self'",
+    "connect-src 'self' https://docs.google.com",
+    "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join("; ");
+
+  return {
+    name: "mirror-csp-meta",
+    apply: "build",
+    transformIndexHtml(html: string) {
+      return html.replace(
+        "</head>",
+        `    <meta http-equiv="Content-Security-Policy" content="${policy}" />\n  </head>`,
+      );
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, root, "");
   Object.assign(process.env, env);
@@ -46,7 +105,15 @@ export default defineConfig(({ mode }) => {
     // All env files live at the repo root - keep Vite's own env loading there too,
     // so packages/web/.env* files can never shadow the root .env.
     envDir: root,
-    plugins: [honoDevPlugin(), react(), tailwind(), assetOptimizerPlugin(), serviceWorkerVersion()],
+    plugins: [
+      honoDevPlugin(),
+      react(),
+      tailwind(),
+      assetOptimizerPlugin(),
+      serviceWorkerVersion(),
+      devCspPlugin(),
+      mirrorCspPlugin(),
+    ],
     build: {
       // Separa le librerie sempre caricate (React, oRPC, lucide) dal codice
       // dell'app: dopo un deploy i visitatori che tornano riutilizzano la cache

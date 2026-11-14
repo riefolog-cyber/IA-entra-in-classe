@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 
 import app from "../../index";
+import { clearAnalysisCache } from "../profile-analysis";
 
 const originalEnv = { ...process.env };
 const originalFetch = globalThis.fetch;
@@ -28,6 +29,7 @@ async function readResult(response: Response) {
 }
 
 beforeEach(() => {
+  clearAnalysisCache();
   process.env = { ...originalEnv };
   setEnv({
     AI_ANALYSIS_RATE_LIMIT: "0",
@@ -42,6 +44,38 @@ afterEach(() => {
 });
 
 describe("analisi IA - rami di errore", () => {
+  test("origine esterna → forbidden_origin, senza chiamare il provider", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_ALLOWED_ORIGINS: undefined,
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      return new Response("nope", { status: 500 });
+    }) as typeof fetch;
+
+    const request = new Request("http://localhost/api/rpc/analyzeProfile", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        host: "localhost",
+        origin: "https://evil.example",
+      },
+      body: JSON.stringify({
+        json: { summary: "Tappa 1: riflessione professionale sull’uso dell’IA in classe." },
+      }),
+    });
+
+    const result = await readResult(await app.fetch(request));
+
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe("forbidden_origin");
+    expect(calls).toBe(0);
+  });
+
   test("configurazione mancante → missing_config, senza chiamare il provider", async () => {
     setEnv({ AI_GATEWAY_BASE_URL: undefined, AI_GATEWAY_API_KEY: undefined });
 
@@ -114,6 +148,42 @@ describe("analisi IA - rami di errore", () => {
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("provider_error");
     expect(String(result.message)).toContain("503");
+    expect(calls).toBe(1);
+  });
+
+  test("la stessa sintesi non richiama il provider due volte", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      return new Response(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content:
+                  '{"headline":"Titolo","narrative":"Testo","strengths":["a"],"tensions":["b"],"questions":["c"],"nextStep":"d","caution":"e"}',
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const summary =
+      "Tappa 3: verifica delle fonti e valutazione condivisa nel dipartimento di storia dell'arte.";
+
+    const first = await readResult(await app.fetch(makeRequest(summary)));
+    const second = await readResult(await app.fetch(makeRequest(summary)));
+
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(true);
+    expect(second.cached).toBe(true);
     expect(calls).toBe(1);
   });
 

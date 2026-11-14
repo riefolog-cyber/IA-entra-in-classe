@@ -5,7 +5,7 @@ services:
     plan: free
     region: frankfurt
     buildCommand: bun install && bun run build:web
-    startCommand: bun packages/web/src/__server.ts
+    startCommand: bun packages/web/src/server.ts
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
@@ -24,3 +24,5 @@ services:
         value: "20"
       - key: AI_ANALYSIS_RATE_LIMIT_GLOBAL
         value: "120"
+      - key: AI_ANALYSIS_DAILY_LIMIT
+        value: "500"
