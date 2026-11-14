@@ -1,6 +1,6 @@
 // Il segnaposto viene sostituito in build da vite.config.ts (plugin sw-version):
 // ogni deploy invalida la cache senza dover ricordare di cambiare un numero a mano.
-const BUILD_ID = "19d045323b";
+const BUILD_ID = "ab2f7e0f01";
 const CACHE = `restare-umani-${BUILD_ID.startsWith("__") ? "dev" : BUILD_ID}`;
 const PRECACHE = ["./", "./manifest.json"];
 
