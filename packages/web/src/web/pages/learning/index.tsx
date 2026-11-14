@@ -5,6 +5,7 @@ import {
   BookOpen,
   Check,
   CheckCircle2,
+  ClipboardList,
   Download,
   Feather,
   LayoutGrid,
@@ -193,6 +194,14 @@ export default function Learning() {
             >
               <LayoutGrid size={18} />
               Il tuo percorso
+            </button>
+
+            <button
+              className={`nav-item nav-item-sub ${view === "summary" ? "active" : ""}`}
+              onClick={() => go("summary")}
+            >
+              <ClipboardList size={16} />
+              Il mio riepilogo
             </button>
 
             <button

@@ -359,6 +359,24 @@ export function HomeView(props: HomeProps) {
           </div>
         </section>
 
+        <section className="home-bottom">
+          <div>
+            <LockKeyhole size={20} />
+
+            <span>
+              Un quaderno professionale, non una certificazione.
+              <small>
+                Non inserire dati degli studenti. Su dispositivi condivisi, esporta e cancella le
+                risposte.
+              </small>
+            </span>
+          </div>
+
+          <button className="text-button" onClick={() => go("summary")}>
+            Il mio riepilogo <ArrowRight size={16} />
+          </button>
+        </section>
+
         <section className="quote-band quote-band-with-image">
           <div className="section-visual">
             <img
@@ -387,23 +405,6 @@ export function HomeView(props: HomeProps) {
           </div>
         </section>
 
-        <section className="home-bottom">
-          <div>
-            <LockKeyhole size={20} />
-
-            <span>
-              Un quaderno professionale, non una certificazione.
-              <small>
-                Non inserire dati degli studenti. Su dispositivi condivisi, esporta e cancella le
-                risposte.
-              </small>
-            </span>
-          </div>
-
-          <button className="text-button" onClick={() => go("summary")}>
-            Il mio riepilogo <ArrowRight size={16} />
-          </button>
-        </section>
       </>
     </>
   );

@@ -172,6 +172,11 @@ a {
 .nav-item:hover {
   background: #e3e8dc;
 }
+.nav-item.nav-item-sub {
+  padding-left: 26px;
+  font-size: 11px;
+  gap: 10px;
+}
 .path-label {
   margin-top: 32px;
   margin-bottom: 12px;
@@ -7755,6 +7760,7 @@ body.dark,
       100% 0%,
       50% 100%,
       0 0;
+    filter: saturate(1);
   }
   100% {
     background-position:
@@ -7762,6 +7768,7 @@ body.dark,
       88% 8%,
       46% 92%,
       0 0;
+    filter: saturate(1.08);
   }
 }
 .topbar {
