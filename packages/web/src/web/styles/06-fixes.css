@@ -3506,3 +3506,31 @@ body.dark .summary-cta-badge {
     break-inside: avoid;
   }
 }
+
+/* Barra del riepilogo in home: sotto il percorso, prima della citazione. */
+.home-bottom.home-summary-bar {
+  margin-top: 6px;
+  border-color: #cfdcc4 !important;
+  background:
+    linear-gradient(135deg, rgba(40, 76, 62, 0.06), rgba(122, 155, 99, 0.12)), #f6f8f1 !important;
+}
+
+body.dark .home-bottom.home-summary-bar,
+.dark .home-bottom.home-summary-bar {
+  border-color: #355045 !important;
+  background:
+    linear-gradient(135deg, rgba(158, 196, 147, 0.08), rgba(94, 150, 170, 0.06)), #141f1a !important;
+}
+
+@media (max-width: 720px) {
+  .home-bottom.home-summary-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* Pulsante non pronto: resta focalizzabile per spiegare il motivo. */
+.button[aria-disabled="true"] {
+  opacity: 0.75;
+  cursor: not-allowed;
+}

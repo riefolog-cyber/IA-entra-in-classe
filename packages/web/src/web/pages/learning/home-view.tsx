@@ -233,10 +233,11 @@ export function HomeView(props: HomeProps) {
 
         <div>
           <div className="eyebrow">COSA OTTIENI</div>
-          <h2>Un quaderno, non un attestato.</h2>
+          <h2>Un quaderno, non una certificazione.</h2>
           <ul>
             <li>Le risposte, i quiz e gli scenari delle 10 tappe</li>
             <li>Un PDF con risposte, quiz e scenari</li>
+            <li>Un&apos;attestazione di partecipazione, se la vuoi</li>
             <li>PDF e JSON da conservare, stampare o spostare</li>
           </ul>
         </div>
@@ -356,7 +357,7 @@ export function HomeView(props: HomeProps) {
         </div>
       </section>
 
-      <section className="home-bottom">
+      <section className="home-bottom home-summary-bar">
         <div>
           <LockKeyhole size={20} />
 

@@ -8,12 +8,25 @@ const PAPER: [number, number, number] = [246, 243, 234];
 const INK: [number, number, number] = [32, 59, 50];
 const MUTED: [number, number, number] = [110, 120, 110];
 
+/** Messaggio unico della guardia: anche l'hook di export lo riusa. */
+export const NAME_REQUIRED_MESSAGE = "Inserisci il tuo nome prima di generare l'attestazione.";
+
+/** L'attestazione richiede un nome: senza, il documento non è intestabile. */
+export function canExportAttestation(state: SavedState): boolean {
+  // Meglio bloccare il pulsante che produrre un PDF con una riga di trattini.
+  return state.name.trim().length > 0;
+}
+
 /**
  * Attestazione di partecipazione, generata nel browser come il resto del
  * quaderno. Non è una certificazione: è la dichiarazione di ciò che il docente
  * ha effettivamente svolto, con i numeri presi dal suo quaderno.
  */
 export async function exportAttestation(state: SavedState) {
+  if (!canExportAttestation(state)) {
+    throw new Error(NAME_REQUIRED_MESSAGE);
+  }
+
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF();
   const pageWidth = 210;
@@ -75,7 +88,7 @@ export async function exportAttestation(state: SavedState) {
   doc.text("DOCENTE", margin + 10, boxTop + 16);
   doc.setFont("times", "normal");
   doc.setFontSize(18);
-  doc.text(name || "________________________________", margin + 10, boxTop + 28);
+  doc.text(name, margin + 10, boxTop + 28);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10.5);
@@ -97,7 +110,7 @@ export async function exportAttestation(state: SavedState) {
     `Verifiche corrette: ${correctQuizzes}/${steps.length}`,
     `Scenari scelti: ${chosen}/${steps.length}`,
   ].join("   ·   ");
-  doc.text(summary, margin + 10, boxTop + 74);
+  doc.text(doc.splitTextToSize(summary, width - 20), margin + 10, boxTop + 74);
 
   doc.setTextColor(...PAPER);
   doc.setFontSize(10);

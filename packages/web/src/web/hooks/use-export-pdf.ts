@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { exportAttestation } from "../lib/export-attestation";
+import { NAME_REQUIRED_MESSAGE, exportAttestation } from "../lib/export-attestation";
 import { exportPdf } from "../lib/export-pdf";
 import { parseState } from "../lib/notebook-state";
 import type { SavedState } from "../lib/teacher-content";
@@ -65,8 +65,13 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       await exportAttestation(data);
       notify("Attestazione generata. Controlla i download del browser.");
-    } catch {
-      setExportError("L'attestazione non è stata generata. Riprova o usa un altro browser.");
+    } catch (error) {
+      // La guardia sul nome è un messaggio per il docente, non un guasto tecnico.
+      setExportError(
+        error instanceof Error && error.message === NAME_REQUIRED_MESSAGE
+          ? NAME_REQUIRED_MESSAGE
+          : "L'attestazione non è stata generata. Riprova o usa un altro browser.",
+      );
     } finally {
       setExporting(false);
     }

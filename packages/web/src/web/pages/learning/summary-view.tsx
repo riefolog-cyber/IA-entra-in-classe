@@ -11,6 +11,7 @@ import { useState, type ReactNode, type RefObject } from "react";
 
 import { useAiAnalysis } from "../../hooks/use-ai-analysis";
 import { useFeedback } from "../../hooks/use-feedback";
+import { canExportAttestation } from "../../lib/export-attestation";
 import { MAX_NAME_LENGTH, type NotebookBackup } from "../../lib/notebook-state";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { buildTeacherProfile } from "../../lib/teacher-profile";
@@ -87,6 +88,7 @@ export function SummaryView(props: SummaryProps) {
   // Analisi deterministica calcolata nel browser: sostituisce il servizio
   // esterno quando il sito è pubblicato in forma statica.
   const localProfile = buildTeacherProfile(data);
+  const attestationReady = canExportAttestation(data);
 
   return (
     <div className="reading-page">
@@ -222,13 +224,23 @@ export function SummaryView(props: SummaryProps) {
 
           {exportButton}
 
-          <button className="button outline" onClick={downloadAttestation}>
-            Scarica l’attestazione di partecipazione
+          <button
+            className="button outline"
+            type="button"
+            onClick={() => {
+              if (!attestationReady) return;
+              downloadAttestation();
+            }}
+            aria-disabled={!attestationReady}
+            aria-describedby="attestation-hint"
+          >
+            Scarica l'attestazione di partecipazione
           </button>
 
-          <p className="page-meta">
-            Autocertificazione di ciò che hai svolto: non è una certificazione e non attribuisce
-            crediti formativi.
+          <p className="page-meta" id="attestation-hint" aria-live="polite">
+            {attestationReady
+              ? "Autocertificazione di ciò che hai svolto: non è una certificazione e non attribuisce crediti formativi."
+              : "Inserisci il tuo nome nel campo qui sotto per generare l'attestazione: serve solo a intestarla e resta in questo browser."}
           </p>
         </div>
       </div>
@@ -338,6 +350,10 @@ export function SummaryView(props: SummaryProps) {
           placeholder="Inserisci il tuo nome"
           onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
         />
+
+        <small className="page-meta">
+          Serve solo per intestare il PDF e l'attestazione; resta in questo browser.
+        </small>
       </label>
 
       {steps.map((s, i) => {
