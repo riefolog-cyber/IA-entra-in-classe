@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://ia-entra-in-classe.onrender.com/</loc>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-1.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-2.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-3.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-4.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-5.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-6.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-7.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-8.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-9.html</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://ia-entra-in-classe.onrender.com/tappe/tappa-10.html</loc><lastmod>2026-11-15</lastmod></url>
 </urlset>

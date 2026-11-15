@@ -1,27 +1,76 @@
 // Il segnaposto viene sostituito in build da vite.config.ts (plugin sw-version):
 // ogni deploy invalida la cache senza dover ricordare di cambiare un numero a mano.
-const BUILD_ID = "ab2f7e0f01";
+const BUILD_ID = "f219c97a84";
 const CACHE = `restare-umani-${BUILD_ID.startsWith("__") ? "dev" : BUILD_ID}`;
-const PRECACHE = ["./", "./manifest.json"];
+// In build il segnaposto diventa l'elenco degli asset compilati: senza, il primo
+// accesso senza rete troverebbe l'HTML e nessuno script. In sviluppo resta una
+// stringa che il filtro scarta.
+const PRECACHE = ["./", "./manifest.json", "./assets/index-BlisKTZZ.js", "./assets/index-CPhgFwZ-.css", "./assets/rolldown-runtime-WkwZ5CU-.js", "./assets/vendor-CyrgsnAU.js"].filter(
+  (path) => path && !path.startsWith("__"),
+);
+// Marcatore di versione dentro la cache: serve ad `activate` per capire quale
+// cache è la più recente, senza dover confrontare gli hash della build.
+const VERSION_PATH = "./__version__";
+// Quante cache oltre alla corrente si conservano. Una: la build appena
+// precedente resta disponibile per le schede aperte durante un aggiornamento.
+const KEEP_PREVIOUS = 1;
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
+      // Un asset mancante non deve far fallire l'intera installazione: gli altri
+      // restano comunque disponibili offline.
+      .then(async (cache) => {
+        await Promise.all(PRECACHE.map((path) => cache.add(path).catch(() => {})));
+        await cache
+          .put(new Request(VERSION_PATH), new Response(`${Date.now()}|${BUILD_ID}`))
+          .catch(() => {});
+      })
       .catch(() => {}),
   );
-  self.skipWaiting();
+  // Niente `skipWaiting()` qui: il worker nuovo resta in attesa. Attivarsi subito
+  // cancellerebbe le cache che la pagina aperta sta ancora usando, e un export
+  // PDF a metà lezione troverebbe i chunk vecchi spariti.
 });
+
+// L'attivazione arriva dalla pagina, quando l'utente sceglie di aggiornare.
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
+});
+
+async function versionOf(cacheName) {
+  try {
+    const cache = await caches.open(cacheName);
+    const marker = await cache.match(VERSION_PATH);
+    if (!marker) return 0;
+    return Number((await marker.text()).split("|")[0]) || 0;
+  } catch {
+    return 0;
+  }
+}
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))),
-      )
-      .catch(() => {}),
+    (async () => {
+      try {
+        const keys = await caches.keys();
+        const others = keys.filter((key) => key !== CACHE);
+
+        // Si conserva la cache più recente oltre alla corrente: una scheda
+        // rimasta aperta su una build precedente può ancora chiedere i suoi
+        // chunk (per esempio un export PDF iniziato prima dell'aggiornamento).
+        const stamped = await Promise.all(
+          others.map(async (key) => ({ key, at: await versionOf(key) })),
+        );
+        stamped.sort((a, b) => b.at - a.at);
+
+        const keep = new Set([CACHE, ...stamped.slice(0, KEEP_PREVIOUS).map((item) => item.key)]);
+        await Promise.all(keys.filter((key) => !keep.has(key)).map((key) => caches.delete(key)));
+      } catch {
+        // Una cache non cancellabile non deve impedire l'attivazione.
+      }
+    })(),
   );
   self.clients.claim();
 });
