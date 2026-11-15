@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test, setSystemTime } from "bun:test";
 
 import app from "../../index";
-import { clearAnalysisCache } from "../profile-analysis";
+import { resetAnalysisStateForTests } from "../profile-analysis";
 
 const originalEnv = { ...process.env };
 const originalFetch = globalThis.fetch;
@@ -29,7 +29,8 @@ async function readResult(response: Response) {
 }
 
 beforeEach(() => {
-  clearAnalysisCache();
+  resetAnalysisStateForTests();
+  setSystemTime(new Date("2026-11-15T10:00:00Z"));
   process.env = { ...originalEnv };
   setEnv({
     AI_ANALYSIS_RATE_LIMIT: "0",
@@ -39,6 +40,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  setSystemTime();
   process.env = { ...originalEnv };
   globalThis.fetch = originalFetch;
 });
@@ -230,5 +232,157 @@ describe("analisi IA - rami di errore", () => {
     expect(result.ok).toBe(true);
     expect((result.analysis as { headline: string }).headline).toBe("Titolo");
     expect((result.analysis as { strengths: string[] }).strengths).toEqual(["a"]);
+  });
+
+  test("una risposta in cache non consuma il limite al minuto", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_ANALYSIS_RATE_LIMIT_GLOBAL: "1",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: '{"headline":"Titolo","narrative":"Testo"}' } }],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const summary = "Tappa 2: verifica delle fonti e uso consapevole dei materiali didattici.";
+    const first = await readResult(await app.fetch(makeRequest(summary)));
+    const second = await readResult(await app.fetch(makeRequest(summary)));
+
+    expect(first.ok).toBe(true);
+    expect(second.ok).toBe(true);
+    expect(second.cached).toBe(true);
+    expect(calls).toBe(1);
+  });
+
+  test("un errore di rete non consuma il budget giornaliero", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_ANALYSIS_DAILY_LIMIT: "1",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      if (calls <= 2) throw new TypeError("Unable to connect");
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: '{"headline":"Riprovato","narrative":"Testo"}' } }],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const summary = "Tappa 4: processo visibile e tracciabilità delle scelte didattiche.";
+    const failed = await readResult(await app.fetch(makeRequest(summary)));
+    const retried = await readResult(await app.fetch(makeRequest(summary)));
+
+    expect(failed.ok).toBe(false);
+    expect(failed.reason).toBe("network_error");
+    expect(retried.ok).toBe(true);
+    expect(calls).toBe(3);
+  });
+
+  test("un errore del provider non consuma il budget giornaliero", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_ANALYSIS_DAILY_LIMIT: "1",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      if (calls === 1) return new Response("errore interno", { status: 500 });
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: '{"headline":"Riprovato","narrative":"Testo"}' } }],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const summary = "Tappa 9: sperimentare, osservare gli effetti e rivedere le scelte.";
+    const failed = await readResult(await app.fetch(makeRequest(summary)));
+    const retried = await readResult(await app.fetch(makeRequest(summary)));
+
+    expect(failed.ok).toBe(false);
+    expect(failed.reason).toBe("provider_error");
+    expect(retried.ok).toBe(true);
+    expect(calls).toBe(2);
+  });
+
+  test("cambiare modello invalida la cache", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_PROFILE_MODEL: "modello-a",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: '{"headline":"Modello","narrative":"Testo"}' } }],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const summary = "Tappa 5: regole condivise e responsabilità nell'uso degli strumenti.";
+    await readResult(await app.fetch(makeRequest(summary)));
+    await readResult(await app.fetch(makeRequest(summary)));
+
+    setEnv({ AI_PROFILE_MODEL: "modello-b" });
+    const third = await readResult(await app.fetch(makeRequest(summary)));
+
+    expect(third.ok).toBe(true);
+    expect(third.cached).toBeUndefined();
+    expect(calls).toBe(2);
+  });
+
+  test("il budget giornaliero riparte il giorno dopo", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_ANALYSIS_DAILY_LIMIT: "1",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      return new Response(
+        JSON.stringify({
+          choices: [{ message: { content: '{"headline":"Giorno","narrative":"Testo"}' } }],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const first = await readResult(
+      await app.fetch(makeRequest("Tappa 6: comunicazione chiara e trasparenza dei criteri.")),
+    );
+    const exhausted = await readResult(
+      await app.fetch(makeRequest("Tappa 7: inclusione, dati e protezione degli studenti.")),
+    );
+
+    setSystemTime(new Date("2026-11-16T10:00:00Z"));
+    const nextDay = await readResult(
+      await app.fetch(makeRequest("Tappa 8: progettazione inclusiva e adattamenti ragionevoli.")),
+    );
+
+    expect(first.ok).toBe(true);
+    expect(exhausted.reason).toBe("daily_limit");
+    expect(nextDay.ok).toBe(true);
+    expect(calls).toBe(2);
   });
 });

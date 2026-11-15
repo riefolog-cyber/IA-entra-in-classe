@@ -92,8 +92,11 @@ type CachedAnalysis = { at: number; model: string; analysis: Record<string, unkn
 const analysisCache = new Map<string, CachedAnalysis>();
 
 /** SHA-256 via Web Crypto: niente import di `node:*` (il file è condiviso con il pacchetto mobile). */
-async function cacheKey(summary: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(summary));
+async function cacheKey(model: string, summary: string): Promise<string> {
+  // Il testo del prompt fa parte della chiave: modificare le istruzioni
+  // invalida la cache senza dover ricordare di cambiare un numero a mano.
+  const material = `${buildPrompt("")}\n${model}\n${summary}`;
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(material));
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
@@ -105,27 +108,44 @@ function rememberAnalysis(key: string, model: string, analysis: Record<string, u
   analysisCache.set(key, { at: Date.now(), model, analysis });
 }
 
-/** Solo per i test: la cache è di processo e non deve attraversare gli scenari. */
-export function clearAnalysisCache() {
-  analysisCache.clear();
-}
-
 let dailyDate = "";
 let dailyCount = 0;
 
-/** Conta solo le richieste che superano i limiti al minuto e raggiungono il provider. */
-function allowDaily(limit: number): boolean {
-  if (limit <= 0) return true;
-
+/** Azzera il contatore quando cambia il giorno (fuso UTC, come il resto del file). */
+function refreshDailyWindow() {
   const today = new Date().toISOString().slice(0, 10);
   if (dailyDate !== today) {
     dailyDate = today;
     dailyCount = 0;
   }
+}
 
-  if (dailyCount >= limit) return false;
+/**
+ * Il budget giornaliero si controlla prima della chiamata ma si consuma solo a
+ * lettura riuscita (vedi `consumeDaily`): un errore di rete o del provider non
+ * deve bruciare la quota. Con richieste simultanee il tetto può essere superato
+ * di poco: preferibile a far pagare all'utente un tentativo fallito.
+ */
+function hasDailyBudget(limit: number): boolean {
+  if (limit <= 0) return true;
+  refreshDailyWindow();
+  return dailyCount < limit;
+}
+
+/** Registra una lettura consegnata al docente. */
+function consumeDaily(limit: number): void {
+  if (limit <= 0) return;
+  refreshDailyWindow();
   dailyCount += 1;
-  return true;
+}
+
+/** Solo per i test: azzera cache e contatori di processo tra uno scenario e l'altro. */
+export function resetAnalysisStateForTests() {
+  analysisCache.clear();
+  dailyDate = "";
+  dailyCount = 0;
+  globalHits.length = 0;
+  perClient.clear();
 }
 
 /** Stato del servizio IA senza segreti: serve a capire un errore dal browser. */
@@ -255,6 +275,22 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     );
   }
 
+  // Modello e cache prima dei limiti: riaprire lo stesso quaderno nello stesso
+  // giorno non deve consumare la quota al minuto, perché il provider non viene
+  // nemmeno contattato.
+  const model = env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini";
+  const key = await cacheKey(model, input.summary);
+  const cached = analysisCache.get(key);
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
+    return {
+      ok: true as const,
+      model: cached.model,
+      analysis: cached.analysis,
+      cached: true,
+      requestId,
+    };
+  }
+
   // Il limite entra in gioco solo quando la richiesta può davvero raggiungere
   // il provider: una configurazione mancante non consuma quota.
   const perClientLimit = readLimit("AI_ANALYSIS_RATE_LIMIT", DEFAULT_PER_CLIENT);
@@ -272,28 +308,14 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     );
   }
 
-  // Una lettura già fatta oggi non consuma né budget né quota.
-  const key = await cacheKey(input.summary);
-  const cached = analysisCache.get(key);
-  if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
-    return {
-      ok: true as const,
-      model: cached.model,
-      analysis: cached.analysis,
-      cached: true,
-      requestId,
-    };
-  }
-
   const dailyLimit = readLimit("AI_ANALYSIS_DAILY_LIMIT", DEFAULT_DAILY);
-  if (!allowDaily(dailyLimit)) {
+  if (!hasDailyBudget(dailyLimit)) {
     return fail(
       "daily_limit",
       `Il budget giornaliero di analisi IA del sito è esaurito (max ${dailyLimit} al giorno). Riprova domani, oppure esporta il quaderno in PDF: le risposte sono già salvate.`,
     );
   }
 
-  const model = env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini";
   const url = baseUrl.includes("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
   const body = JSON.stringify({
     model,
@@ -381,6 +403,7 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
         : "Interpretazione probabilistica: rileggi criticamente e verifica nel tuo contesto.",
   };
 
+  consumeDaily(dailyLimit);
   rememberAnalysis(key, model, analysis);
   return { ok: true as const, model, analysis, requestId };
 });
