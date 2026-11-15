@@ -64,6 +64,8 @@ export function SummaryView(props: SummaryProps) {
   } = props;
   const stepCount = steps.length;
   const [pendingImport, setPendingImport] = useState<File | null>(null);
+  // Il ripristino sostituisce il quaderno: un clic solo è troppo poco.
+  const [pendingRestore, setPendingRestore] = useState<number | null>(null);
 
   const {
     apiAvailable,
@@ -228,7 +230,11 @@ export function SummaryView(props: SummaryProps) {
             className="button outline"
             type="button"
             onClick={() => {
-              if (!attestationReady) return;
+              if (!attestationReady) {
+                // Un clic che non fa nulla sembra un guasto: porta al campo che manca.
+                document.querySelector<HTMLInputElement>('input[aria-label="Nome"]')?.focus();
+                return;
+              }
               downloadAttestation();
             }}
             aria-disabled={!attestationReady}
@@ -329,10 +335,32 @@ export function SummaryView(props: SummaryProps) {
                   <button
                     className="text-button"
                     type="button"
-                    onClick={() => restoreBackup(item.savedAt)}
+                    onClick={() => setPendingRestore(item.savedAt)}
                   >
                     Ripristina
                   </button>
+                  {pendingRestore === item.savedAt && (
+                    <span className="backup-confirm">
+                      <span>Il quaderno attuale verrà conservato come copia. Confermi?</span>
+                      <button
+                        className="button primary"
+                        type="button"
+                        onClick={() => {
+                          restoreBackup(item.savedAt);
+                          setPendingRestore(null);
+                        }}
+                      >
+                        Ripristina questa copia
+                      </button>
+                      <button
+                        className="text-button"
+                        type="button"
+                        onClick={() => setPendingRestore(null)}
+                      >
+                        Annulla
+                      </button>
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -570,10 +598,28 @@ export function SummaryView(props: SummaryProps) {
                     </button>
                   </p>
                 )}
+                <p className="profile-footnote">
+                  <button
+                    className="text-button"
+                    type="button"
+                    onClick={() => {
+                      go("privacy");
+                      // La privacy azzera lo scroll all'ingresso: si arriva al
+                      // pannello quando la vista è montata.
+                      setTimeout(() => {
+                        document
+                          .getElementById("stato-servizio")
+                          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 300);
+                    }}
+                  >
+                    Che cosa può fare il sito adesso?
+                  </button>
+                </p>
               </div>
             )}
             {aiResult?.analysis && (
-              <div className="ai-result">
+              <div className="ai-result" aria-live="polite">
                 <div className="ai-badge">
                   ANALISI IA · {aiResult.model || "modello configurato"}
                 </div>

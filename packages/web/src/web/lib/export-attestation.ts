@@ -87,8 +87,11 @@ export async function exportAttestation(state: SavedState) {
   doc.setFontSize(11);
   doc.text("DOCENTE", margin + 10, boxTop + 16);
   doc.setFont("times", "normal");
-  doc.setFontSize(18);
-  doc.text(name, margin + 10, boxTop + 28);
+  // Un nome lungo va spezzato: a 18 pt esce dal riquadro largo 162 mm. Il tetto
+  // di 80 caratteri non basta a garantire una sola riga.
+  const nameLines = doc.splitTextToSize(name, width - 20).slice(0, 2) as string[];
+  doc.setFontSize(nameLines.length > 1 ? 15 : 18);
+  nameLines.forEach((line, index) => doc.text(line, margin + 10, boxTop + 27 + index * 7));
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10.5);

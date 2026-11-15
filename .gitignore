@@ -74,3 +74,8 @@ packages/mobile/scripts/*
 !packages/mobile/scripts/generate-ios-certs.py
 
 .env
+
+# artefatti dei test end-to-end
+test-results/
+playwright-report/
+blob-report/

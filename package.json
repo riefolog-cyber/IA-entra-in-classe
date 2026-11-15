@@ -18,6 +18,9 @@
     "lint:fix": "oxfmt .",
     "typecheck": "turbo typecheck",
     "test": "bun test packages/web/src",
+    "test:e2e": "cd packages/web && bunx playwright test",
+    "size": "cd packages/web && node vite/check-bundle-size.mjs",
+    "og": "cd packages/web && node vite/generate-og.mjs",
     "db:generate": "turbo db:generate",
     "db:migrate": "turbo db:migrate",
     "db:push": "turbo db:push",
@@ -28,6 +31,7 @@
     "pm2": "^7.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@runablehq/runkit": "0.1.1",
     "@tursodatabase/api": "^1.9.2",
     "@types/bun": "1.3.14",

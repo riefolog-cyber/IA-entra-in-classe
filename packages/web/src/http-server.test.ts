@@ -52,6 +52,13 @@ describe("server di produzione", () => {
     expect([400, 404]).toContain(response.status);
   });
 
+  test("l'HTML non si può mettere in cache: una policy nuova deve arrivare subito", async () => {
+    expect((await request("/")).headers.get("cache-control")).toBe("no-cache");
+    expect((await request("/confini-morali-dell-ai.html")).headers.get("cache-control")).toBe(
+      "no-cache",
+    );
+  });
+
   test("/api risponde con la policy dell'app, non con quella della pagina legacy", async () => {
     const response = await request("/api/health");
 

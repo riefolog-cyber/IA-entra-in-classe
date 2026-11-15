@@ -132,9 +132,9 @@ export function useNotebook() {
   // senza sovrascrivere in silenzio la sessione visibile nell'altra.
   useEffect(() => {
     const onStorage = (event: StorageEvent) => {
-      if (!event.newValue) return;
-
       if (event.key === PREVIOUS_KEY) {
+        // `newValue === null` significa rimozione: `parseState(null)` riporta allo
+        // stato vuoto, che è esattamente ciò che è rimasto nello storage.
         setPreviousData(parseState(event.newValue));
         return;
       }
@@ -145,6 +145,18 @@ export function useNotebook() {
       }
 
       if (event.key !== KEY) return;
+
+      // Rimozione da un'altra scheda («Cancella i miei dati»): qui i dati vecchi
+      // vanno lasciati andare, altrimenti la prima battuta successiva li
+      // riscriverebbe nello storage e la cancellazione sarebbe solo apparente.
+      if (!event.newValue) {
+        skipNextSave.current = true;
+        setData(freshState());
+        setPreviousData(freshState());
+        setBackups([]);
+        notify("I dati sono stati cancellati da un'altra scheda di questo browser.");
+        return;
+      }
 
       // Con una scrittura locale in sospeso si tiene ciò che l'utente sta
       // scrivendo qui: l'ultima scrittura vince, ma non in silenzio.

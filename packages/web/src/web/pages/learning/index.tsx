@@ -27,6 +27,7 @@ import { PrivacyView } from "./privacy-view";
 import { ResourcesView } from "./resources-view";
 import { StepView } from "./step-view";
 import { SummaryView } from "./summary-view";
+import { UpdateBanner } from "./update-banner";
 
 const names: Record<View, string> = {
   home: "Il tuo percorso",
@@ -159,6 +160,8 @@ export default function Learning() {
       <a className="skip-link" href="#main-content">
         Vai al contenuto principale
       </a>
+
+      <UpdateBanner />
 
       <div className="app-shell">
         <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}>

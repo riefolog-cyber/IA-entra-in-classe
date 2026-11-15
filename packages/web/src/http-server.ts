@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import app from "./api";
+import { cspForPath } from "./csp";
 
 /**
  * Server HTTP di produzione (Bun).
@@ -17,48 +18,6 @@ const IMMUTABLE = "public, max-age=31536000, immutable";
 const REVALIDATE = "no-cache";
 const SHORT = "public, max-age=3600";
 
-/**
- * Il sito non carica script di terzi: la CSP può essere stretta. Le eccezioni
- * sono quelle che servono davvero — moduli Google per il feedback, miniature
- * YouTube e i video incorporati della pagina «confini».
- */
-const CONTENT_SECURITY_POLICY = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://img.youtube.com",
-  "font-src 'self'",
-  "connect-src 'self' https://docs.google.com",
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
-  "media-src 'self'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-].join("; ");
-
-/**
- * La pagina «confini» è un artefatto autonomo, con script inline, quattro CDN e
- * immagini remote: la policy stretta la spegnerebbe. Ha quindi una policy
- * propria, più larga, limitata al suo percorso. Resta candidata alla
- * sostituzione con una pagina statica autoconsistente.
- */
-const LEGACY_PAGE = "/confini-morali-dell-ai.html";
-const LEGACY_CONTENT_SECURITY_POLICY = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://d3js.org https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-  "style-src 'self' 'unsafe-inline' https:",
-  "img-src 'self' data: blob: https:",
-  // Font Awesome arriva da cdnjs insieme ai suoi fogli di stile.
-  "font-src 'self' data: https://cdnjs.cloudflare.com",
-  "connect-src 'self' https://generativelanguage.googleapis.com https://gemini.google.com",
-  "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://learningapps.org",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-].join("; ");
-
 const BASE_SECURITY_HEADERS: Record<string, string> = {
   // Il sito è sempre servito in HTTPS da Render: niente downgrade.
   "Strict-Transport-Security": "max-age=15552000",
@@ -68,13 +27,10 @@ const BASE_SECURITY_HEADERS: Record<string, string> = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
 
-function contentSecurityPolicy(pathname: string): string {
-  return pathname === LEGACY_PAGE ? LEGACY_CONTENT_SECURITY_POLICY : CONTENT_SECURITY_POLICY;
-}
-
 function applySecurityHeaders(headers: Headers, pathname = "/"): Headers {
   for (const [name, value] of Object.entries(BASE_SECURITY_HEADERS)) headers.set(name, value);
-  headers.set("Content-Security-Policy", contentSecurityPolicy(pathname));
+  // Le direttive stanno in `csp.ts`: le stesse che finiscono nel <meta> del mirror.
+  headers.set("Content-Security-Policy", cspForPath(pathname));
   return headers;
 }
 

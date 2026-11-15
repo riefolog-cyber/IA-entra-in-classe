@@ -127,10 +127,10 @@ export function useAiAnalysis(data: SavedState) {
       if (error instanceof Error && error.name === "AbortError") {
         setAiError("Lettura annullata. Puoi riprovare quando vuoi.");
       } else {
+        // Il testo tecnico del browser («Failed to fetch») non aiuta un docente:
+        // vale il messaggio scritto, come per tutti gli altri esiti.
         setAiError(
-          error instanceof Error
-            ? error.message
-            : "Analisi IA non disponibile in questa versione del sito. Puoi comunque esportare il tuo quaderno.",
+          "Richiesta IA non riuscita per un problema di rete. Controlla la connessione e riprova: le risposte sono già salvate e puoi esportare il quaderno.",
         );
       }
     } finally {

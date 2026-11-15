@@ -19,6 +19,9 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `bun run lint:fix` applica la formattazione.
 - `bun run typecheck` esegue TypeScript su tutti i pacchetti.
 - `bun test packages/web/src` esegue i test dei contenuti, dello stato e dell'API.
+- `bun run test:e2e` esegue i test end-to-end con Playwright sul sito compilato (prima volta: `bunx playwright install chromium`). Coprono il download dell'attestazione PDF, la cancellazione tra due schede, l'avviso di aggiornamento, la registrazione del service worker e le pagine statiche.
+- `bun run size` verifica il budget di peso: 1400 kB per il bundle JS/CSS, 260 kB per il chunk vendor. Riporta anche il peso delle risorse statiche, che è contenuto e non codice.
+- `bun run og` rigenera l'immagine di condivisione 1200×630 (`packages/web/public/images/og-restare-umani.png`).
 - `bun run db:generate`, `db:migrate`, `db:push` gestiscono il database (non usato dal percorso).
 
 ## Struttura
@@ -28,8 +31,11 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `packages/web/src/web/lib/` — contenuti delle tappe, stato e sua sanificazione, sintesi inviata all'IA, profilo locale, PDF.
 - `packages/web/src/http-server.ts` — server Bun di produzione: file statici, fallback SPA, `Cache-Control` e header di sicurezza (fuori dai file `__` protetti dal template).
 - `packages/web/src/api/` — API Hono + oRPC: `/api/health`, `/api/status` e `analyzeProfile`; `security.ts` applica a tutte le route la stessa regola di origine.
+- `packages/web/src/csp.ts` — unica fonte delle direttive CSP, condivisa da server Bun, `<meta>` del mirror e sviluppo.
+- `packages/web/src/web/boot-guard.ts` — schermata di emergenza se il bootstrap dell'app fallisce.
+- `packages/web/e2e/` — test Playwright sul build, con `playwright.config.ts` che avvia l'anteprima.
 - `packages/web/public/` — asset statici, immagini, font WOFF2, service worker.
-- `docs/` — build statica committata, rigenerata da `build:web`.
+- `docs/` — build statica committata, rigenerata da `build:pages`, con `tappe/` (dieci pagine statiche più l'indice) e `sitemap.xml`.
 
 Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/privacy`): funzionano su GitHub Pages e su qualunque host statico senza rewrite.
 
@@ -61,13 +67,13 @@ Senza queste variabili l'endpoint risponde `missing_config` e il sito resta util
 ## Pubblicazione
 
 - **Render (host principale, con IA)**: `render.yaml` descrive il servizio. Build `bun install && bun run build:web`, avvio `bun packages/web/src/server.ts`, health check `/api/health`. Le variabili `AI_GATEWAY_BASE_URL` e `AI_GATEWAY_API_KEY` vanno impostate in Render → Environment (non nel repository). Con queste variabili l'analisi IA resta attiva; senza, l'endpoint risponde `missing_config` e il riquadro IA mostra l'errore al momento della richiesta.
-- **GitHub Pages**: workflow `.github/workflows/deploy.yml` con job `check` che blocca il deploy se typecheck, lint o test falliscono. È un mirror statico: l'analisi IA non è disponibile lì e la vista ripiega sulla lettura locale con pulsante di riprova.
+- **GitHub Pages**: workflow `.github/workflows/deploy.yml` con job `check` (typecheck, lint, test) e job `e2e` (Playwright su Chromium): il deploy parte solo se entrambi passano. È un mirror statico: l'analisi IA non è disponibile lì e la vista ripiega sulla lettura locale con pulsante di riprova.
 - **Server Bun + pm2**: `bun run start`, con API e analisi IA.
 
 ## Sicurezza
 
-`http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. Il mirror statico in `docs/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header. `GET /api/status` dichiara se l'analisi IA è configurata, il modello, i limiti e il consumo del giorno, con la stessa regola di origine delle procedure e senza alcun segreto.
+Le direttive di policy vivono in `packages/web/src/csp.ts`: le stesse stringhe servono l'header del server Bun, il `<meta>` del mirror e l'header `Report-Only` dello sviluppo, così un'aggiunta fatta per il sito non può rompere in silenzio l'altro deploy. `http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. Il mirror statico in `docs/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header. `GET /api/status` dichiara se l'analisi IA è configurata, il modello, i limiti e il consumo del giorno, con la stessa regola di origine delle procedure e senza alcun segreto.
 
 ## Verifiche
 
-`bun run typecheck`, `bun run lint`, `bun test packages/web/src`, `bun run build:web`. Non esiste ancora una suite end-to-end nel browser.
+`bun run typecheck`, `bun run lint`, `bun test packages/web/src` (57 test), `bun run build:pages`, `bun run size`, `bun run test:e2e` (5 test in Chromium). Il workflow di Pages esegue gli stessi comandi, più build e deploy.

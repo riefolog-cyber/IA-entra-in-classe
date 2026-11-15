@@ -2,6 +2,7 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 import { siteMeta } from "../../lib/site-meta";
 import type { Go } from "./navigation";
+import { ServiceStatus } from "./service-status";
 
 export function PrivacyView({ go }: { go: Go }) {
   return (
@@ -93,6 +94,20 @@ export function PrivacyView({ go }: { go: Go }) {
           dei dati. Per chiarimenti o per chiedere la rimozione di un contenuto puoi usare il
           questionario di feedback.
         </p>
+      </section>
+
+      <section className="activity" id="stato-servizio">
+        <div className="activity-label">
+          <ShieldCheck size={17} />
+          STATO DEL SERVIZIO
+        </div>
+        <h2>Che cosa risponde il server, adesso.</h2>
+        <p>
+          Una lettura in tempo reale di ciò che il sito può fare in questo momento. Serve a capire
+          un errore senza dover chiedere aiuto: dice se l’analisi IA è configurata, quanto budget
+          resta oggi e quante letture sono già in memoria.
+        </p>
+        <ServiceStatus />
       </section>
 
       <section className="activity">

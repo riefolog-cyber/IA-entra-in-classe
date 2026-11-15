@@ -3534,3 +3534,45 @@ body.dark .home-bottom.home-summary-bar,
   opacity: 0.75;
   cursor: not-allowed;
 }
+
+/* === Avviso di versione e conferma di ripristino === */
+.update-banner {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 16px;
+  padding: 10px 18px;
+  background: #203b32;
+  color: #f6f3ea;
+  font-size: 13px;
+  text-align: center;
+}
+.update-banner .button {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.backup-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #d7e0cf;
+  border-radius: 12px;
+  background: #f4f7ef;
+  font-size: 13px;
+}
+.backup-confirm .button {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+body.dark .backup-confirm {
+  background: #1d2b25;
+  border-color: #31463d;
+  color: #e7efe8;
+}
