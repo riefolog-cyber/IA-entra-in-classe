@@ -7,6 +7,7 @@ import {
   analysisKey,
   analysisStatus,
   clientKey,
+  countAnalysis,
   consumeDaily,
   defaults,
   hasDailyBudget,
@@ -165,14 +166,21 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   // Riferimento breve e cercabile nei log: l'utente può citarlo in una segnalazione.
   const requestId = crypto.randomUUID().slice(0, 8);
   // `requestId` è un campo, non parte del messaggio: la vista lo mostra una volta sola.
-  const fail = (reason: string, message: string) => ({
-    ok: false as const,
-    reason,
-    message,
-    requestId,
-    // Dettaglio tecnico utile a chi gestisce il sito: nessun testo del docente.
-    lastError: lastAnalysisFailure(),
-  });
+  // Ogni ingresso si conta: se il numero non cresce, la richiesta non è mai
+  // arrivata al server (o è arrivata a un'altra istanza).
+  countAnalysis("requests");
+
+  const fail = (reason: string, message: string) => {
+    countAnalysis("failed");
+    return {
+      ok: false as const,
+      reason,
+      message,
+      requestId,
+      // Dettaglio tecnico utile a chi gestisce il sito: nessun testo del docente.
+      lastError: lastAnalysisFailure(),
+    };
+  };
 
   // Prima di ogni altra cosa: una chiamata cross-origin non deve consumare quota.
   if (isForeignOrigin(context.headers)) {
@@ -223,6 +231,7 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   });
   const cached = readCache(key);
   if (cached) {
+    countAnalysis("cached");
     return {
       ok: true as const,
       model: cached.model,
@@ -399,6 +408,7 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
   }
 
   consumeDaily(dailyLimit);
+  countAnalysis("succeeded");
   rememberAnalysis(key, { at: Date.now(), model, analysis, droppedQuotes });
   return {
     ok: true as const,

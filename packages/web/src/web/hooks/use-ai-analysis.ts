@@ -165,10 +165,12 @@ export function useAiAnalysis(data: SavedState) {
       if (error instanceof Error && error.name === "AbortError") {
         setAiError("Lettura annullata. Puoi riprovare quando vuoi.");
       } else {
-        // Il testo tecnico del browser («Failed to fetch») non aiuta un docente:
-        // vale il messaggio scritto, come per tutti gli altri esiti.
+        // Qui il guasto è della pagina, non del modello: la richiesta non ha
+        // raggiunto il server. Il messaggio dice questo, perché "problema di
+        // rete" faceva pensare alla connessione del docente.
+        console.error("[analisi-ia] richiesta non inviata:", error);
         setAiError(
-          "Richiesta IA non riuscita per un problema di rete. Controlla la connessione e riprova: le risposte sono già salvate e puoi esportare il quaderno.",
+          "La pagina non è riuscita a contattare il servizio di analisi: la richiesta non ha raggiunto il server. Se stai provando in locale, controlla che il server sia acceso (bun run dev) e ricarica. In alternativa esporta il quaderno e usa il prompt per Gemini qui sotto: le risposte sono già salvate.",
         );
       }
     } finally {

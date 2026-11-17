@@ -152,6 +152,28 @@ export type AnalysisFailure = {
 
 let lastFailure: AnalysisFailure | null = null;
 
+/**
+ * Contatori di processo: distinguono "la richiesta non è mai arrivata" da
+ * "è arrivata e il provider l'ha rifiutata". Senza questi numeri, un errore di
+ * rete del browser e un guasto del gateway hanno lo stesso messaggio.
+ */
+export type AnalysisCounters = {
+  requests: number;
+  cached: number;
+  succeeded: number;
+  failed: number;
+};
+
+const counters: AnalysisCounters = { requests: 0, cached: 0, succeeded: 0, failed: 0 };
+
+export function countAnalysis(step: keyof AnalysisCounters): void {
+  counters[step] += 1;
+}
+
+export function analysisCounters(): AnalysisCounters {
+  return { ...counters };
+}
+
 export function recordFailure(failure: AnalysisFailure): void {
   lastFailure = { ...failure, detail: failure.detail.slice(0, 300) };
 }
@@ -199,6 +221,10 @@ export function limitHint(): string {
 export function resetAnalysisStateForTests() {
   analysisCache.clear();
   lastFailure = null;
+  counters.requests = 0;
+  counters.cached = 0;
+  counters.succeeded = 0;
+  counters.failed = 0;
   dailyDate = "";
   dailyCount = 0;
   globalHits.length = 0;
@@ -231,6 +257,7 @@ export function analysisStatus() {
       },
       // Nessuna chiave, nessun testo del docente: solo il guasto tecnico.
       lastError: lastFailure,
+      counters: analysisCounters(),
     },
   };
 }
