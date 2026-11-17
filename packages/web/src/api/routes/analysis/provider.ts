@@ -121,6 +121,11 @@ export async function requestJson(options: {
   timeoutMs?: number;
   /** `response_format: json_object`: disattivabile se il gateway non lo supporta. */
   jsonMode?: boolean;
+  /**
+   * Tentativi per una caduta di rete (1 o 2). Le letture di tappa usano 1:
+   * se la rete è giù, ritentare dieci volte non aiuta e allunga l'attesa.
+   */
+  attempts?: 1 | 2;
 }): Promise<ProviderOutcome> {
   const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
   const body = (jsonMode: boolean) =>
@@ -144,6 +149,9 @@ export async function requestJson(options: {
       // Un timeout non si ritenta: raddoppierebbe l'attesa senza cambiare esito.
       if (isAbort(firstError)) {
         return { error: { kind: "timeout" as const, detail: describeError(firstError) } };
+      }
+      if (options.attempts === 1) {
+        return { error: { kind: "network" as const, detail: describeError(firstError) } };
       }
       // Un secondo tentativo per una caduta di rete immediata (Wi-Fi, DNS, proxy).
       await new Promise((resolve) => setTimeout(resolve, 700));

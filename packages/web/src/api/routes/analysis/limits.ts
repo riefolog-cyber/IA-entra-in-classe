@@ -134,6 +134,32 @@ export function rememberAnalysis(key: string, entry: CachedAnalysis) {
   analysisCache.set(key, entry);
 }
 
+/**
+ * Ultimo guasto di rete del provider, in memoria e senza segreti.
+ *
+ * "Problema di rete" da solo non permette di capire nulla: qui restano il
+ * codice d'errore (`ENOTFOUND`, `ECONNRESET`, `CERT_HAS_EXPIRED`...), il tipo e
+ * l'istante. Serve al docente per una segnalazione e a chi gestisce il sito per
+ * distinguere un DNS sbagliato da un gateway spento.
+ */
+export type AnalysisFailure = {
+  at: number;
+  requestId: string;
+  kind: string;
+  status?: number;
+  detail: string;
+};
+
+let lastFailure: AnalysisFailure | null = null;
+
+export function recordFailure(failure: AnalysisFailure): void {
+  lastFailure = { ...failure, detail: failure.detail.slice(0, 300) };
+}
+
+export function lastAnalysisFailure(): AnalysisFailure | null {
+  return lastFailure;
+}
+
 let dailyDate = "";
 let dailyCount = 0;
 
@@ -172,6 +198,7 @@ export function limitHint(): string {
 /** Solo per i test: azzera cache e contatori di processo tra uno scenario e l'altro. */
 export function resetAnalysisStateForTests() {
   analysisCache.clear();
+  lastFailure = null;
   dailyDate = "";
   dailyCount = 0;
   globalHits.length = 0;
@@ -201,6 +228,8 @@ export function analysisStatus() {
         dailyUsed: dailyDate === today ? dailyCount : 0,
         cachedAnalyses: analysisCache.size,
       },
+      // Nessuna chiave, nessun testo del docente: solo il guasto tecnico.
+      lastError: lastFailure,
     },
   };
 }

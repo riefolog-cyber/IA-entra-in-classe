@@ -10,9 +10,11 @@ import {
   consumeDaily,
   defaults,
   hasDailyBudget,
+  lastAnalysisFailure,
   limitHint,
   readCache,
   readLimit,
+  recordFailure,
   rememberAnalysis,
   resetAnalysisStateForTests,
 } from "./analysis/limits";
@@ -137,7 +139,7 @@ function failureOf(failure: ProviderFailure) {
     return {
       reason: "network_error",
       message:
-        "Richiesta IA non riuscita per un problema di rete. Controlla la connessione e riprova: le risposte sono già salvate e puoi esportare il quaderno.",
+        "Il sito non è riuscito a raggiungere il servizio IA. Le risposte sono già salvate: riprova tra poco oppure esporta il quaderno. Se il problema continua, la causa è tecnica e riguarda il server, non le tue risposte.",
     };
   }
   if (failure.kind === "provider") {
@@ -168,6 +170,8 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     reason,
     message,
     requestId,
+    // Dettaglio tecnico utile a chi gestisce il sito: nessun testo del docente.
+    lastError: lastAnalysisFailure(),
   });
 
   // Prima di ogni altra cosa: una chiamata cross-origin non deve consumare quota.
@@ -262,8 +266,16 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
         user: buildStepMapPrompt(step),
         maxTokens: MAP_MAX_TOKENS,
         temperature: 0,
+        attempts: 1,
       });
       if (outcome.kind !== "ok") {
+        recordFailure({
+          at: Date.now(),
+          requestId,
+          kind: `map:${outcome.kind}`,
+          status: outcome.status,
+          detail: outcome.detail,
+        });
         console.error(
           `[analisi-ia ${requestId}] mappa tappa ${step.step + 1} non riuscita: ${outcome.kind} ${outcome.detail.slice(0, 160)}`,
         );
@@ -295,18 +307,41 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     : buildSingleShotPrompt(input.summary, input.correction);
 
   // ---------------------------------------------------------------- fase 2
-  const outcome = await requestJson({
-    url,
-    apiKey,
-    model,
-    system: SYSTEM_JSON,
-    user: prompt,
-    maxTokens: SYNTHESIS_MAX_TOKENS,
-    temperature: 0.25,
-  });
+  const askSynthesis = (text: string) =>
+    requestJson({
+      url,
+      apiKey,
+      model,
+      system: SYSTEM_JSON,
+      user: text,
+      maxTokens: SYNTHESIS_MAX_TOKENS,
+      temperature: 0.25,
+      attempts: 2,
+    });
+
+  let outcome = await askSynthesis(prompt);
+  let fallbackUsed = false;
+
+  // Se la pipeline a più chiamate incontra un guasto di rete, si riprova con
+  // UNA sola richiesta più piccola: a volte il problema è la raffica, non il
+  // servizio. Meglio una lettura meno ricca che nessuna lettura.
+  if (outcome.kind === "network" && useMap) {
+    console.error(
+      `[analisi-ia ${requestId}] due fasi non raggiungibili, nuovo tentativo in una sola chiamata`,
+    );
+    outcome = await askSynthesis(buildSingleShotPrompt(input.summary, input.correction));
+    fallbackUsed = outcome.kind === "ok";
+  }
 
   if (outcome.kind !== "ok") {
     const failure = failureOf(outcome);
+    recordFailure({
+      at: Date.now(),
+      requestId,
+      kind: outcome.kind,
+      status: outcome.status,
+      detail: outcome.detail,
+    });
     console.error(
       `[analisi-ia ${requestId}] sintesi non riuscita: ${outcome.kind} ${outcome.detail.slice(0, 200)}`,
     );
@@ -315,6 +350,15 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
 
   const parsed = analysisSchema.safeParse(outcome.json);
   if (!parsed.success) {
+    recordFailure({
+      at: Date.now(),
+      requestId,
+      kind: "schema",
+      detail: parsed.error.issues
+        .slice(0, 5)
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(" | "),
+    });
     console.error(
       `[analisi-ia ${requestId}] schema non valido:`,
       parsed.error.issues.slice(0, 3).map((issue) => issue.path.join(".")),
@@ -352,8 +396,9 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     analysis,
     requestId,
     droppedQuotes,
-    stepsMapped: mapped,
+    stepsMapped: fallbackUsed ? 0 : mapped,
     stepsTotal: dossier?.coverage.stepsTotal ?? STEP_COUNT,
-    twoPhase: useMap,
+    twoPhase: useMap && !fallbackUsed,
+    fallbackUsed,
   };
 });

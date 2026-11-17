@@ -277,6 +277,76 @@ describe("analisi in due fasi", () => {
     expect(analysis.steps[0].evidence[0].verified).toBe(true);
   });
 
+  test("se la rete cade, la lettura riprova in una sola chiamata", async () => {
+    const payload = buildAnalysisPayload({
+      answers: { "0-p0": "Ho verificato le fonti prima di usare la scheda." },
+      completed: [0],
+      current: 0,
+      name: "",
+    });
+
+    let mapCalls = 0;
+    let multiCalls = 0;
+    let fallbackCalls = 0;
+
+    globalThis.fetch = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as { messages: Array<{ content: string }> };
+      const prompt = body.messages[1]?.content ?? "";
+
+      if (prompt.includes("Analizzi UNA tappa alla volta")) {
+        mapCalls += 1;
+        return new Response(
+          JSON.stringify({
+            choices: [
+              {
+                message: {
+                  content:
+                    '{"criterion":"verificare","decision":"controllo","tension":"tempo","quotes":[{"field":"Riflessione 1","quote":"Ho verificato le fonti prima di usare la scheda."}]}',
+                },
+              },
+            ],
+          }),
+          { status: 200 },
+        );
+      }
+      if (!prompt.includes("Nessuna mappatura separata")) {
+        multiCalls += 1;
+        throw new TypeError("Unable to connect");
+      }
+
+      fallbackCalls += 1;
+      return new Response(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content:
+                  '{"headline":"Ripresa","narrative":"Lettura in una sola chiamata.","strengths":["a"],"tensions":["b"],"questions":["c"],"nextStep":"d","caution":"e"}',
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      );
+    }) as typeof fetch;
+
+    const response = await app.fetch(
+      new Request("http://localhost/api/rpc/analyzeProfile", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ json: { summary: payload.summary, dossier: payload.dossier } }),
+      }),
+    );
+
+    const result = ((await response.json()) as { json: Record<string, unknown> }).json;
+    expect(result.ok).toBe(true);
+    expect(result.fallbackUsed).toBe(true);
+    expect(result.twoPhase).toBe(false);
+    expect(mapCalls).toBe(1);
+    expect(multiCalls).toBe(2);
+    expect(fallbackCalls).toBe(1);
+  });
+
   test("con la lettura in due fasi disattivata resta una sola chiamata", async () => {
     setEnv({ AI_ANALYSIS_TWO_PHASE: "0" });
     const payload = buildAnalysisPayload({

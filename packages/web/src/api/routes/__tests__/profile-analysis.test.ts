@@ -129,7 +129,7 @@ describe("analisi IA - rami di errore", () => {
 
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("network_error");
-    expect(String(result.message)).toContain("problema di rete");
+    expect(String(result.message)).toContain("raggiungere il servizio IA");
     expect(calls).toBe(2);
   });
 
