@@ -28,11 +28,18 @@ const phaseColor = (phase?: string): [number, number, number] => {
   }
 };
 
-/**
- * `stepIndex` limita l'esportazione a una sola tappa (stesso layout, meno pagine):
- * serve a chi vuole portare un singolo caso in dipartimento.
- */
-export async function exportPdf(state: SavedState, previousVersion = false, stepIndex?: number) {
+export type ExportPdfOptions = {
+  /** Esporta il quaderno precedente (v1) invece di quello corrente. */
+  previousVersion?: boolean;
+  /** Solo le tappe già lavorate: il lavoro fatto finora, non i dieci capitoli. */
+  partial?: boolean;
+  /** Limita l'esportazione a una sola tappa (0-based): un estratto da portare
+   *  in dipartimento, con lo stesso layout ma meno pagine. */
+  stepIndex?: number;
+};
+
+export async function exportPdf(state: SavedState, options: ExportPdfOptions = {}) {
+  const { previousVersion = false, partial = false, stepIndex } = options;
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF();
 
@@ -161,7 +168,9 @@ export async function exportPdf(state: SavedState, previousVersion = false, step
     clean(
       previousVersion
         ? "Percorso personale precedente"
-        : "IA a scuola: decisioni, evidenze, sperimentazione",
+        : partial
+          ? "Lavoro in corso: il quaderno fin qui"
+          : "IA a scuola: decisioni, evidenze, sperimentazione",
     ),
     margin,
     124,
@@ -194,7 +203,9 @@ export async function exportPdf(state: SavedState, previousVersion = false, step
   newPage();
   sectionTitle("Come leggere questo quaderno", 17);
   para(
-    "Raccoglie le attività del percorso e le risposte presenti al momento dell'esportazione. Le risposte mancanti sono indicate. Non è una valutazione della persona, non è una certificazione e non sostituisce le procedure dell'istituto.",
+    partial
+      ? "Raccoglie le tappe già avviate e le risposte presenti al momento dell'esportazione. Le tappe non ancora iniziate non sono incluse: il quaderno completo si esporta dalla pagina di riepilogo. Non è una valutazione della persona, non è una certificazione e non sostituisce le procedure dell'istituto."
+      : "Raccoglie le attività del percorso e le risposte presenti al momento dell'esportazione. Le risposte mancanti sono indicate. Non è una valutazione della persona, non è una certificazione e non sostituisce le procedure dell'istituto.",
   );
   para(
     "I casi sono inventati e i contenuti sono aggiornati alla data indicata in copertina. Prima di usare uno strumento in classe verifica le condizioni d'uso e le indicazioni del tuo istituto. Non inserire dati identificativi di studenti, colleghi o famiglie.",
@@ -206,7 +217,18 @@ export async function exportPdf(state: SavedState, previousVersion = false, step
       ? [stepIndex]
       : steps.map((_, index) => index);
 
-  stepIndices.forEach((i) => {
+  // Con `partial` restano solo le tappe con almeno una risposta o segnate come
+  // concluse: il PDF rispecchia il lavoro fatto, senza capitoli ancora vuoti.
+  const worked = stepIndices.filter(
+    (index) =>
+      state.completed.includes(index) ||
+      Object.entries(state.answers).some(
+        ([key, value]) => key.startsWith(`${index}-`) && value.trim() !== "",
+      ),
+  );
+  const chapters = partial && worked.length > 0 ? worked : stepIndices;
+
+  chapters.forEach((i) => {
     const step = steps[i];
     newPage();
     // Indice navigabile (segnalibri): jsPDF lo espone dai lettori PDF.
@@ -334,6 +356,8 @@ export async function exportPdf(state: SavedState, previousVersion = false, step
       ? "restare-umani-percorso-precedente.pdf"
       : typeof stepIndex === "number"
         ? `restare-umani-tappa-${stepIndex + 1}.pdf`
-        : "restare-umani-quaderno-docente.pdf",
+        : partial
+          ? "restare-umani-quaderno-in-corso.pdf"
+          : "restare-umani-quaderno-docente.pdf",
   );
 }

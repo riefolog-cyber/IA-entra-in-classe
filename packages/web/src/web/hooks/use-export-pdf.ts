@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 import { NAME_REQUIRED_MESSAGE, exportAttestation } from "../lib/export-attestation";
-import { exportPdf } from "../lib/export-pdf";
+import { exportPdf, type ExportPdfOptions } from "../lib/export-pdf";
 import { parseState } from "../lib/notebook-state";
 import type { SavedState } from "../lib/teacher-content";
 
@@ -19,7 +19,7 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
   const [exportError, setExportError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const download = async (previousVersion = false) => {
+  const download = async (options: ExportPdfOptions = {}) => {
     setExporting(true);
     setExportError("");
 
@@ -27,8 +27,13 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
       // Un frame di respiro: il pulsante mostra lo stato "Generazione…" prima
       // che jsPDF occupi il thread principale.
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      await exportPdf(previousVersion ? previousData : data, previousVersion);
-      notify("PDF generato. Controlla i download del browser.");
+      const state = options.previousVersion ? previousData : data;
+      await exportPdf(state, options);
+      notify(
+        options.partial
+          ? "PDF del lavoro in corso generato. Controlla i download del browser."
+          : "PDF generato. Controlla i download del browser.",
+      );
     } catch {
       setExportError(
         "Il PDF non è stato generato. Riprova o usa un altro browser. Le risposte restano qui.",
@@ -45,7 +50,7 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
 
     try {
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      await exportPdf(data, false, index);
+      await exportPdf(data, { stepIndex: index });
       notify(`PDF della tappa ${index + 1} generato.`);
     } catch {
       setExportError(

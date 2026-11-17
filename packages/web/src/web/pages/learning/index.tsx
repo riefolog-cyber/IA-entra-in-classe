@@ -310,6 +310,17 @@ export default function Learning() {
             </div>
 
             <div className="topbar-right">
+              <button
+                className="topbar-export"
+                type="button"
+                disabled={exporting}
+                onClick={() => download({ partial: true })}
+                aria-label="Esporta in PDF il lavoro fatto finora"
+                title="Esporta in PDF le tappe già avviate"
+              >
+                <Download size={15} />
+                <span>{exporting ? "Generazione…" : "Esporta PDF"}</span>
+              </button>
               <div className={`save-status ${saveMode === "memory" ? "error" : ""}`}>
                 <span />
                 {saveMode === "memory"

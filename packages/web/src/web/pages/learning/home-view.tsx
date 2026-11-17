@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import type { SavedState, Step } from "../../lib/teacher-content";
+import type { ExportPdfOptions } from "../../lib/export-pdf";
 import type { Go } from "./navigation";
 
 type Phase = { name: string; items: { i: number; s: Step }[] };
@@ -28,7 +29,7 @@ type HomeProps = {
   phaseImage: (phase?: string) => string;
   go: Go;
   toggleComplete: (i?: number) => void;
-  download: (previous?: boolean) => void;
+  download: (options?: ExportPdfOptions) => void;
   exporting: boolean;
 };
 
@@ -74,7 +75,11 @@ export function HomeView(props: HomeProps) {
             Le attività sono cambiate: il quaderno docente usa uno spazio distinto, per non
             associare risposte vecchie a domande nuove.
           </p>
-          <button className="text-button" disabled={exporting} onClick={() => download(true)}>
+          <button
+            className="text-button"
+            disabled={exporting}
+            onClick={() => download({ previousVersion: true })}
+          >
             Esporta il percorso precedente <Download size={15} />
           </button>
         </div>
