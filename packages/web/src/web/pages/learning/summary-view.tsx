@@ -454,7 +454,7 @@ export function SummaryView(props: SummaryProps) {
           anche il tuo nome in copertina.
         </p>
 
-        <GeminiPromptBox exportButton={exportButton} notify={notify} />
+        <GeminiPromptBox data={data} exportButton={exportButton} notify={notify} />
       </div>
 
       {!feedbackSent ? (

@@ -17,7 +17,7 @@ export const GEMINI_ANALYSIS_PROMPT = [
   "- la riga «Scelta personale» dello scenario;",
   "- la sezione «La mia motivazione»;",
   "- l'indicazione «Tappa segnata come conclusa», che dice solo che l'ho conclusa.",
-  "Tutto il resto è materiale del corso e non va attribuito a me: introduzione della tappa, «Una chiave di lettura», «In sintesi», la domanda della verifica, le opzioni, la «Risposta corretta», la «Spiegazione», lo scenario proposto e le sue prospettive.",
+  "Tutto il resto è materiale del corso e non va attribuito a me: introduzione della tappa, «Una chiave di lettura», «In sintesi», la domanda della verifica, le opzioni, la «Risposta corretta», la spiegazione che la segue, lo scenario proposto e le sue prospettive.",
   "",
   "REGOLE",
   "- Il percorso ha 10 tappe: considerale TUTTE, comprese quelle non compilate, che vanno dichiarate come non ancora lavorate e NON interpretate.",
@@ -58,3 +58,39 @@ export const GEMINI_PRIVACY_NOTE =
 
 /** Link diretto: nessun tracciamento, si apre in una nuova scheda. */
 export const GEMINI_URL = "https://gemini.google.com/app";
+
+/** Istruzioni brevi per chi usa un modello diverso da Gemini. */
+export const GEMINI_OTHER_MODELS =
+  "Il prompt funziona allo stesso modo con ChatGPT, Claude o un altro assistente: allega il PDF del quaderno, poi incolla il testo. Se il servizio non accetta PDF, esporta il quaderno anche in JSON e allega quello.";
+
+/**
+ * Prompt per una sola tappa.
+ *
+ * Chi porta un caso in dipartimento non deve allegare venti pagine: il PDF di
+ * una tappa si esporta dalla pagina della tappa ("Esporta la tappa in PDF") e
+ * qui il modello riceve istruzioni proporzionate a quel materiale.
+ */
+export function buildGeminiStepPrompt(stepNumber: number, title: string): string {
+  return [
+    `Sei un formatore esperto che accompagna docenti nella riflessione professionale sull'uso dell'IA a scuola. Ti ho allegato il PDF della **tappa ${stepNumber}** («${title}») del mio quaderno di aggiornamento.`,
+    "",
+    "CHE COSA CONTANO COME MIE PAROLE",
+    "Considera MIE SOLO le risposte che compaiono sotto le domande di riflessione, la riga «Risposta scelta», la riga «Scelta personale» e la sezione «La mia motivazione». Tutto il resto è materiale del corso (introduzione, «Una chiave di lettura», «In sintesi», domanda della verifica, opzioni, «Risposta corretta», spiegazione, scenario proposto e prospettive) e non va attribuito a me.",
+    "",
+    "REGOLE",
+    "- Leggi solo questa tappa: non inventare collegamenti con le altre che non puoi vedere.",
+    "- Ogni affermazione deve poggiare su una citazione letterale breve (max 12 parole) delle mie risposte.",
+    "- Non inventare citazioni: se non trovi la frase, togli l'affermazione.",
+    "- Non fare diagnosi, non dare punteggi, non etichettare la persona, non giudicare.",
+    "- Un campo vuoto è un dato mancante, non un segnale psicologico.",
+    "- Scrivi in italiano, in modo chiaro e asciutto.",
+    "",
+    "RISPONDI CON QUESTE SEZIONI",
+    "1. Che cosa mostra questa tappa sul mio modo di decidere (3-5 frasi).",
+    "2. Il criterio che dichiaro e la scelta che faccio: sono allineati o in tensione? Con le citazioni delle due parti.",
+    "3. Una risorsa professionale che riconosco e un punto che merita di essere esplorato.",
+    "4. Due domande aperte per me, senza suggerire la risposta.",
+    "5. Un passo concreto per la prossima settimana, con l'evidenza che mi dirà se ha funzionato.",
+    "6. Avvertenza: una frase sul carattere parziale di una lettura basata su una sola tappa.",
+  ].join("\n");
+}

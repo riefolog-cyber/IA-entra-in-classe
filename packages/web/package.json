@@ -7,7 +7,6 @@
   },
   "scripts": {
     "build": "tsc --noEmit && vite build",
-    "build:pages": "tsc --noEmit && vite build && node -e \"const fs=require('fs');fs.rmSync('../../docs',{recursive:true,force:true});fs.cpSync('dist','../../docs',{recursive:true});fs.writeFileSync('../../docs/.nojekyll','');console.log('docs/ aggiornata')\"",
     "dev": "vite",
     "start": "bun src/server.ts",
     "typecheck": "tsc --noEmit",
@@ -19,12 +18,9 @@
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
-    "@orpc/client": "^1.14.7",
     "@orpc/server": "^1.14.7",
-    "@orpc/tanstack-query": "^1.14.7",
     "@radix-ui/react-slot": "^1.2.4",
     "@runablehq/website-runtime": "^0.11.1",
-    "@tanstack/react-query": "^5.100.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
@@ -34,8 +30,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.5.0",
-    "wouter": "^3.9.0",
-    "zod": "^4.3.6"
+    "wouter": "^3.9.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.1",

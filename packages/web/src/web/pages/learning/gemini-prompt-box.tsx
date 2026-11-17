@@ -1,12 +1,17 @@
-import { Check, Copy, ExternalLink } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Check, Copy, Download, ExternalLink } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import {
   GEMINI_ANALYSIS_PROMPT,
   GEMINI_CORRECTION_PROMPT,
+  GEMINI_OTHER_MODELS,
   GEMINI_PRIVACY_NOTE,
   GEMINI_URL,
+  buildGeminiStepPrompt,
 } from "../../lib/gemini-prompt";
+import { describeCoverage, notebookCoverage } from "../../lib/notebook-coverage";
+import { steps, type SavedState } from "../../lib/teacher-content";
+import { ReadingLog } from "./reading-log";
 
 /** Copia negli appunti con ripiego per i browser che negano `navigator.clipboard`. */
 async function copyText(text: string): Promise<boolean> {
@@ -31,22 +36,41 @@ async function copyText(text: string): Promise<boolean> {
   }
 }
 
+/** Scarica il prompt come testo: funziona anche dove gli appunti sono bloccati. */
+function downloadText(text: string, filename: string) {
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.rel = "noopener";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  // Safari annulla il download se l'URL viene revocato nello stesso tick.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 type GeminiPromptBoxProps = {
+  /** Quaderno corrente: serve a dichiarare la copertura prima dell'invio. */
+  data: SavedState;
   /** Pulsante di esportazione già pronto nella vista: evita due comandi diversi. */
   exportButton?: ReactNode;
   notify?: (message: string) => void;
 };
 
 /**
- * Strada alternativa all'analisi interna: il docente porta il proprio quaderno
- * in un modello esterno con un prompt che chiede lo stesso quadro.
+ * La lettura del percorso, affidata a un modello scelto dal docente.
  *
- * Non è un ripiego nascosto: è un'opzione visibile, perché il PDF è suo e il
- * modello che usa è una sua scelta.
+ * Il sito prepara il prompt, dichiara su quante tappe si fonderà e lascia
+ * scegliere se portare tutto il quaderno o una sola tappa. Nessun testo esce
+ * dal dispositivo per iniziativa del sito: l'invio lo fa il docente, altrove.
  */
-export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) {
+export function GeminiPromptBox({ data, exportButton, notify }: GeminiPromptBoxProps) {
   const [copied, setCopied] = useState<"analysis" | "correction" | null>(null);
   const [failed, setFailed] = useState(false);
+  /** -1 = tutto il quaderno, altrimenti indice della tappa. */
+  const [scope, setScope] = useState(-1);
   // Il timer del messaggio "copiato" non deve sopravvivere al componente.
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
@@ -56,8 +80,21 @@ export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) 
     [],
   );
 
+  const coverage = useMemo(() => notebookCoverage(data), [data]);
+
+  const prompt = useMemo(
+    () =>
+      scope === -1
+        ? GEMINI_ANALYSIS_PROMPT
+        : buildGeminiStepPrompt(scope + 1, steps[scope]?.title ?? "Tappa"),
+    [scope],
+  );
+
+  const filename =
+    scope === -1 ? "prompt-gemini-quaderno.txt" : `prompt-gemini-tappa-${scope + 1}.txt`;
+
   const copy = async (kind: "analysis" | "correction") => {
-    const text = kind === "analysis" ? GEMINI_ANALYSIS_PROMPT : GEMINI_CORRECTION_PROMPT;
+    const text = kind === "analysis" ? prompt : GEMINI_CORRECTION_PROMPT;
     const ok = await copyText(text);
     if (!ok) {
       setFailed(true);
@@ -69,7 +106,7 @@ export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) 
     setCopied(kind);
     notify?.(
       kind === "analysis"
-        ? "Prompt copiato: incollalo in Gemini."
+        ? "Prompt copiato: incollalo nel modello."
         : "Prompt di correzione copiato.",
     );
     if (timer.current) clearTimeout(timer.current);
@@ -89,15 +126,37 @@ export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) 
         <li>
           <strong>Esporta il quaderno in PDF.</strong>
           {exportButton ? <div className="gemini-export">{exportButton}</div> : null}
+          <p className="gemini-coverage">
+            {describeCoverage(coverage)} Il modello leggerà solo ciò che c’è: le tappe vuote restano
+            mute.
+          </p>
         </li>
         <li>
-          <strong>Apri Gemini e allega il PDF.</strong>
+          <strong>Apri il modello e allega il PDF.</strong>
           <a className="text-button" href={GEMINI_URL} target="_blank" rel="noreferrer noopener">
             Apri Gemini <ExternalLink size={14} aria-hidden="true" />
           </a>
         </li>
         <li>
-          <strong>Incolla il prompt.</strong>
+          <strong>Scegli che cosa far leggere, poi incolla il prompt.</strong>
+          <label className="gemini-scope">
+            <span>Ambito del prompt</span>
+            <select value={scope} onChange={(event) => setScope(Number(event.target.value))}>
+              <option value={-1}>Tutto il quaderno</option>
+              {steps.map((step, index) => (
+                <option key={step.title} value={index}>
+                  {`Tappa ${index + 1} — ${step.short}`}
+                  {coverage.worked.includes(index) ? "" : " (vuota)"}
+                </option>
+              ))}
+            </select>
+          </label>
+          {scope !== -1 ? (
+            <p className="gemini-coverage">
+              Per il PDF della sola tappa usa «Esporta la tappa in PDF» nella pagina della tappa: il
+              prompt qui sopra è già scritto per quella.
+            </p>
+          ) : null}
           <div className="gemini-actions">
             <button className="button outline" type="button" onClick={() => void copy("analysis")}>
               {copied === "analysis" ? (
@@ -107,6 +166,16 @@ export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) 
               )}
               {copied === "analysis" ? "Prompt copiato" : "Copia il prompt"}
             </button>
+            <button
+              className="text-button"
+              type="button"
+              onClick={() => {
+                downloadText(prompt, filename);
+                notify?.(`Prompt scaricato: ${filename}`);
+              }}
+            >
+              <Download size={14} aria-hidden="true" /> Scarica .txt
+            </button>
             <button className="text-button" type="button" onClick={() => void copy("correction")}>
               Copia il prompt di correzione (dopo la lettura)
             </button>
@@ -114,7 +183,7 @@ export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) 
           {/* Il cambio di etichetta non basta ai lettori di schermo. */}
           <output className="screen-reader-only" aria-live="polite">
             {copied === "analysis"
-              ? "Prompt di analisi copiato"
+              ? "Prompt copiato"
               : copied === "correction"
                 ? "Prompt di correzione copiato"
                 : ""}
@@ -124,14 +193,21 @@ export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) 
 
       <details className="gemini-prompt-preview">
         <summary>Che cosa contiene il prompt</summary>
-        <pre>{GEMINI_ANALYSIS_PROMPT}</pre>
+        <pre>{prompt}</pre>
+      </details>
+
+      <details className="gemini-prompt-preview">
+        <summary>Se usi un altro modello</summary>
+        <p>{GEMINI_OTHER_MODELS}</p>
       </details>
 
       <p className="profile-footnote gemini-privacy">{GEMINI_PRIVACY_NOTE}</p>
+
+      <ReadingLog scope={scope} notify={notify} />
       {failed ? (
         <p className="profile-footnote">
           La copia automatica non è disponibile: apri «Che cosa contiene il prompt» e copia il testo
-          a mano.
+          a mano, oppure scarica il file .txt.
         </p>
       ) : null}
     </section>

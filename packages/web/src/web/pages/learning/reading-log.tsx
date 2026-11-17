@@ -1,0 +1,193 @@
+import { Check, Copy, Download, Save, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  formatReadingDate,
+  loadReadings,
+  MAX_READING_LENGTH,
+  removeReading,
+  saveReading,
+  type SavedReading,
+} from "../../lib/reading-store";
+import { steps } from "../../lib/teacher-content";
+
+type ReadingLogProps = {
+  /** Ambito selezionato nel riquadro del prompt: la lettura lo eredita. */
+  scope: number;
+  notify?: (message: string) => void;
+};
+
+function scopeLabel(scope: number | null): string {
+  if (scope === null) return "tutto il quaderno";
+  return `tappa ${scope + 1}${steps[scope] ? ` — ${steps[scope].short}` : ""}`;
+}
+
+/** Copia di riserva, identica a quella del riquadro del prompt. */
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.append(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+}
+
+function downloadReading(reading: SavedReading) {
+  const name =
+    reading.scope === null ? "lettura-quaderno.txt" : `lettura-tappa-${reading.scope + 1}.txt`;
+  const blob = new Blob([reading.text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  link.rel = "noopener";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * Il ritorno della lettura: il docente incolla qui la risposta ricevuta dal
+ * modello e la ritrova accanto al quaderno, con la data. Vive solo nel browser,
+ * come le risposte.
+ */
+export function ReadingLog({ scope, notify }: ReadingLogProps) {
+  const [readings, setReadings] = useState<SavedReading[]>(() => loadReadings());
+  const [text, setText] = useState("");
+  const [model, setModel] = useState("Gemini");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const scopeText = useMemo(() => scopeLabel(scope === -1 ? null : scope), [scope]);
+  const canSave = text.trim().length >= 40;
+
+  const save = () => {
+    if (!canSave) return;
+    setReadings(saveReading({ model, scope: scope === -1 ? null : scope, text }));
+    setText("");
+    notify?.("Lettura conservata su questo dispositivo.");
+  };
+
+  const copy = async (reading: SavedReading) => {
+    const ok = await copyText(reading.text);
+    if (!ok) {
+      notify?.("Copia non riuscita: usa «Scarica .txt».");
+      return;
+    }
+    setCopiedId(reading.id);
+    notify?.("Lettura copiata.");
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  return (
+    <section className="reading-log" aria-labelledby="reading-log-title">
+      <h5 id="reading-log-title">Conserva la lettura ricevuta</h5>
+      <p>
+        Incolla qui la risposta che ti ha dato il modello: resta in questo browser accanto al
+        quaderno, con la data. Il sito non la invia a nessuno e non la controlla.
+      </p>
+
+      <label className="reading-log-field">
+        <span>Modello usato</span>
+        <input
+          type="text"
+          value={model}
+          maxLength={60}
+          placeholder="Gemini"
+          onChange={(event) => setModel(event.target.value)}
+        />
+      </label>
+
+      <label className="reading-log-field">
+        <span>Lettura ({scopeText})</span>
+        <textarea
+          value={text}
+          rows={5}
+          maxLength={MAX_READING_LENGTH}
+          placeholder="Incolla qui il quadro ricevuto dal modello…"
+          onChange={(event) => setText(event.target.value)}
+        />
+      </label>
+
+      <div className="reading-log-actions">
+        <button className="button outline" type="button" disabled={!canSave} onClick={save}>
+          <Save size={15} aria-hidden="true" /> Conserva la lettura
+        </button>
+        {text.trim().length > 0 && !canSave ? (
+          <span className="profile-footnote">Ancora troppo breve per essere conservata.</span>
+        ) : null}
+      </div>
+      <output className="screen-reader-only" aria-live="polite">
+        {readings.length > 0 ? `${readings.length} letture conservate` : ""}
+      </output>
+
+      {readings.length > 0 ? (
+        <ul className="reading-log-list">
+          {readings.map((reading) => (
+            <li key={reading.id}>
+              <div className="reading-log-head">
+                <strong>{formatReadingDate(reading.at)}</strong>
+                <span>
+                  {reading.model || "modello non indicato"} · {scopeLabel(reading.scope)}
+                </span>
+              </div>
+              <details>
+                <summary>Leggi la lettura conservata</summary>
+                <pre>{reading.text}</pre>
+              </details>
+              <div className="reading-log-actions">
+                <button className="text-button" type="button" onClick={() => void copy(reading)}>
+                  {copiedId === reading.id ? (
+                    <Check size={14} aria-hidden="true" />
+                  ) : (
+                    <Copy size={14} aria-hidden="true" />
+                  )}
+                  {copiedId === reading.id ? "Copiata" : "Copia"}
+                </button>
+                <button
+                  className="text-button"
+                  type="button"
+                  onClick={() => downloadReading(reading)}
+                >
+                  <Download size={14} aria-hidden="true" /> Scarica .txt
+                </button>
+                <button
+                  className="text-button"
+                  type="button"
+                  onClick={() => {
+                    setReadings(removeReading(reading.id));
+                    notify?.("Lettura eliminata da questo dispositivo.");
+                  }}
+                >
+                  <Trash2 size={14} aria-hidden="true" /> Elimina
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}

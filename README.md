@@ -12,7 +12,6 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `bun run dev:desktop` e `bun run dev:mobile` avviano i client di piattaforma (scaffolding, non necessari al sito).
 - `bun run build` compila tutti i pacchetti.
 - `bun run build:web` compila il sito in `packages/web/dist`.
-- `bun run --filter @template/web build:pages` compila il sito e rigenera `docs/` (output statico versionato per la pubblicazione).
 - `bun run start` / `bun run stop` avviano o fermano il server Bun di produzione con pm2.
 - `bun run start:server` avvia il server Bun in primo piano (comando usato da Render).
 - `bun run lint` verifica formattazione (oxfmt) e regole di correttezza (oxlint).
@@ -30,12 +29,12 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `packages/web/src/web/hooks/` — quaderno locale (`useNotebook`), esportazione (`useExportPdf`), feedback.
 - `packages/web/src/web/lib/` — contenuti delle tappe, stato e sua sanificazione, prompt per l'analisi esterna, PDF.
 - `packages/web/src/http-server.ts` — server Bun di produzione: file statici, fallback SPA, `Cache-Control` e header di sicurezza (fuori dai file `__` protetti dal template).
-- `packages/web/src/api/` — API Hono + oRPC: `/api/health` e `ping`, senza servizi esterni.
+- `packages/web/src/api/` — server Hono + oRPC: solo `/api/health`, senza servizi esterni né chiavi.
 - `packages/web/src/csp.ts` — unica fonte delle direttive CSP, condivisa da server Bun, `<meta>` del mirror e sviluppo.
 - `packages/web/src/web/boot-guard.ts` — schermata di emergenza se il bootstrap dell'app fallisce.
 - `packages/web/e2e/` — test Playwright sul build, con `playwright.config.ts` che avvia l'anteprima.
 - `packages/web/public/` — asset statici, immagini, font WOFF2, service worker.
-- `docs/` — build statica committata, rigenerata da `build:pages`, con `tappe/` (dieci pagine statiche più l'indice) e `sitemap.xml`.
+- `packages/web/dist/` — build statica (non versionata): la produce `bun run build:web` e la pubblica il workflow di GitHub Pages, con `tappe/` e `sitemap.xml`.
 
 Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/privacy`): funzionano su GitHub Pages e su qualunque host statico senza rewrite.
 
@@ -51,7 +50,9 @@ Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/priv
 
 ## Lettura del percorso con un modello esterno
 
-Il sito non chiama alcun modello e non conserva chiavi. Nel riepilogo, il riquadro "leggi il percorso con Gemini" (`lib/gemini-prompt.ts`) prepara un prompt che chiede un quadro completo — tutte e dieci le tappe, citazioni letterali, dimensioni, coerenza, passi concreti, confidenza — da incollare dopo aver allegato il PDF del quaderno. La scelta del modello e l'invio sono del docente, fuori dal sito.
+Il sito non chiama alcun modello e non conserva chiavi. Nel riepilogo, il riquadro "Leggi il percorso con Gemini" (`lib/gemini-prompt.ts`) prepara un prompt che chiede un quadro completo — tutte e dieci le tappe, citazioni letterali, dimensioni, coerenza, passi concreti, confidenza — da incollare dopo aver allegato il PDF del quaderno. Si può scegliere l'ambito (tutto il quaderno o una sola tappa), copiare il prompt o scaricarlo in `.txt`; il riquadro dichiara prima quante tappe sono lavorate e quali restano vuote (`lib/notebook-coverage.ts`).
+
+La risposta ricevuta dal modello può essere incollata in "Conserva la lettura ricevuta" (`lib/reading-store.ts`): resta in `localStorage` con data, modello e ambito, fino a cinque letture, e si può copiare, scaricare o eliminare. La scelta del modello e l'invio sono del docente, fuori dal sito; nessuna lettura viene inviata o verificata dal sito.
 
 ## Pubblicazione
 
@@ -61,7 +62,7 @@ Il sito non chiama alcun modello e non conserva chiavi. Nel riepilogo, il riquad
 
 ## Sicurezza
 
-Le direttive di policy vivono in `packages/web/src/csp.ts`: le stesse stringhe servono l'header del server Bun, il `<meta>` del mirror e l'header `Report-Only` dello sviluppo, così un'aggiunta fatta per il sito non può rompere in silenzio l'altro deploy. `http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. Il mirror statico in `docs/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header.
+Le direttive di policy vivono in `packages/web/src/csp.ts`: le stesse stringhe servono l'header del server Bun, il `<meta>` del mirror e l'header `Report-Only` dello sviluppo, così un'aggiunta fatta per il sito non può rompere in silenzio l'altro deploy. `http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. La build statica in `dist/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header.
 
 ## Verifiche
 

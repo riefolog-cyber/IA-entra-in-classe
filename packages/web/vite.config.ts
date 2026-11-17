@@ -151,7 +151,7 @@ function devCspPlugin(): Plugin {
 }
 
 /**
- * Il mirror statico (`docs/`) non può inviare header: la policy stretta arriva
+ * La build statica (`dist/`) non può inviare header: la policy stretta arriva
  * come <meta> nell'index compilato, così l'anteprima su GitHub Pages ha le
  * stesse regole del server Bun (tranne `frame-ancestors`, non supportato in meta).
  */

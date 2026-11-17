@@ -9,6 +9,13 @@ import { JSDOM } from "jsdom";
 let dom: JSDOM;
 let copied: string | null = null;
 
+const state = {
+  answers: { "0-p0": "Ho verificato le fonti prima di usare la scheda in classe." },
+  completed: [0],
+  current: 0,
+  name: "",
+};
+
 beforeAll(() => {
   dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", {
     url: "http://localhost/#/riepilogo",
@@ -45,7 +52,7 @@ describe("prompt per Gemini", () => {
     const root = createRoot(container as HTMLElement);
 
     await act(async () => {
-      root.render(<GeminiPromptBox />);
+      root.render(<GeminiPromptBox data={state} />);
     });
 
     const copyButton = [...dom.window.document.querySelectorAll("button")].find((button) =>
@@ -78,10 +85,13 @@ describe("prompt per Gemini", () => {
     const root = createRoot(container);
 
     await act(async () => {
-      root.render(<GeminiPromptBox />);
+      root.render(<GeminiPromptBox data={state} />);
     });
 
     expect(container.textContent ?? "").toContain("nome in copertina");
+    expect(container.textContent ?? "").toContain("1 tappa lavorata su 10");
+    expect(container.textContent ?? "").toContain("ancora vuote");
+    expect(container.querySelector("select")).not.toBeNull();
 
     await act(async () => {
       root.unmount();

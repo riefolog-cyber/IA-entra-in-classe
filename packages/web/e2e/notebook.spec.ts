@@ -70,3 +70,42 @@ test("le pagine statiche delle tappe rispondono", async ({ page }) => {
   expect(html).toContain("Tappa 1 di 10");
   expect(html).toContain('href="../#/tappa/1"');
 });
+
+test("il prompt per Gemini si copia, si scarica e cambia con l'ambito", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/#/riepilogo");
+
+  const box = page.locator(".gemini-box");
+  await expect(box).toBeVisible();
+  await expect(box).toContainText("tappe lavorate su 10");
+
+  await box.getByRole("button", { name: "Copia il prompt", exact: true }).click();
+  const wholeBook = await page.evaluate(() => navigator.clipboard.readText());
+  expect(wholeBook).toContain("10 tappe");
+  expect(wholeBook).toContain("citazione letterale");
+
+  // Ambito: la sola tappa 3.
+  await box.getByRole("combobox").selectOption("2");
+  await box.getByRole("button", { name: "Copia il prompt", exact: true }).click();
+  const single = await page.evaluate(() => navigator.clipboard.readText());
+  expect(single).toContain("tappa 3");
+
+  const download = page.waitForEvent("download");
+  await box.getByRole("button", { name: /Scarica/ }).click();
+  expect((await download).suggestedFilename()).toBe("prompt-gemini-tappa-3.txt");
+
+  // La lettura ricevuta dal modello si conserva accanto al quaderno.
+  await box
+    .getByRole("textbox", { name: /^Lettura/ })
+    .fill(
+      "Lettura di prova: la tappa mostra un criterio chiaro di verifica delle fonti, con una tensione sul tempo disponibile.",
+    );
+  await box.getByRole("button", { name: /Conserva la lettura/ }).click();
+  await expect(box).toContainText("Leggi la lettura conservata");
+
+  await page.reload();
+  await expect(page.locator(".gemini-box")).toContainText("Leggi la lettura conservata");
+});

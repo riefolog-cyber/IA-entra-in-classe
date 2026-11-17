@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ia-entra-in-classe.onrender.com/sitemap.xml
