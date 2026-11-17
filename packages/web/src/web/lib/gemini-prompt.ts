@@ -1,6 +1,6 @@
 /**
- * Prompt per ottenere lo stesso quadro dell'analisi IA caricando il PDF del
- * quaderno in un modello esterno (Gemini, ChatGPT, Claude…).
+ * Prompt per leggere il percorso con un modello esterno (Gemini, ChatGPT,
+ * Claude…), caricando il PDF del quaderno: il sito non chiama alcun modello.
  *
  * Perché vive qui e non nel testo della vista: lo stesso testo serve al
  * pulsante "copia", alla documentazione e ai test che controllano che le

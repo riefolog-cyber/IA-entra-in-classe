@@ -2,7 +2,7 @@
 
 Percorso di aggiornamento professionale in italiano per docenti della secondaria di secondo grado: dieci tappe con riflessioni, quiz, scenari, glossario, riferimenti e un quaderno esportabile in PDF o JSON.
 
-Il sito è un'applicazione Vite + React servita dal server Bun su Render (`https://ia-entra-in-classe.onrender.com/`), con API e analisi IA attive. Le risposte restano nel browser; l'analisi del percorso usa il servizio IA configurato, con consenso esplicito, e ha una lettura locale di riserva se il backend non risponde.
+Il sito è un'applicazione Vite + React servita dal server Bun su Render (`https://ia-entra-in-classe.onrender.com/`). Le risposte restano nel browser: il sito calcola l'avanzamento e prepara un prompt da usare con un modello scelto dal docente (per esempio Gemini), allegando il PDF del quaderno. Nessun servizio IA è chiamato dal sito.
 
 ## Comandi
 
@@ -27,10 +27,10 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 ## Struttura
 
 - `packages/web/src/web/pages/learning/` — shell, viste (`home`, `step`, `resources`, `summary`, `privacy`) e rotte con hash.
-- `packages/web/src/web/hooks/` — quaderno locale (`useNotebook`), esportazione (`useExportPdf`), analisi IA (`useAiAnalysis`), feedback.
-- `packages/web/src/web/lib/` — contenuti delle tappe, stato e sua sanificazione, sintesi inviata all'IA, profilo locale, PDF.
+- `packages/web/src/web/hooks/` — quaderno locale (`useNotebook`), esportazione (`useExportPdf`), feedback.
+- `packages/web/src/web/lib/` — contenuti delle tappe, stato e sua sanificazione, prompt per l'analisi esterna, PDF.
 - `packages/web/src/http-server.ts` — server Bun di produzione: file statici, fallback SPA, `Cache-Control` e header di sicurezza (fuori dai file `__` protetti dal template).
-- `packages/web/src/api/` — API Hono + oRPC: `/api/health`, `/api/status` e `analyzeProfile`; `security.ts` applica a tutte le route la stessa regola di origine.
+- `packages/web/src/api/` — API Hono + oRPC: `/api/health` e `ping`, senza servizi esterni.
 - `packages/web/src/csp.ts` — unica fonte delle direttive CSP, condivisa da server Bun, `<meta>` del mirror e sviluppo.
 - `packages/web/src/web/boot-guard.ts` — schermata di emergenza se il bootstrap dell'app fallisce.
 - `packages/web/e2e/` — test Playwright sul build, con `playwright.config.ts` che avvia l'anteprima.
@@ -45,37 +45,23 @@ Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/priv
 - Nessun account, nessun analytics, nessuna profilazione.
 - PDF, attestazione di partecipazione e JSON generati nel browser; cancellazione con conferma.
 - Copie di sicurezza locali (fino a tre) create prima di un'importazione: stessa sede del quaderno, rimosse con lo stesso pulsante di cancellazione.
-- L'analisi IA è opzionale, richiede consenso e invia una sintesi senza il nome. Se il backend non risponde, la vista mostra un'analisi locale deterministica.
+- Nessun testo delle risposte viene inviato dal sito: non ci sono chiamate a servizi IA.
+- Per un'interpretazione più ampia il sito offre un prompt da usare con un modello esterno scelto dal docente (Gemini o altro), allegando il PDF: quello è un invio a un terzo, dichiarato nella pagina e nell'avviso accanto al pulsante.
 - La sintesi informativa è nella pagina `#/privacy`.
 
-## Analisi IA (attiva su Render)
+## Lettura del percorso con un modello esterno
 
-Variabili nel `.env` alla radice:
-
-```
-AI_GATEWAY_BASE_URL=
-AI_GATEWAY_API_KEY=
-AI_PROFILE_MODEL=openai/gpt-4.1-mini
-AI_PROFILE_MAP_MODEL=
-AI_ANALYSIS_ENABLED=1
-AI_ANALYSIS_TWO_PHASE=1
-AI_ANALYSIS_RATE_LIMIT=20
-AI_ANALYSIS_RATE_LIMIT_GLOBAL=120
-AI_ANALYSIS_DAILY_LIMIT=500
-AI_ALLOWED_ORIGINS=
-```
-
-Senza queste variabili l'endpoint risponde `missing_config` e il sito resta utilizzabile, ma senza analisi IA. Su Render vanno inserite nel pannello Environment del servizio: `render.yaml` le dichiara come `sync: false` proprio per non versionare la chiave. I limiti sono in memoria di processo: proteggono da raffiche, non sostituiscono un limite condiviso o la quota del provider. `AI_ANALYSIS_DAILY_LIMIT` limita la spesa su una giornata intera (0 = nessun limite). L'analisi lavora in due fasi: `AI_PROFILE_MAP_MODEL` legge una tappa per volta (vuoto = stesso modello) e il modello principale compone il quadro; `AI_ANALYSIS_TWO_PHASE=0` torna a una sola chiamata; `AI_ANALYSIS_ENABLED=0` spegne l'analisi interna lasciando nella vista il prompt pronto per Gemini. Il budget giornaliero conta le letture consegnate, non le singole chiamate interne. Le richieste con `Origin` diverso da quello del sito vengono rifiutate con `forbidden_origin`: per aggiungere un'origine fidata (per esempio un dominio personalizzato) usare `AI_ALLOWED_ORIGINS`, separando i valori con una virgola. L'endpoint resta senza account per scelta: se lo esponi su un host con traffico reale, metti davanti un limite condiviso o una verifica anti-bot.
+Il sito non chiama alcun modello e non conserva chiavi. Nel riepilogo, il riquadro "leggi il percorso con Gemini" (`lib/gemini-prompt.ts`) prepara un prompt che chiede un quadro completo — tutte e dieci le tappe, citazioni letterali, dimensioni, coerenza, passi concreti, confidenza — da incollare dopo aver allegato il PDF del quaderno. La scelta del modello e l'invio sono del docente, fuori dal sito.
 
 ## Pubblicazione
 
-- **Render (host principale, con IA)**: `render.yaml` descrive il servizio. Build `bun install && bun run build:web`, avvio `bun packages/web/src/server.ts`, health check `/api/health`. Le variabili `AI_GATEWAY_BASE_URL` e `AI_GATEWAY_API_KEY` vanno impostate in Render → Environment (non nel repository). Con queste variabili l'analisi IA resta attiva; senza, l'endpoint risponde `missing_config` e il riquadro IA mostra l'errore al momento della richiesta.
-- **GitHub Pages**: workflow `.github/workflows/deploy.yml` con job `check` (typecheck, lint, test) e job `e2e` (Playwright su Chromium): il deploy parte solo se entrambi passano. È un mirror statico: l'analisi IA non è disponibile lì e la vista ripiega sulla lettura locale con pulsante di riprova.
-- **Server Bun + pm2**: `bun run start`, con API e analisi IA.
+- **Render (host principale)**: `render.yaml` descrive il servizio. Build `bun install && bun run build:web`, avvio `bun packages/web/src/server.ts`, health check `/api/health`. Nessuna chiave o variabile di modello è necessaria.
+- **GitHub Pages**: workflow `.github/workflows/deploy.yml` con job `check` (typecheck, lint, test) e job `e2e` (Playwright su Chromium): il deploy parte solo se entrambi passano. È un mirror statico: il quaderno, il PDF e il prompt per Gemini funzionano allo stesso modo, perché non richiedono backend.
+- **Server Bun + pm2**: `bun run start`, con l'API di base (`/api/health`).
 
 ## Sicurezza
 
-Le direttive di policy vivono in `packages/web/src/csp.ts`: le stesse stringhe servono l'header del server Bun, il `<meta>` del mirror e l'header `Report-Only` dello sviluppo, così un'aggiunta fatta per il sito non può rompere in silenzio l'altro deploy. `http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. Il mirror statico in `docs/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header. `GET /api/status` dichiara se l'analisi IA è configurata, il modello, i limiti e il consumo del giorno, con la stessa regola di origine delle procedure e senza alcun segreto.
+Le direttive di policy vivono in `packages/web/src/csp.ts`: le stesse stringhe servono l'header del server Bun, il `<meta>` del mirror e l'header `Report-Only` dello sviluppo, così un'aggiunta fatta per il sito non può rompere in silenzio l'altro deploy. `http-server.ts` invia a ogni risposta `Content-Security-Policy`, `Referrer-Policy`, `HSTS`, `X-Frame-Options`, `Permissions-Policy` e `nosniff`. La policy dell'app ammette solo risorse della stessa origine, più il modulo Google del feedback, le miniature YouTube e i video incorporati. La pagina `confini-morali-dell-ai.html` è un artefatto autonomo con script inline e CDN esterni: ha una policy propria, più larga, limitata al suo percorso — è candidata alla sostituzione con una pagina statica autoconsistente. Il mirror statico in `docs/` riceve la stessa policy come `<meta>` nell'HTML compilato, perché GitHub Pages non può inviare header.
 
 ## Verifiche
 

@@ -66,21 +66,4 @@ describe("server di produzione", () => {
     expect(response.headers.get("content-security-policy")).toContain("script-src 'self'");
     expect(response.headers.get("content-security-policy")).not.toContain("cdn.tailwindcss.com");
   });
-
-  test("/api/status non espone segreti", async () => {
-    const payload = JSON.stringify(await (await request("/api/status")).json());
-
-    expect(payload).not.toContain("AI_GATEWAY");
-    expect(payload).not.toContain("apiKey");
-    expect(payload).not.toContain("chiave");
-  });
-
-  test("/api/status rifiuta un'origine esterna", async () => {
-    const response = await request("/api/status", {
-      host: "localhost",
-      origin: "https://evil.example",
-    });
-
-    expect(response.status).toBe(403);
-  });
 });

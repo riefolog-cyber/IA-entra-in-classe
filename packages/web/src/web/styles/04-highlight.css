@@ -218,8 +218,7 @@ body {
 .activity-hero-image,
 .scenario-hero-image,
 .perspective-hero-image,
-.completion-hero-image,
-.ai-hero-image {
+.completion-hero-image {
   filter: drop-shadow(0 10px 18px rgba(32, 59, 50, 0.08));
 }
 main {

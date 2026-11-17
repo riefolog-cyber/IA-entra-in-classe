@@ -2,7 +2,6 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 import { siteMeta } from "../../lib/site-meta";
 import type { Go } from "./navigation";
-import { ServiceStatus } from "./service-status";
 
 export function PrivacyView({ go }: { go: Go }) {
   return (
@@ -52,14 +51,17 @@ export function PrivacyView({ go }: { go: Go }) {
           <ShieldCheck size={17} />
           ANALISI DEL PERCORSO
         </div>
-        <h2>Due modi, entrambi espliciti.</h2>
+        <h2>Nessuna lettura automatica: la scelta è tua.</h2>
         <p>
-          Se il sito è pubblicato senza servizi esterni, l’analisi del percorso è calcolata
-          interamente nel browser: nessun testo lascia il dispositivo. Se è attiva l’analisi IA, la
-          funzione resta opzionale e richiede un consenso separato: viene inviata una sintesi
-          scritta del percorso, senza il nome. Il servizio IA configurato dal gestore del sito può
-          conservare quel testo secondo le proprie condizioni. Non inserire dati identificativi di
-          studenti, colleghi o famiglie.
+          Il sito non analizza le tue risposte e non chiama alcun servizio di intelligenza
+          artificiale: le risposte restano nel browser e nessun modello le riceve. Nel riepilogo
+          trovi un prompt già scritto: se vuoi una lettura del percorso, lo copi e lo usi con un
+          modello scelto da te (per esempio Gemini), allegando il PDF del quaderno.
+        </p>
+        <p>
+          Quell’invio avviene fuori dal sito ed è una tua decisione: il testo caricato viene
+          trattato secondo le condizioni del servizio che usi, e il PDF contiene anche il tuo nome
+          in copertina. Non inserire dati identificativi di studenti, colleghi o famiglie.
         </p>
       </section>
 
@@ -94,20 +96,6 @@ export function PrivacyView({ go }: { go: Go }) {
           dei dati. Per chiarimenti o per chiedere la rimozione di un contenuto puoi usare il
           questionario di feedback.
         </p>
-      </section>
-
-      <section className="activity" id="stato-servizio">
-        <div className="activity-label">
-          <ShieldCheck size={17} />
-          STATO DEL SERVIZIO
-        </div>
-        <h2>Che cosa risponde il server, adesso.</h2>
-        <p>
-          Una lettura in tempo reale di ciò che il sito può fare in questo momento. Serve a capire
-          un errore senza dover chiedere aiuto: dice se l’analisi IA è configurata, quanto budget
-          resta oggi e quante letture sono già in memoria.
-        </p>
-        <ServiceStatus />
       </section>
 
       <section className="activity">

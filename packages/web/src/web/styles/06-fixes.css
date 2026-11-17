@@ -1824,65 +1824,8 @@ textarea:focus-visible {
     animation: none !important;
   }
 }
-
-/* === Readability hotfix (light text on light bg) + extra polish === */
-/* Dark mode: force dark surfaces on remaining light containers */
-body.dark .profile-header,
-body.dark .profile-panel,
-body.dark .profile-grid,
-body.dark .profile-report,
-body.dark .profile-option,
-body.dark .profile-compare,
-body.dark .ai-result,
-body.dark .ai-badge,
-body.dark .ai-error,
-body.dark .summary-phases .path-phase,
-body.dark .summary-phases .path-phase-head,
-body.dark .resource-heading,
-body.dark .glossary,
-body.dark .references-section,
-body.dark .references-list,
-body.dark .references-list li,
-body.dark .perspectives,
-body.dark .perspectives > div,
-body.dark .concept-box,
-body.dark .scenario-story,
-body.dark .feedback,
-body.dark .completion-box,
-body.dark .quote-band,
-body.dark .quote-band > div,
-body.dark .notice,
-body.dark .mobile-step-cta,
-body.dark .step-head-visual,
-body.dark .activity,
-body.dark .question-block,
-body.dark .prompt-box,
-body.dark details,
-body.dark details[open],
-body.dark .option-list,
-body.dark .text-field,
-.dark .profile-header,
-.dark .profile-panel,
-.dark .ai-result,
-.dark .details,
-.dark details {
-  background: #18221e !important;
-  background-color: #18221e !important;
-  color: #eaf2ec !important;
-  border-color: #2b3d35 !important;
-}
 body.dark .profile-header {
   background: linear-gradient(180deg, #1c2a25 0%, #18221e 100%) !important;
-}
-body.dark .ai-badge {
-  background: #24352e !important;
-  color: #dff0d8 !important;
-  border: 1px solid #355045 !important;
-}
-body.dark .ai-error {
-  background: #2a1d1a !important;
-  color: #ffd8c9 !important;
-  border-color: #5a3930 !important;
 }
 body.dark .profile-kicker,
 body.dark .activity-label,
@@ -1896,7 +1839,6 @@ body.dark .resource-heading h2 {
 body.dark .profile-header h3,
 body.dark .profile-panel h4,
 body.dark .profile-option h4,
-body.dark .ai-result h4,
 body.dark .concept-box strong,
 body.dark .feedback strong,
 body.dark .completion-box strong,
@@ -1911,8 +1853,6 @@ body.dark .profile-header p,
 body.dark .profile-panel li,
 body.dark .profile-option p,
 body.dark .profile-option li,
-body.dark .ai-result p,
-body.dark .ai-result li,
 body.dark .concept-box p,
 body.dark .feedback p,
 body.dark .feedback small,
@@ -1958,31 +1898,12 @@ body.dark .home-bottom > div > svg,
 body.dark .profile-panel h4 svg {
   color: #bfe0b7 !important;
 }
-
-/* Light mode safety (if ever shown): dark text on light surfaces */
-body:not(.dark) .scenario-story,
-body:not(.dark) .feedback,
-body:not(.dark) .completion-box,
-body:not(.dark) .concept-box,
-body:not(.dark) .profile-header,
-body:not(.dark) .profile-panel,
-body:not(.dark) .profile-option,
-body:not(.dark) .ai-result,
-body:not(.dark) .quote-band,
-body:not(.dark) .notice,
-body:not(.dark) details,
-body:not(.dark) .glossary details,
-body:not(.dark) .option {
-  color: #173127;
-}
 body:not(.dark) .scenario-story,
 body:not(.dark) .feedback p,
 body:not(.dark) .concept-box p,
 body:not(.dark) .profile-header p,
 body:not(.dark) .profile-panel li,
 body:not(.dark) .profile-option p,
-body:not(.dark) .ai-result p,
-body:not(.dark) .ai-result li,
 body:not(.dark) .quote-band blockquote {
   color: #2f4338 !important;
 }
@@ -2460,121 +2381,7 @@ body.dark .option.chosen {
   white-space: pre-line;
   overflow-wrap: anywhere;
 }
-
-/* === Migliorie grafiche: area analisi IA (caricamento, errore, risultato) === */
-.ai-loading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #2f4239;
-  background: linear-gradient(135deg, rgba(36, 53, 46, 0.9), rgba(24, 34, 30, 0.95));
-  color: #deebe1;
-  font-size: 14px;
-  line-height: 1.5;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
-}
-.ai-loading-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex: 0 0 auto;
-  background: #9ec493;
-  box-shadow: 0 0 0 0 rgba(158, 196, 147, 0.55);
-  animation: ai-pulse 1.4s ease-out infinite;
-}
-@keyframes ai-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(158, 196, 147, 0.55);
-    transform: scale(0.95);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(158, 196, 147, 0);
-    transform: scale(1);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(158, 196, 147, 0);
-    transform: scale(0.95);
-  }
-}
-.ai-error {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-weight: 500;
-  line-height: 1.55;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-}
-.ai-error::before {
-  content: "!";
-  flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
-  background: rgba(255, 216, 201, 0.18);
-  color: #ffd8c9;
-  border: 1px solid rgba(255, 216, 201, 0.28);
-}
-body.dark .ai-error::before,
-.dark .ai-error::before {
-  background: rgba(255, 216, 201, 0.16);
-  color: #ffd8c9;
-}
-.ai-result {
-  border-radius: 16px !important;
-  border: 1px solid #355045 !important;
-  background: linear-gradient(180deg, #1a2923 0%, #16211d 100%) !important;
-  box-shadow:
-    0 14px 30px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  padding: 18px 18px 16px !important;
-}
-.ai-result .ai-badge {
-  margin-bottom: 10px;
-}
-.ai-result h4 {
-  font-size: 20px;
-  line-height: 1.3;
-  margin: 4px 0 10px !important;
-}
-.ai-result .grid section {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid #2b3d35;
-  border-radius: 12px;
-  padding: 12px 12px 10px;
-}
-.ai-result .grid section h4 {
-  font-size: 14px !important;
-  margin: 0 0 8px !important;
-  color: #dff0d8 !important;
-  letter-spacing: 0.02em;
-}
-.ai-result ul li {
-  margin: 0;
-}
-.ai-result > p:last-child {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed #355045;
-  font-size: 13px;
-  color: #b9cfc0 !important;
-}
-.ai-actions .button.primary:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  filter: saturate(0.7);
-}
 @media (prefers-reduced-motion: reduce) {
-  .ai-loading-dot {
-    animation: none !important;
-    box-shadow: 0 0 0 4px rgba(158, 196, 147, 0.2);
-  }
 }
 
 /* === Micro-polish home/hero e percorso === */
@@ -3482,8 +3289,7 @@ body.dark .summary-cta-badge {
   .summary-status-actions,
   .summary-progress-bar,
   .mobile-step-cta,
-  .activity-visual,
-  .ai-visual {
+  .activity-visual {
     display: none !important;
   }
 
@@ -3626,275 +3432,6 @@ body.dark .topbar-export:hover:not(:disabled),
   .topbar-export span {
     display: none;
   }
-}
-
-/* ============================================================
-   Analisi IA: il quadro completo
-   Copertura, dieci tappe, dimensioni con citazioni, coerenza,
-   passi concreti. Le prove si aprono solo se il docente le cerca.
-   ============================================================ */
-.analysis-full .analysis-date,
-.analysis-full .analysis-cached {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: 8px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  opacity: 0.85;
-}
-.analysis-coverage {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin: 12px 0;
-  padding: 10px 12px;
-  border: 1px solid #d7e1cf;
-  border-radius: 12px;
-  background: #f3f7ec;
-}
-.analysis-coverage p {
-  margin: 4px 0 0;
-  font-size: 13px;
-  line-height: 1.45;
-}
-.analysis-block {
-  margin: 14px 0;
-  border-top: 1px solid var(--line);
-  padding-top: 10px;
-}
-.analysis-block > summary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  font-weight: 700;
-  color: var(--green-deep);
-}
-.analysis-block[open] > summary {
-  margin-bottom: 10px;
-}
-.analysis-evidence-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: #e8eedf;
-  color: #4c6a48;
-  font-size: 11px;
-  font-weight: 700;
-}
-.analysis-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-.analysis-steps > li {
-  display: grid;
-  grid-template-columns: 34px 1fr;
-  gap: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed var(--line);
-}
-.analysis-steps > li:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
-}
-.analysis-steps p {
-  margin: 2px 0 0;
-  font-size: 14px;
-}
-.analysis-step-number {
-  font-size: 13px;
-  font-weight: 700;
-  color: #7a9670;
-  letter-spacing: 0.04em;
-}
-.analysis-step-empty {
-  opacity: 0.7;
-}
-.analysis-dimensions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 12px;
-}
-.analysis-dimensions h5 {
-  margin: 0 0 4px;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #6d8862;
-}
-.analysis-dimensions p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
-}
-.analysis-question {
-  margin-top: 6px !important;
-  font-style: italic;
-  color: #4c6a48;
-}
-.analysis-evidence {
-  margin-top: 6px;
-}
-.analysis-evidence > summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  color: #6d8862;
-  list-style: none;
-}
-.analysis-evidence > summary::-webkit-details-marker {
-  display: none;
-}
-.analysis-evidence ul {
-  margin: 6px 0 0;
-  padding-left: 14px;
-  display: grid;
-  gap: 6px;
-}
-.analysis-evidence blockquote {
-  margin: 0;
-  font-style: italic;
-  font-size: 13px;
-  color: var(--ink);
-}
-.analysis-evidence-step {
-  font-size: 11px;
-  color: #7a9670;
-  letter-spacing: 0.03em;
-}
-.analysis-coherence {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-.analysis-coherence li {
-  border-left: 3px solid #d7e1cf;
-  padding-left: 10px;
-}
-.analysis-coherence li.is-tension {
-  border-left-color: #d8a24a;
-}
-.analysis-coherence p {
-  margin: 3px 0;
-  font-size: 14px;
-}
-.analysis-tag {
-  display: inline-block;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #6d8862;
-  background: #edf2e6;
-  border-radius: 999px;
-  padding: 2px 8px;
-}
-.analysis-next-steps ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-.analysis-next-steps p {
-  margin: 3px 0;
-  font-size: 13px;
-}
-.analysis-correction {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  display: grid;
-  gap: 8px;
-}
-.analysis-correction label {
-  display: grid;
-  gap: 3px;
-  font-size: 14px;
-}
-.analysis-correction label span {
-  font-size: 13px;
-  color: #5c7360;
-}
-.analysis-correction textarea {
-  width: 100%;
-  border: 1px solid #d7e1cf;
-  border-radius: 10px;
-  padding: 9px 11px;
-  font: inherit;
-  font-size: 14px;
-  background: #fbfcf8;
-  color: var(--ink);
-  resize: vertical;
-}
-.analysis-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-.ai-preview-dossier {
-  margin-top: 8px;
-}
-.ai-preview-dossier pre {
-  max-height: 260px;
-  overflow: auto;
-  margin: 6px 0 0;
-  padding: 10px;
-  border-radius: 10px;
-  background: #f3f5ef;
-  font-size: 11px;
-  line-height: 1.4;
-}
-body.dark .analysis-coverage,
-body.dark .analysis-preview-dossier pre,
-.dark .analysis-coverage {
-  background: #1d2b25 !important;
-  border-color: #355045 !important;
-  color: #e7efe8 !important;
-}
-body.dark .analysis-block > summary,
-body.dark .analysis-block > summary span,
-.dark .analysis-block > summary {
-  color: #d6e8cf !important;
-}
-body.dark .analysis-coverage p,
-body.dark .analysis-correction label span,
-body.dark .analysis-steps p,
-body.dark .analysis-dimensions p,
-body.dark .analysis-question,
-.dark .analysis-coverage p,
-.dark .analysis-correction label span {
-  color: #cfdfd5 !important;
-}
-body.dark .analysis-correction textarea,
-.dark .analysis-correction textarea {
-  background: #131c19 !important;
-  border-color: #355045 !important;
-  color: #e7efe8 !important;
-}
-body.dark .analysis-evidence blockquote,
-.dark .analysis-evidence blockquote {
-  color: #e7efe8 !important;
-}
-body.dark .analysis-evidence-count,
-.dark .analysis-evidence-count {
-  background: #24352e !important;
-  color: #dff0d8 !important;
 }
 
 /* ============================================================

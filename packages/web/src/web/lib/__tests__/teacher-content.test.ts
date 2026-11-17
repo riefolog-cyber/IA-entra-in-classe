@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { emptyState, references, steps, glossary } from "../teacher-content";
-import { buildTeacherProfile } from "../teacher-profile";
+import { references, steps, glossary } from "../teacher-content";
 
 const serialized = JSON.stringify(steps);
 
@@ -52,24 +51,5 @@ describe("contenuti del percorso docenti", () => {
         expect(ref).toBeLessThanOrEqual(steps.length);
       }
     }
-  });
-});
-
-describe("profilo locale", () => {
-  test("resta utilizzabile senza il servizio IA", () => {
-    const profile = buildTeacherProfile({
-      ...emptyState,
-      answers: {
-        "0-p0": "Vorrei verificare le fonti e controllare gli errori dei materiali generati.",
-        "0-quiz": "1",
-        "0-scenario": "0",
-        "0-reason": "Mi confronto con un collega e documento le scelte fatte in classe.",
-      },
-      completed: [0],
-    });
-
-    expect(profile.headline.length).toBeGreaterThan(0);
-    expect(profile.strengths.length).toBeGreaterThan(0);
-    expect(profile.questions.length).toBeGreaterThan(0);
   });
 });

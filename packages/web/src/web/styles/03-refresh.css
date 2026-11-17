@@ -149,8 +149,7 @@ body {
 .summary-step,
 .perspective-card,
 .concept-box,
-.activity,
-.ai-result {
+.activity {
   background: var(--glass);
   backdrop-filter: blur(8px) saturate(1.05);
   -webkit-backdrop-filter: blur(8px) saturate(1.05);
@@ -277,17 +276,6 @@ body {
 .micro-quiz {
   border-left: 3px solid var(--accent);
   background: linear-gradient(135deg, #fbfcf8, #f7f6f0);
-}
-.ai-result {
-  background: linear-gradient(135deg, #fbfcf8, #f4f7ef);
-  border: 1px solid #d7e1cf;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-}
-.ai-badge {
-  background: linear-gradient(135deg, #eaf0e3, #f3e7dc);
-  color: var(--green-deep);
-  border: 1px solid #dce4d3;
 }
 .home-credit-banner {
   background: linear-gradient(135deg, #eaf0e3, #f3e7dc);
@@ -622,8 +610,7 @@ body {
 .summary-step,
 .perspective-card,
 .concept-box,
-.activity,
-.ai-result {
+.activity {
   background: #ffffff;
   border: 2px solid #e8e4dc;
   border-radius: 4px;
@@ -780,20 +767,6 @@ body {
 .save-status {
   color: var(--sage-deep);
   font-weight: 600;
-}
-.ai-result {
-  background: #fff;
-  border: 2px solid #d7e1cf;
-  border-radius: 4px;
-  box-shadow: 6px 6px 0 rgba(31, 61, 51, 0.06);
-}
-.ai-badge {
-  background: var(--accent-hot);
-  color: #fff;
-  border: none;
-  border-radius: 2px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
 }
 .home-credit-banner {
   background: var(--ink-deep);
@@ -1056,20 +1029,6 @@ body {
 .glossary details[open]::before {
   opacity: 1;
 }
-.ai-result {
-  position: relative;
-  overflow: hidden;
-}
-.ai-result::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle at top right, rgba(217, 119, 87, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
 @media (prefers-reduced-motion: reduce) {
   .activity .activity-label::before {
     animation: none !important;
@@ -1253,17 +1212,6 @@ body {
   opacity: 1;
   animation: pulseGlow 2s ease-in-out infinite;
 }
-.ai-result {
-  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-.ai-result::before {
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle at top right, rgba(217, 119, 87, 0.22) 0%, transparent 70%);
-}
-.ai-badge {
-  animation: bounceIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
 .progress-panel {
   animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
@@ -1354,7 +1302,6 @@ body {
   .path-card .card-number,
   .hero,
   .concept-box,
-  .ai-result,
   .progress-panel,
   .micro-quiz {
     animation: none !important;
@@ -1507,23 +1454,6 @@ body {
   opacity: 1;
   animation: pulseGlow 2s ease-in-out infinite;
 }
-.ai-result {
-  position: relative;
-  overflow: hidden;
-}
-.ai-result::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle at top right, rgba(217, 119, 87, 0.2) 0%, transparent 70%);
-  pointer-events: none;
-}
-.ai-badge {
-  animation: bounceIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
 .path-card .card-number {
   animation: bounceIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
@@ -1550,8 +1480,7 @@ body {
   .topbar::after,
   .home-credit-banner::before,
   .scenario-story::before,
-  .glossary details[open],
-  .ai-result::before {
+  .glossary details[open] {
     animation: none !important;
   }
 }
@@ -1730,24 +1659,6 @@ body {
     animation: none !important;
   }
 }
-
-/* ===== Thematic animated elements v5 ===== */
-.ai-result {
-  position: relative;
-  overflow: hidden;
-}
-.ai-result::before {
-  content: "";
-  position: absolute;
-  top: -30px;
-  right: -30px;
-  width: 200px;
-  height: 160px;
-  background: url("../../images/theme/anim-brain.svg") center/contain no-repeat;
-  opacity: 0.12;
-  pointer-events: none;
-  animation: floatSlow 10s ease-in-out infinite;
-}
 .glossary {
   position: relative;
 }
@@ -1780,7 +1691,6 @@ body {
   animation: floatSlow 11s ease-in-out infinite;
 }
 @media (max-width: 720px) {
-  .ai-result::before,
   .glossary::before,
   .progress-panel::before {
     width: 120px;
@@ -1789,7 +1699,6 @@ body {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ai-result::before,
   .glossary::before,
   .progress-panel::before {
     animation: none !important;
@@ -1944,19 +1853,6 @@ body {
 .discipline-case p {
   margin: 0;
   line-height: 1.65;
-}
-.ai-consent {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin: 14px 0 4px;
-  font-size: 13px;
-  line-height: 1.55;
-  cursor: pointer;
-}
-.ai-consent input {
-  margin-top: 3px;
-  flex: 0 0 auto;
 }
 .references-section {
   margin-top: 40px;

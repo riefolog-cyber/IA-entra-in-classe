@@ -9,13 +9,10 @@ import {
 
 import { useState, type ReactNode, type RefObject } from "react";
 
-import { useAiAnalysis } from "../../hooks/use-ai-analysis";
 import { useFeedback } from "../../hooks/use-feedback";
 import { canExportAttestation } from "../../lib/export-attestation";
 import { MAX_NAME_LENGTH, type NotebookBackup } from "../../lib/notebook-state";
 import { steps, type SavedState } from "../../lib/teacher-content";
-import { buildTeacherProfile } from "../../lib/teacher-profile";
-import { AnalysisView } from "./analysis-view";
 import { GeminiPromptBox } from "./gemini-prompt-box";
 import type { Go } from "./navigation";
 
@@ -69,32 +66,9 @@ export function SummaryView(props: SummaryProps) {
   // Il ripristino sostituisce il quaderno: un clic solo è troppo poco.
   const [pendingRestore, setPendingRestore] = useState<number | null>(null);
 
-  const {
-    apiAvailable,
-    aiConsent,
-    setAiConsent,
-    showAiPreview,
-    setShowAiPreview,
-    aiLoading,
-    aiError,
-    aiResult,
-    aiRequestId,
-    aiSummary,
-    aiDossier,
-    redactions,
-    online,
-    runAiAnalysis,
-    cancelAiAnalysis,
-    recheckApi,
-    forgetAnalysis,
-  } = useAiAnalysis(data);
-
   const { feedback, setFeedback, feedbackSent, feedbackError, submitFeedback, resetFeedback } =
     useFeedback(notify);
 
-  // Analisi deterministica calcolata nel browser: sostituisce il servizio
-  // esterno quando il sito è pubblicato in forma statica.
-  const localProfile = buildTeacherProfile(data);
   const attestationReady = canExportAttestation(data);
 
   return (
@@ -467,218 +441,20 @@ export function SummaryView(props: SummaryProps) {
       })}
 
       <div className="activity">
-        <h2>Il mio profilo e l’autocomprensione</h2>
+        <h2>La lettura del percorso</h2>
         <p>
-          L’analisi IA rilegge le tue risposte come un testo professionale: cerca il senso delle
-          scelte, le tensioni e le contraddizioni che emergono dal percorso e propone punti di
-          forza, punti da chiarire, domande aperte e un possibile prossimo passo. Non interpreta i
-          campi vuoti come segnali personali: un silenzio resta un silenzio.
+          Il sito non interpreta le tue risposte e non invia nulla a nessun modello: il quaderno
+          resta sul tuo dispositivo. Per una lettura professionale del percorso puoi però portarlo
+          con te: esporta il PDF, allegalo a Gemini e incolla il prompt già scritto. Il prompt
+          chiede tutte e dieci le tappe, citazioni letterali delle tue parole, dimensioni, coerenza
+          tra intenzioni e pratiche e passi concreti.
         </p>
-        {apiAvailable === false ? (
-          <div className="concept-box">
-            <ShieldCheck size={24} />
-            <div>
-              <strong>Il servizio IA non ha risposto</strong>
-              <p>
-                L’analisi con IA resta disponibile su questa installazione: il controllo del backend
-                non è andato a buon fine, per esempio durante un avvio a freddo o per un problema di
-                rete. Attendi qualche secondo e riprova.
-              </p>
+        <p className="profile-footnote">
+          Il modello che scegli è una tua decisione, fuori dal sito: il PDF che alleghi contiene
+          anche il tuo nome in copertina.
+        </p>
 
-              <button className="button outline" type="button" onClick={recheckApi}>
-                Riprova a contattare il servizio IA
-              </button>
-
-              <h4>Nel frattempo: analisi locale</h4>
-              <p>Questa lettura è calcolata nel browser, senza inviare nulla.</p>
-
-              <h4>{localProfile.headline}</h4>
-              <p>{localProfile.summary}</p>
-
-              <p className="profile-footnote">{localProfile.coverage}</p>
-
-              {localProfile.dimensions.length > 0 ? (
-                <>
-                  <h4>Che cosa emerge, per dimensione</h4>
-                  <div className="analysis-dimensions">
-                    {localProfile.dimensions.map((dimension) => (
-                      <section key={dimension.dimension}>
-                        <h5>{dimension.dimension}</h5>
-                        <p>{dimension.whatEmerges}</p>
-                        <span className="analysis-evidence-step">tappa {dimension.step}</span>
-                      </section>
-                    ))}
-                  </div>
-                </>
-              ) : null}
-
-              <h4>Risorse che riconosci</h4>
-              <ul>
-                {localProfile.strengths.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-
-              <h4>Punti da esplorare</h4>
-              <ul>
-                {localProfile.growth.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-
-              <h4>Domande per te</h4>
-              <ul>
-                {localProfile.questions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-
-              <GeminiPromptBox
-                exportButton={exportButton}
-                hasReading={Boolean(aiResult?.analysis)}
-                notify={notify}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="ai-analysis ai-analysis-with-visual">
-            <div className="ai-visual">
-              <img
-                className="ai-hero-image"
-                src="./images/theme/anim-brain.svg"
-                alt=""
-                aria-hidden="true"
-                loading="eager"
-                decoding="async"
-                width={220}
-                height={180}
-              />
-            </div>
-            <label className="ai-consent">
-              <input
-                type="checkbox"
-                checked={aiConsent}
-                onChange={(event) => setAiConsent(event.target.checked)}
-              />
-              <span>
-                Ho letto le informazioni sopra e acconsento all’invio del testo al servizio IA
-                esterno.
-              </span>
-            </label>
-            <div className="ai-actions">
-              <button
-                className="button outline"
-                type="button"
-                onClick={() => setShowAiPreview((v) => !v)}
-              >
-                {showAiPreview ? "Nascondi dati inviati" : "Mostra dati inviati"}
-              </button>
-              <button
-                className="button primary"
-                type="button"
-                disabled={aiLoading || apiAvailable === null || !aiConsent || !online}
-                onClick={runAiAnalysis}
-              >
-                {aiLoading ? "Lettura in corso…" : "Leggi il mio percorso"}
-              </button>
-              {aiLoading && (
-                <button className="text-button" type="button" onClick={cancelAiAnalysis}>
-                  Annulla la lettura
-                </button>
-              )}
-            </div>
-            {showAiPreview && (
-              <>
-                <textarea
-                  className="ai-preview"
-                  readOnly
-                  value={aiSummary}
-                  aria-label="Dati inviati per l’analisi IA"
-                />
-                <details className="ai-preview-dossier">
-                  <summary>Scheda strutturata inviata insieme al testo</summary>
-                  <pre>{JSON.stringify(aiDossier, null, 2)}</pre>
-                </details>
-                {redactions > 0 ? (
-                  <p className="profile-footnote">
-                    {redactions === 1
-                      ? "Un dato identificativo (email o numero) è stato rimosso prima dell’invio."
-                      : `${redactions} dati identificativi (email o numeri) sono stati rimossi prima dell’invio.`}
-                  </p>
-                ) : null}
-              </>
-            )}
-            {aiLoading && (
-              <output className="ai-loading" aria-live="polite">
-                <span className="ai-loading-dot" aria-hidden="true" />
-                <span>
-                  Sto preparando la lettura del tuo percorso… può richiedere qualche secondo.
-                </span>
-              </output>
-            )}
-            {!online && (
-              <p className="page-meta">
-                Sei offline: l’analisi IA richiede una connessione. Le risposte restano salvate e
-                puoi esportare il quaderno.
-              </p>
-            )}
-            {aiError && (
-              <div className="ai-error" role="alert">
-                {aiError}
-                {aiRequestId && (
-                  <p className="profile-footnote">
-                    Riferimento per l’assistenza: {aiRequestId}{" "}
-                    <button
-                      className="text-button"
-                      type="button"
-                      onClick={() => {
-                        void navigator.clipboard?.writeText(aiRequestId);
-                      }}
-                    >
-                      Copia
-                    </button>
-                  </p>
-                )}
-                <p className="profile-footnote">
-                  <button
-                    className="text-button"
-                    type="button"
-                    onClick={() => {
-                      go("privacy");
-                      // La privacy azzera lo scroll all'ingresso: si arriva al
-                      // pannello quando la vista è montata.
-                      setTimeout(() => {
-                        document
-                          .getElementById("stato-servizio")
-                          ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                      }, 300);
-                    }}
-                  >
-                    Che cosa può fare il sito adesso?
-                  </button>
-                </p>
-              </div>
-            )}
-            {aiResult?.analysis && (
-              <AnalysisView
-                model={aiResult.model}
-                analysis={aiResult.analysis}
-                at={aiResult.at}
-                cached={aiResult.cached}
-                droppedQuotes={aiResult.droppedQuotes}
-                loading={aiLoading}
-                onCorrection={(correction) => void runAiAnalysis(correction)}
-                onForget={forgetAnalysis}
-              />
-            )}
-
-            <GeminiPromptBox
-              exportButton={exportButton}
-              hasReading={Boolean(aiResult?.analysis)}
-              notify={notify}
-            />
-          </div>
-        )}
+        <GeminiPromptBox exportButton={exportButton} notify={notify} />
       </div>
 
       {!feedbackSent ? (
