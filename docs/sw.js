@@ -1,11 +1,11 @@
 // Il segnaposto viene sostituito in build da vite.config.ts (plugin sw-version):
 // ogni deploy invalida la cache senza dover ricordare di cambiare un numero a mano.
-const BUILD_ID = "f219c97a84";
+const BUILD_ID = "6d4eec1564";
 const CACHE = `restare-umani-${BUILD_ID.startsWith("__") ? "dev" : BUILD_ID}`;
 // In build il segnaposto diventa l'elenco degli asset compilati: senza, il primo
 // accesso senza rete troverebbe l'HTML e nessuno script. In sviluppo resta una
 // stringa che il filtro scarta.
-const PRECACHE = ["./", "./manifest.json", "./assets/index-BlisKTZZ.js", "./assets/index-CPhgFwZ-.css", "./assets/rolldown-runtime-WkwZ5CU-.js", "./assets/vendor-CyrgsnAU.js"].filter(
+const PRECACHE = ["./", "./manifest.json", "./assets/index-BhJgJJCI.js", "./assets/index-QC2geclE.css", "./assets/rolldown-runtime-WkwZ5CU-.js", "./assets/vendor-BEOWrtYt.js"].filter(
   (path) => path && !path.startsWith("__"),
 );
 // Marcatore di versione dentro la cache: serve ad `activate` per capire quale
