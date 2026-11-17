@@ -3525,3 +3525,17 @@ body.dark .gemini-privacy,
 .dark .gemini-privacy {
   color: #e0cf9c !important;
 }
+
+/* Testo per i lettori di schermo: presente nell'albero di accessibilità,
+   fuori dalla vista. */
+.screen-reader-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

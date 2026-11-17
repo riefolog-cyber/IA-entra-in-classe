@@ -1,5 +1,5 @@
 import { Check, Copy, ExternalLink } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import {
   GEMINI_ANALYSIS_PROMPT,
@@ -34,8 +34,6 @@ async function copyText(text: string): Promise<boolean> {
 type GeminiPromptBoxProps = {
   /** Pulsante di esportazione già pronto nella vista: evita due comandi diversi. */
   exportButton?: ReactNode;
-  /** Una lettura esiste già: la correzione ha senso solo in quel caso. */
-  hasReading?: boolean;
   notify?: (message: string) => void;
 };
 
@@ -46,9 +44,17 @@ type GeminiPromptBoxProps = {
  * Non è un ripiego nascosto: è un'opzione visibile, perché il PDF è suo e il
  * modello che usa è una sua scelta.
  */
-export function GeminiPromptBox({ exportButton, hasReading, notify }: GeminiPromptBoxProps) {
+export function GeminiPromptBox({ exportButton, notify }: GeminiPromptBoxProps) {
   const [copied, setCopied] = useState<"analysis" | "correction" | null>(null);
   const [failed, setFailed] = useState(false);
+  // Il timer del messaggio "copiato" non deve sopravvivere al componente.
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
 
   const copy = async (kind: "analysis" | "correction") => {
     const text = kind === "analysis" ? GEMINI_ANALYSIS_PROMPT : GEMINI_CORRECTION_PROMPT;
@@ -66,16 +72,17 @@ export function GeminiPromptBox({ exportButton, hasReading, notify }: GeminiProm
         ? "Prompt copiato: incollalo in Gemini."
         : "Prompt di correzione copiato.",
     );
-    setTimeout(() => setCopied(null), 2500);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(null), 2500);
   };
 
   return (
     <section className="gemini-box" aria-labelledby="gemini-title">
-      <h4 id="gemini-title">Oppure: leggi il percorso con Gemini</h4>
+      <h4 id="gemini-title">Leggi il percorso con Gemini</h4>
       <p>
-        Il quaderno in PDF contiene tutto ciò che hai scritto. Puoi caricarlo in Gemini (o in un
-        altro modello) e chiedergli lo stesso quadro che produce questa pagina, con un prompt già
-        scritto: nessun dato passa da questo sito.
+        Il quaderno in PDF contiene tutto ciò che hai scritto. Puoi caricarlo in Gemini, o in un
+        altro modello, con un prompt già scritto: il sito non chiama alcun modello e non conserva
+        chiavi.
       </p>
 
       <ol className="gemini-steps">
@@ -100,12 +107,18 @@ export function GeminiPromptBox({ exportButton, hasReading, notify }: GeminiProm
               )}
               {copied === "analysis" ? "Prompt copiato" : "Copia il prompt"}
             </button>
-            {hasReading ? (
-              <button className="text-button" type="button" onClick={() => void copy("correction")}>
-                Copia il prompt di correzione
-              </button>
-            ) : null}
+            <button className="text-button" type="button" onClick={() => void copy("correction")}>
+              Copia il prompt di correzione (dopo la lettura)
+            </button>
           </div>
+          {/* Il cambio di etichetta non basta ai lettori di schermo. */}
+          <output className="screen-reader-only" aria-live="polite">
+            {copied === "analysis"
+              ? "Prompt di analisi copiato"
+              : copied === "correction"
+                ? "Prompt di correzione copiato"
+                : ""}
+          </output>
         </li>
       </ol>
 

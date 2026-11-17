@@ -22,7 +22,17 @@ describe("prompt per l'analisi esterna", () => {
   test("distingue le parole del docente dal materiale del corso", () => {
     expect(GEMINI_ANALYSIS_PROMPT).toContain("Considera MIE SOLO");
     expect(GEMINI_ANALYSIS_PROMPT).toContain("«Una chiave di lettura»");
+    expect(GEMINI_ANALYSIS_PROMPT).toContain("«Risposta corretta»");
     expect(GEMINI_ANALYSIS_PROMPT).toContain("La mia motivazione");
+  });
+
+  test("usa le etichette che il PDF contiene davvero", () => {
+    // Le etichette sono quelle stampate da export-pdf.ts: se cambiano là, il
+    // prompt deve cambiare qui, altrimenti il modello non trova le risposte.
+    expect(GEMINI_ANALYSIS_PROMPT).toContain("Risposta scelta");
+    expect(GEMINI_ANALYSIS_PROMPT).toContain("Scelta personale");
+    expect(GEMINI_ANALYSIS_PROMPT).toContain("Tappa segnata come conclusa");
+    expect(GEMINI_ANALYSIS_PROMPT).not.toContain("Riflessione 1");
   });
 
   test("mantiene le cautele: nessuna diagnosi, nessun voto", () => {

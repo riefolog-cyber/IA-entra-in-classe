@@ -123,9 +123,9 @@ export function PrivacyView({ go }: { go: Go }) {
         <details className="faq-item">
           <summary>L’IA vede i nomi degli studenti?</summary>
           <p>
-            Non deve vederli. La sintesi inviata esclude il nome del quaderno, ma il testo che
-            scrivi può contenerne altri: non inserire nomi, diagnosi o documenti di studenti e
-            colleghi.
+            Il sito non invia nulla a un’IA: nessun modello riceve le tue risposte. Se decidi tu di
+            caricare il PDF in Gemini, quel file contiene anche il tuo nome in copertina e tutto ciò
+            che hai scritto: non inserire nomi, diagnosi o documenti di studenti e colleghi.
           </p>
         </details>
 
