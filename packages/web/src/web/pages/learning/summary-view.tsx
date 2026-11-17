@@ -16,6 +16,7 @@ import { MAX_NAME_LENGTH, type NotebookBackup } from "../../lib/notebook-state";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { buildTeacherProfile } from "../../lib/teacher-profile";
 import { AnalysisView } from "./analysis-view";
+import { GeminiPromptBox } from "./gemini-prompt-box";
 import type { Go } from "./navigation";
 
 type SummaryProps = {
@@ -531,6 +532,12 @@ export function SummaryView(props: SummaryProps) {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+
+              <GeminiPromptBox
+                exportButton={exportButton}
+                hasReading={Boolean(aiResult?.analysis)}
+                notify={notify}
+              />
             </div>
           </div>
         ) : (
@@ -664,6 +671,12 @@ export function SummaryView(props: SummaryProps) {
                 onForget={forgetAnalysis}
               />
             )}
+
+            <GeminiPromptBox
+              exportButton={exportButton}
+              hasReading={Boolean(aiResult?.analysis)}
+              notify={notify}
+            />
           </div>
         )}
       </div>

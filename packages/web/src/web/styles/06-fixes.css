@@ -3896,3 +3896,95 @@ body.dark .analysis-evidence-count,
   background: #24352e !important;
   color: #dff0d8 !important;
 }
+
+/* ============================================================
+   Analisi con un modello esterno (Gemini)
+   Il quaderno è del docente: se preferisce portarlo altrove, il
+   prompt è già scritto e si copia con un clic.
+   ============================================================ */
+.gemini-box {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px dashed #cfdcc4;
+  border-radius: 12px;
+  background: #f8faf3;
+}
+.gemini-box h4 {
+  margin: 0 0 6px;
+  color: var(--green-deep);
+}
+.gemini-box > p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.gemini-steps {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+}
+.gemini-steps > li {
+  padding-left: 2px;
+}
+.gemini-steps strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.gemini-export,
+.gemini-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.gemini-actions .button {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+.gemini-prompt-preview {
+  margin-top: 10px;
+}
+.gemini-prompt-preview > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5c7360;
+}
+.gemini-prompt-preview pre {
+  max-height: 320px;
+  overflow: auto;
+  margin: 8px 0 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  font-size: 11.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.gemini-privacy {
+  margin-top: 10px;
+  color: #7a6a3f;
+}
+body.dark .gemini-box,
+.dark .gemini-box {
+  background: #17211d !important;
+  border-color: #355045 !important;
+  color: #e7efe8 !important;
+}
+body.dark .gemini-box h4,
+.dark .gemini-box h4 {
+  color: #f6fbf7 !important;
+}
+body.dark .gemini-prompt-preview pre,
+.dark .gemini-prompt-preview pre {
+  background: #0f1714 !important;
+  border-color: #2b3d35 !important;
+  color: #dfeae3 !important;
+}
+body.dark .gemini-privacy,
+.dark .gemini-privacy {
+  color: #e0cf9c !important;
+}

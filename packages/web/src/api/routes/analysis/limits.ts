@@ -216,6 +216,7 @@ export function analysisStatus() {
       configured: Boolean(env("AI_GATEWAY_BASE_URL") && env("AI_GATEWAY_API_KEY")),
       model: env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini",
       mapModel: env("AI_PROFILE_MAP_MODEL") || env("AI_PROFILE_MODEL") || "openai/gpt-4.1-mini",
+      enabled: env("AI_ANALYSIS_ENABLED") !== "0",
       twoPhase: env("AI_ANALYSIS_TWO_PHASE") !== "0",
       schemaVersion: ANALYSIS_SCHEMA_VERSION,
       limits: {

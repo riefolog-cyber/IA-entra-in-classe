@@ -179,6 +179,16 @@ export const analyzeProfile = base.input(inputSchema).handler(async ({ input, co
     return fail("forbidden_origin", FORBIDDEN_ORIGIN_MESSAGE);
   }
 
+  // Interruttore d'emergenza: spegne l'analisi interna senza toccare il codice
+  // (per esempio se il gateway è inaffidabile). La strada del prompt esterno
+  // resta disponibile nella vista.
+  if (env("AI_ANALYSIS_ENABLED") === "0") {
+    return fail(
+      "disabled",
+      "L'analisi IA interna è disattivata su questa installazione. Puoi comunque esportare il quaderno in PDF e leggerlo con il prompt pronto per Gemini, qui sotto.",
+    );
+  }
+
   const baseUrl = (env("AI_GATEWAY_BASE_URL") || "").replace(/\/$/, "");
   const apiKey = (env("AI_GATEWAY_API_KEY") || "").trim();
   if (!baseUrl || !apiKey) {

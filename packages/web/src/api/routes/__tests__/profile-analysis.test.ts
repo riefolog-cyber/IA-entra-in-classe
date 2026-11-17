@@ -35,6 +35,7 @@ beforeEach(() => {
   setEnv({
     AI_ANALYSIS_RATE_LIMIT: "0",
     AI_ANALYSIS_RATE_LIMIT_GLOBAL: "0",
+    AI_ANALYSIS_ENABLED: undefined,
   });
   globalThis.fetch = originalFetch;
 });
@@ -75,6 +76,27 @@ describe("analisi IA - rami di errore", () => {
 
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("forbidden_origin");
+    expect(calls).toBe(0);
+  });
+
+  test("analisi disattivata → disabled, senza chiamare il provider", async () => {
+    setEnv({
+      AI_GATEWAY_BASE_URL: "https://example.test",
+      AI_GATEWAY_API_KEY: "chiave-di-prova",
+      AI_ANALYSIS_ENABLED: "0",
+    });
+
+    let calls = 0;
+    globalThis.fetch = (async () => {
+      calls += 1;
+      return new Response("nope", { status: 500 });
+    }) as typeof fetch;
+
+    const result = await readResult(await app.fetch(makeRequest()));
+
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe("disabled");
+    expect(String(result.message)).toContain("Gemini");
     expect(calls).toBe(0);
   });
 
