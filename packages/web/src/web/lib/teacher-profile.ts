@@ -1,11 +1,36 @@
 import { steps, type SavedState } from "./teacher-content";
 
+/** Dimensione trasversale ricavata dalle parole usate dal docente. */
+export type LocalDimension = {
+  dimension: string;
+  whatEmerges: string;
+  /** Tappa in cui il tema compare per la prima volta (1-based). */
+  step: number;
+};
+
 export type TeacherProfile = {
   headline: string;
   summary: string;
+  /** Su quante tappe si fonda la lettura locale e quali mancano. */
+  coverage: string;
+  dimensions: LocalDimension[];
   strengths: string[];
   growth: string[];
   questions: string[];
+};
+
+/**
+ * Nomi delle dimensioni allineati a quelli dell'analisi IA: il docente ritrova
+ * le stesse parole sia nella lettura locale sia in quella con il modello.
+ */
+const DIMENSION_LABELS: Record<string, string> = {
+  verifica: "verifica delle fonti",
+  dati: "inclusione e dati",
+  valutazione: "valutazione e feedback",
+  progettazione: "progettazione",
+  relazione: "relazione professionale",
+  sperimentazione: "sperimentazione",
+  sostenibilita: "sostenibilità",
 };
 
 const themes = [
@@ -249,9 +274,45 @@ export function buildTeacherProfile(data: SavedState): TeacherProfile {
     );
   }
 
+  // Dove compare, per la prima volta, il tema di ogni dimensione: una tappa
+  // concreta è più utile di un conteggio astratto.
+  const dimensions: LocalDimension[] = themeCounts.slice(0, 4).map((theme) => {
+    const stepIndex = steps.findIndex((_, i) =>
+      theme.words.some((word) =>
+        normalize(`${promptTexts[i]} ${reasonTexts[i]}`).includes(normalize(word)),
+      ),
+    );
+    return {
+      dimension: DIMENSION_LABELS[theme.key] ?? theme.label,
+      whatEmerges: `Nelle tue risposte ${theme.label} torna ${theme.count} ${
+        theme.count === 1 ? "volta" : "volte"
+      }: è un criterio che stai già usando, non solo un tema letto.`,
+      step: stepIndex >= 0 ? stepIndex + 1 : 1,
+    };
+  });
+
+  // Una tappa conta come lavorata se contiene almeno una risposta: è la stessa
+  // regola usata per l'invio all'analisi IA, così le due letture non divergono.
+  const worked = steps.map(
+    (_, i) =>
+      promptTexts[i].trim() !== "" ||
+      reasonTexts[i].trim() !== "" ||
+      data.answers[`${i}-quiz`] !== undefined ||
+      data.answers[`${i}-scenario`] !== undefined ||
+      data.completed.includes(i),
+  );
+  const workingSteps = worked.filter(Boolean).length;
+  const emptySteps = worked.map((isWorked, i) => (isWorked ? 0 : i + 1)).filter((step) => step > 0);
+
   return {
     headline,
     summary: summaryParts.join(" · ") + ".",
+    coverage: `Lettura calcolata nel browser su ${workingSteps} tappe su ${steps.length}${
+      emptySteps.length
+        ? `; ancora da lavorare: ${emptySteps.map((step) => `tappa ${step}`).join(", ")}`
+        : ""
+    }.`,
+    dimensions,
     strengths: strengths.slice(0, 4),
     growth: growth.slice(0, 4),
     questions: questions.slice(0, 3),

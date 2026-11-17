@@ -5,6 +5,7 @@ import {
   stepSources,
   type SavedState,
 } from "./teacher-content";
+import { formatAnalysisDate, type SavedAnalysis } from "./analysis-store";
 import { siteMeta } from "./site-meta";
 
 const GREEN: [number, number, number] = [31, 61, 51];
@@ -31,6 +32,8 @@ const phaseColor = (phase?: string): [number, number, number] => {
 export type ExportPdfOptions = {
   /** Esporta il quaderno precedente (v1) invece di quello corrente. */
   previousVersion?: boolean;
+  /** Lettura IA conservata: se c'è, il quaderno si chiude con il quadro. */
+  analysis?: SavedAnalysis;
   /** Solo le tappe già lavorate: il lavoro fatto finora, non i dieci capitoli. */
   partial?: boolean;
   /** Limita l'esportazione a una sola tappa (0-based): un estratto da portare
@@ -39,7 +42,7 @@ export type ExportPdfOptions = {
 };
 
 export async function exportPdf(state: SavedState, options: ExportPdfOptions = {}) {
-  const { previousVersion = false, partial = false, stepIndex } = options;
+  const { previousVersion = false, partial = false, stepIndex, analysis } = options;
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF();
 
@@ -310,6 +313,94 @@ export async function exportPdf(state: SavedState, options: ExportPdfOptions = {
       });
     }
   });
+
+  // ------------------------------------------------- lettura del percorso
+  // L'analisi è un'interpretazione, non una valutazione: nel quaderno porta la
+  // data, il modello e le stesse cautele che il docente ha letto sullo schermo.
+  if (analysis && typeof stepIndex !== "number") {
+    newPage();
+    sectionTitle("Lettura del percorso", 20);
+    para(
+      `Quadro generato con ${analysis.model} il ${formatAnalysisDate(analysis.at)}. È una lettura interpretativa, non una certificazione.`,
+      9,
+      "normal",
+      MUTED,
+    );
+
+    para(analysis.analysis.headline, 15, "bold", GREEN, "helvetica", 6);
+    para(analysis.analysis.narrative);
+
+    const coverage = analysis.analysis.coverage;
+    if (coverage) {
+      label("Su che cosa si fonda");
+      para(
+        `${coverage.stepsWorked} tappe lavorate su ${coverage.stepsTotal}${
+          coverage.emptySteps.length
+            ? `; tappe non ancora lavorate: ${coverage.emptySteps.join(", ")}`
+            : "; nessuna tappa mancante"
+        }.`,
+        10,
+        "normal",
+        MUTED,
+      );
+    }
+
+    if (analysis.analysis.dimensions.length) {
+      sectionTitle("Che cosa emerge, per dimensione", 13);
+      analysis.analysis.dimensions.forEach((dimension) => {
+        label(dimension.dimension);
+        para(dimension.whatEmerges, 10.5);
+        dimension.evidence.forEach((item) => {
+          para(`«${item.quote}» (tappa ${item.step})`, 9, "italic", MUTED);
+        });
+      });
+    }
+
+    if (analysis.analysis.steps.length) {
+      sectionTitle("Le tappe, una per una", 13);
+      analysis.analysis.steps.forEach((step) => {
+        label(`${step.step}. ${step.title || "Tappa"}`);
+        para(
+          step.reading || (step.worked ? "Nessun elemento da commentare." : "Non ancora lavorata."),
+          10,
+        );
+      });
+    }
+
+    if (analysis.analysis.coherence.length) {
+      sectionTitle("Intenzioni e pratiche", 13);
+      analysis.analysis.coherence.forEach((item) => {
+        para(`${item.intention} > ${item.practice}`, 10, "normal", INK);
+        para(
+          item.kind === "tensione" ? "Punto di tensione da esplorare." : "Scelta allineata.",
+          9,
+          "italic",
+          MUTED,
+        );
+      });
+    }
+
+    if (analysis.analysis.strengths.length || analysis.analysis.questions.length) {
+      sectionTitle("Risorse e domande", 13);
+      analysis.analysis.strengths.forEach((item) => para(`- ${item}`, 10));
+      analysis.analysis.questions.forEach((item) => para(`- ${item}`, 10));
+    }
+
+    if (analysis.analysis.nextSteps.length) {
+      sectionTitle("Passi concreti", 13);
+      analysis.analysis.nextSteps.forEach((item) => {
+        para(item.action, 10.5, "bold");
+        if (item.howYouWillKnow)
+          para(`Te ne accorgi da: ${item.howYouWillKnow}`, 9.5, "normal", MUTED);
+        if (item.within) para(`Entro: ${item.within}`, 9.5, "normal", MUTED);
+      });
+    } else if (analysis.analysis.nextStep) {
+      sectionTitle("Prossimo passo", 13);
+      para(analysis.analysis.nextStep, 10.5);
+    }
+
+    para(analysis.analysis.caution, 9, "italic", MUTED);
+  }
 
   // Glossario e riferimenti appartengono al quaderno completo: un estratto di
   // tappa si ferma alla tappa.

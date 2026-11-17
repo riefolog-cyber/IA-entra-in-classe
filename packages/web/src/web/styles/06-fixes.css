@@ -3627,3 +3627,272 @@ body.dark .topbar-export:hover:not(:disabled),
     display: none;
   }
 }
+
+/* ============================================================
+   Analisi IA: il quadro completo
+   Copertura, dieci tappe, dimensioni con citazioni, coerenza,
+   passi concreti. Le prove si aprono solo se il docente le cerca.
+   ============================================================ */
+.analysis-full .analysis-date,
+.analysis-full .analysis-cached {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  opacity: 0.85;
+}
+.analysis-coverage {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 12px 0;
+  padding: 10px 12px;
+  border: 1px solid #d7e1cf;
+  border-radius: 12px;
+  background: #f3f7ec;
+}
+.analysis-coverage p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.analysis-block {
+  margin: 14px 0;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.analysis-block > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+.analysis-block[open] > summary {
+  margin-bottom: 10px;
+}
+.analysis-evidence-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e8eedf;
+  color: #4c6a48;
+  font-size: 11px;
+  font-weight: 700;
+}
+.analysis-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.analysis-steps > li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--line);
+}
+.analysis-steps > li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.analysis-steps p {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+.analysis-step-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7a9670;
+  letter-spacing: 0.04em;
+}
+.analysis-step-empty {
+  opacity: 0.7;
+}
+.analysis-dimensions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+.analysis-dimensions h5 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6d8862;
+}
+.analysis-dimensions p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.analysis-question {
+  margin-top: 6px !important;
+  font-style: italic;
+  color: #4c6a48;
+}
+.analysis-evidence {
+  margin-top: 6px;
+}
+.analysis-evidence > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6d8862;
+  list-style: none;
+}
+.analysis-evidence > summary::-webkit-details-marker {
+  display: none;
+}
+.analysis-evidence ul {
+  margin: 6px 0 0;
+  padding-left: 14px;
+  display: grid;
+  gap: 6px;
+}
+.analysis-evidence blockquote {
+  margin: 0;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink);
+}
+.analysis-evidence-step {
+  font-size: 11px;
+  color: #7a9670;
+  letter-spacing: 0.03em;
+}
+.analysis-coherence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.analysis-coherence li {
+  border-left: 3px solid #d7e1cf;
+  padding-left: 10px;
+}
+.analysis-coherence li.is-tension {
+  border-left-color: #d8a24a;
+}
+.analysis-coherence p {
+  margin: 3px 0;
+  font-size: 14px;
+}
+.analysis-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6d8862;
+  background: #edf2e6;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.analysis-next-steps ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.analysis-next-steps p {
+  margin: 3px 0;
+  font-size: 13px;
+}
+.analysis-correction {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
+}
+.analysis-correction label {
+  display: grid;
+  gap: 3px;
+  font-size: 14px;
+}
+.analysis-correction label span {
+  font-size: 13px;
+  color: #5c7360;
+}
+.analysis-correction textarea {
+  width: 100%;
+  border: 1px solid #d7e1cf;
+  border-radius: 10px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 14px;
+  background: #fbfcf8;
+  color: var(--ink);
+  resize: vertical;
+}
+.analysis-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.ai-preview-dossier {
+  margin-top: 8px;
+}
+.ai-preview-dossier pre {
+  max-height: 260px;
+  overflow: auto;
+  margin: 6px 0 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f3f5ef;
+  font-size: 11px;
+  line-height: 1.4;
+}
+body.dark .analysis-coverage,
+body.dark .analysis-preview-dossier pre,
+.dark .analysis-coverage {
+  background: #1d2b25 !important;
+  border-color: #355045 !important;
+  color: #e7efe8 !important;
+}
+body.dark .analysis-block > summary,
+body.dark .analysis-block > summary span,
+.dark .analysis-block > summary {
+  color: #d6e8cf !important;
+}
+body.dark .analysis-coverage p,
+body.dark .analysis-correction label span,
+body.dark .analysis-steps p,
+body.dark .analysis-dimensions p,
+body.dark .analysis-question,
+.dark .analysis-coverage p,
+.dark .analysis-correction label span {
+  color: #cfdfd5 !important;
+}
+body.dark .analysis-correction textarea,
+.dark .analysis-correction textarea {
+  background: #131c19 !important;
+  border-color: #355045 !important;
+  color: #e7efe8 !important;
+}
+body.dark .analysis-evidence blockquote,
+.dark .analysis-evidence blockquote {
+  color: #e7efe8 !important;
+}
+body.dark .analysis-evidence-count,
+.dark .analysis-evidence-count {
+  background: #24352e !important;
+  color: #dff0d8 !important;
+}

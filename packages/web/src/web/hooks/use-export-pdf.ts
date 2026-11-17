@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 
+import { loadAnalysis } from "../lib/analysis-store";
 import { NAME_REQUIRED_MESSAGE, exportAttestation } from "../lib/export-attestation";
 import { exportPdf, type ExportPdfOptions } from "../lib/export-pdf";
 import { parseState } from "../lib/notebook-state";
@@ -28,7 +29,9 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
       // che jsPDF occupi il thread principale.
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       const state = options.previousVersion ? previousData : data;
-      await exportPdf(state, options);
+      // La lettura IA conservata entra nel quaderno: chi lo archivia o lo porta
+      // in dipartimento trova anche il quadro, non solo le risposte.
+      await exportPdf(state, { ...options, analysis: loadAnalysis() ?? undefined });
       notify(
         options.partial
           ? "PDF del lavoro in corso generato. Controlla i download del browser."

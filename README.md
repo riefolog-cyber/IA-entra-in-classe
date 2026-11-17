@@ -56,13 +56,15 @@ Variabili nel `.env` alla radice:
 AI_GATEWAY_BASE_URL=
 AI_GATEWAY_API_KEY=
 AI_PROFILE_MODEL=openai/gpt-4.1-mini
+AI_PROFILE_MAP_MODEL=
+AI_ANALYSIS_TWO_PHASE=1
 AI_ANALYSIS_RATE_LIMIT=20
 AI_ANALYSIS_RATE_LIMIT_GLOBAL=120
 AI_ANALYSIS_DAILY_LIMIT=500
 AI_ALLOWED_ORIGINS=
 ```
 
-Senza queste variabili l'endpoint risponde `missing_config` e il sito resta utilizzabile, ma senza analisi IA. Su Render vanno inserite nel pannello Environment del servizio: `render.yaml` le dichiara come `sync: false` proprio per non versionare la chiave. I limiti sono in memoria di processo: proteggono da raffiche, non sostituiscono un limite condiviso o la quota del provider. `AI_ANALYSIS_DAILY_LIMIT` limita la spesa su una giornata intera (0 = nessun limite). Le richieste con `Origin` diverso da quello del sito vengono rifiutate con `forbidden_origin`: per aggiungere un'origine fidata (per esempio un dominio personalizzato) usare `AI_ALLOWED_ORIGINS`, separando i valori con una virgola. L'endpoint resta senza account per scelta: se lo esponi su un host con traffico reale, metti davanti un limite condiviso o una verifica anti-bot.
+Senza queste variabili l'endpoint risponde `missing_config` e il sito resta utilizzabile, ma senza analisi IA. Su Render vanno inserite nel pannello Environment del servizio: `render.yaml` le dichiara come `sync: false` proprio per non versionare la chiave. I limiti sono in memoria di processo: proteggono da raffiche, non sostituiscono un limite condiviso o la quota del provider. `AI_ANALYSIS_DAILY_LIMIT` limita la spesa su una giornata intera (0 = nessun limite). L'analisi lavora in due fasi: `AI_PROFILE_MAP_MODEL` legge una tappa per volta (vuoto = stesso modello) e il modello principale compone il quadro; `AI_ANALYSIS_TWO_PHASE=0` torna a una sola chiamata. Il budget giornaliero conta le letture consegnate, non le singole chiamate interne. Le richieste con `Origin` diverso da quello del sito vengono rifiutate con `forbidden_origin`: per aggiungere un'origine fidata (per esempio un dominio personalizzato) usare `AI_ALLOWED_ORIGINS`, separando i valori con una virgola. L'endpoint resta senza account per scelta: se lo esponi su un host con traffico reale, metti davanti un limite condiviso o una verifica anti-bot.
 
 ## Pubblicazione
 

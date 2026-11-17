@@ -15,6 +15,7 @@ import { canExportAttestation } from "../../lib/export-attestation";
 import { MAX_NAME_LENGTH, type NotebookBackup } from "../../lib/notebook-state";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { buildTeacherProfile } from "../../lib/teacher-profile";
+import { AnalysisView } from "./analysis-view";
 import type { Go } from "./navigation";
 
 type SummaryProps = {
@@ -78,10 +79,13 @@ export function SummaryView(props: SummaryProps) {
     aiResult,
     aiRequestId,
     aiSummary,
+    aiDossier,
+    redactions,
     online,
     runAiAnalysis,
     cancelAiAnalysis,
     recheckApi,
+    forgetAnalysis,
   } = useAiAnalysis(data);
 
   const { feedback, setFeedback, feedbackSent, feedbackError, submitFeedback, resetFeedback } =
@@ -490,6 +494,23 @@ export function SummaryView(props: SummaryProps) {
               <h4>{localProfile.headline}</h4>
               <p>{localProfile.summary}</p>
 
+              <p className="profile-footnote">{localProfile.coverage}</p>
+
+              {localProfile.dimensions.length > 0 ? (
+                <>
+                  <h4>Che cosa emerge, per dimensione</h4>
+                  <div className="analysis-dimensions">
+                    {localProfile.dimensions.map((dimension) => (
+                      <section key={dimension.dimension}>
+                        <h5>{dimension.dimension}</h5>
+                        <p>{dimension.whatEmerges}</p>
+                        <span className="analysis-evidence-step">tappa {dimension.step}</span>
+                      </section>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+
               <h4>Risorse che riconosci</h4>
               <ul>
                 {localProfile.strengths.map((item) => (
@@ -560,12 +581,25 @@ export function SummaryView(props: SummaryProps) {
               )}
             </div>
             {showAiPreview && (
-              <textarea
-                className="ai-preview"
-                readOnly
-                value={aiSummary}
-                aria-label="Dati inviati per l’analisi IA"
-              />
+              <>
+                <textarea
+                  className="ai-preview"
+                  readOnly
+                  value={aiSummary}
+                  aria-label="Dati inviati per l’analisi IA"
+                />
+                <details className="ai-preview-dossier">
+                  <summary>Scheda strutturata inviata insieme al testo</summary>
+                  <pre>{JSON.stringify(aiDossier, null, 2)}</pre>
+                </details>
+                {redactions > 0 ? (
+                  <p className="profile-footnote">
+                    {redactions === 1
+                      ? "Un dato identificativo (email o numero) è stato rimosso prima dell’invio."
+                      : `${redactions} dati identificativi (email o numeri) sono stati rimossi prima dell’invio.`}
+                  </p>
+                ) : null}
+              </>
             )}
             {aiLoading && (
               <output className="ai-loading" aria-live="polite">
@@ -619,48 +653,16 @@ export function SummaryView(props: SummaryProps) {
               </div>
             )}
             {aiResult?.analysis && (
-              <div className="ai-result" aria-live="polite">
-                <div className="ai-badge">
-                  ANALISI IA · {aiResult.model || "modello configurato"}
-                </div>
-                <h4>{aiResult.analysis.headline}</h4>
-                <p>{aiResult.analysis.narrative}</p>
-                <div className="grid">
-                  <section>
-                    <h4>Punti di forza</h4>
-                    <ul>
-                      {aiResult.analysis.strengths.map((x, i) => (
-                        <li key={i}>{x}</li>
-                      ))}
-                    </ul>
-                  </section>
-                  <section>
-                    <h4>Tensioni utili</h4>
-                    <ul>
-                      {aiResult.analysis.tensions.map((x, i) => (
-                        <li key={i}>{x}</li>
-                      ))}
-                    </ul>
-                  </section>
-                  <section>
-                    <h4>Domande per te</h4>
-                    <ul>
-                      {aiResult.analysis.questions.map((x, i) => (
-                        <li key={i}>{x}</li>
-                      ))}
-                    </ul>
-                  </section>
-                </div>
-                <p>
-                  <strong>Prossimo passo:</strong> {aiResult.analysis.nextStep}
-                </p>
-                <p className="profile-footnote">{aiResult.analysis.caution}</p>
-                <div className="profile-print">
-                  <button className="button outline" type="button" onClick={() => window.print()}>
-                    Stampa l’analisi
-                  </button>
-                </div>
-              </div>
+              <AnalysisView
+                model={aiResult.model}
+                analysis={aiResult.analysis}
+                at={aiResult.at}
+                cached={aiResult.cached}
+                droppedQuotes={aiResult.droppedQuotes}
+                loading={aiLoading}
+                onCorrection={(correction) => void runAiAnalysis(correction)}
+                onForget={forgetAnalysis}
+              />
             )}
           </div>
         )}

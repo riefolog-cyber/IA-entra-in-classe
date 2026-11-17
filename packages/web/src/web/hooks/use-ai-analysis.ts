@@ -1,26 +1,34 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { buildAiSummary } from "../lib/ai-summary";
+import type { Analysis } from "../../api/routes/analysis/schema";
+import { buildAnalysisPayload } from "../lib/ai-summary";
+import {
+  clearAnalysis,
+  loadAnalysis,
+  saveAnalysis,
+  type SavedAnalysis,
+} from "../lib/analysis-store";
 import { checkApiHealth } from "../lib/api-health";
 import type { SavedState } from "../lib/teacher-content";
 
-type Analysis = {
-  headline: string;
-  narrative: string;
-  strengths: string[];
-  tensions: string[];
-  questions: string[];
-  nextStep: string;
-  caution: string;
+type AnalysisResult = {
+  model: string;
+  analysis: Analysis;
+  cached?: boolean;
+  /** Quando è stata prodotta: per le letture riprese da `localStorage`. */
+  at?: number;
+  stepsMapped?: number;
+  droppedQuotes?: number;
 };
 
 type AnalysisResponse =
   | { ok: false; reason?: string; message?: string; requestId?: string }
-  | { ok: true; model: string; analysis: Analysis; cached?: boolean; requestId?: string };
+  | (AnalysisResult & { ok: true; requestId?: string });
 
 // Il server chiude la chiamata al provider a 90 s: qui si lascia un margine,
-// così il messaggio che arriva all'utente è quello dell'endpoint.
-const ANALYSIS_TIMEOUT_MS = 95_000;
+// così il messaggio che arriva all'utente è quello dell'endpoint. La lettura in
+// due fasi fa più chiamate, quindi il margine è più largo.
+const ANALYSIS_TIMEOUT_MS = 120_000;
 
 export function useAiAnalysis(data: SavedState) {
   const [apiAvailable, setApiAvailable] = useState<boolean | null>(null);
@@ -29,7 +37,13 @@ export function useAiAnalysis(data: SavedState) {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
   const [aiRequestId, setAiRequestId] = useState("");
-  const [aiResult, setAiResult] = useState<null | { model?: string; analysis: Analysis }>(null);
+  const [saved, setSaved] = useState<SavedAnalysis | null>(() => loadAnalysis());
+  const [aiResult, setAiResult] = useState<AnalysisResult | null>(() => {
+    const stored = loadAnalysis();
+    return stored
+      ? { model: stored.model, analysis: stored.analysis, at: stored.at, cached: true }
+      : null;
+  });
   const [apiCheckTick, setApiCheckTick] = useState(0);
   // Senza rete la richiesta non parte: meglio dirlo subito che attendere il timeout.
   const [online, setOnline] = useState(() => navigator.onLine);
@@ -37,7 +51,7 @@ export function useAiAnalysis(data: SavedState) {
 
   // La sintesi si ricalcola solo quando il quaderno cambia: prima veniva
   // ricostruita a ogni render dell'anteprima.
-  const aiSummary = useMemo(() => buildAiSummary(data), [data]);
+  const payload = useMemo(() => buildAnalysisPayload(data), [data]);
 
   useEffect(() => {
     const up = () => setOnline(true);
@@ -81,7 +95,12 @@ export function useAiAnalysis(data: SavedState) {
     setApiCheckTick((tick) => tick + 1);
   };
 
-  const runAiAnalysis = async () => {
+  /**
+   * `correction` è la precisazione del docente ("questo non mi rappresenta
+   * perché…"): entra nella chiave di cache e nel prompt, quindi la nuova
+   * lettura non è la stessa di prima.
+   */
+  const runAiAnalysis = async (correction?: string) => {
     if (!navigator.onLine) {
       setAiError(
         "Sei offline: l'analisi IA richiede una connessione. Le risposte restano salvate e puoi esportare il quaderno.",
@@ -92,7 +111,6 @@ export function useAiAnalysis(data: SavedState) {
     setAiLoading(true);
     setAiError("");
     setAiRequestId("");
-    setAiResult(null);
 
     const controller = new AbortController();
     requestRef.current = controller;
@@ -104,11 +122,17 @@ export function useAiAnalysis(data: SavedState) {
       const response = await fetch(`${window.location.origin}/api/rpc/analyzeProfile`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ json: { summary: aiSummary } }),
+        body: JSON.stringify({
+          json: {
+            summary: payload.summary,
+            dossier: payload.dossier,
+            ...(correction?.trim() ? { correction: correction.trim() } : {}),
+          },
+        }),
         signal: controller.signal,
       });
-      const payload = (await response.json().catch(() => null)) as { json?: unknown } | null;
-      const res = payload?.json as AnalysisResponse | null;
+      const body = (await response.json().catch(() => null)) as { json?: unknown } | null;
+      const res = body?.json as AnalysisResponse | null;
 
       if (res?.requestId) setAiRequestId(res.requestId);
 
@@ -121,7 +145,21 @@ export function useAiAnalysis(data: SavedState) {
       } else if (!res.ok) {
         setAiError(res.message || "Analisi IA non disponibile.");
       } else {
-        setAiResult(res);
+        const entry: SavedAnalysis = {
+          at: Date.now(),
+          model: res.model,
+          analysis: res.analysis,
+        };
+        saveAnalysis(entry);
+        setSaved(entry);
+        setAiResult({
+          model: res.model,
+          analysis: res.analysis,
+          cached: res.cached,
+          at: entry.at,
+          stepsMapped: res.stepsMapped,
+          droppedQuotes: res.droppedQuotes,
+        });
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -142,6 +180,13 @@ export function useAiAnalysis(data: SavedState) {
 
   const cancelAiAnalysis = () => requestRef.current?.abort();
 
+  /** Elimina la lettura conservata: il quaderno resta, l'interpretazione no. */
+  const forgetAnalysis = () => {
+    clearAnalysis();
+    setSaved(null);
+    setAiResult(null);
+  };
+
   return {
     apiAvailable,
     aiConsent,
@@ -152,7 +197,12 @@ export function useAiAnalysis(data: SavedState) {
     aiError,
     aiRequestId,
     aiResult,
-    aiSummary,
+    saved,
+    forgetAnalysis,
+    /** Testo inviato: l'anteprima deve mostrare esattamente questo. */
+    aiSummary: payload.summary,
+    aiDossier: payload.dossier,
+    redactions: payload.redactions,
     online,
     runAiAnalysis,
     cancelAiAnalysis,
