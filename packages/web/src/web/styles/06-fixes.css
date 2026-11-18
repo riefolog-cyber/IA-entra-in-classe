@@ -287,21 +287,6 @@ main {
   }
 }
 
-/* Readability boosts */
-body:not(.dark) .card-time,
-body:not(.dark) .card-bottom span,
-body:not(.dark) .progress-detail small,
-body:not(.dark) .progress-detail > div:first-child span,
-body:not(.dark) .sidebar-progress-info span,
-body:not(.dark) .sidebar-progress-info small {
-  color: #33473d !important;
-}
-body:not(.dark) .path-card p,
-body:not(.dark) .highlight-card p,
-body:not(.dark) .perspective-card p,
-body:not(.dark) .perspective-body p {
-  color: #2f4338 !important;
-}
 body.dark .card-time,
 body.dark .progress-detail small,
 body.dark .progress-detail > div:first-child span,
@@ -637,22 +622,6 @@ body.dark .topbar-progress .progress-text strong,
   transform: none !important;
 }
 
-/* Extra readability */
-body:not(.dark) .eyebrow,
-body:not(.dark) .page-eyebrow,
-body:not(.dark) .activity-label {
-  color: #2f4a3d !important;
-}
-body:not(.dark) .glossary summary,
-body:not(.dark) .references-section summary,
-body:not(.dark) .perspectives summary,
-body:not(.dark) details summary {
-  color: #173127 !important;
-}
-body:not(.dark) .perspective-toggle {
-  color: #173127 !important;
-  background: #e4ecdc !important;
-}
 body.dark .eyebrow,
 body.dark .page-eyebrow,
 body.dark .activity-label {
@@ -748,11 +717,7 @@ body.dark .references-section summary:hover {
 .highlight-section {
   background-size: 180% 180%;
 }
-body:not(.dark) .highlight-section:hover {
-  animation:
-    shimmerBg 8s ease infinite alternate,
-    fadeSlideIn 0.45s ease both;
-}
+
 .path-card {
   transform-origin: center;
 }
@@ -802,9 +767,6 @@ body.dark .option.chosen::before {
 @media (prefers-reduced-motion: reduce) {
   .reading-page > * {
     animation: none !important;
-  }
-  body:not(.dark) .highlight-section:hover {
-    animation: fadeSlideIn 0.45s ease both !important;
   }
 }
 
@@ -1818,12 +1780,6 @@ body.dark .concept-box > svg,
 body.dark .home-bottom > div > svg {
   color: #bfe0b7 !important;
 }
-body:not(.dark) .scenario-story,
-body:not(.dark) .feedback p,
-body:not(.dark) .concept-box p,
-body:not(.dark) .quote-band blockquote {
-  color: #2f4338 !important;
-}
 
 /* Extra beautification */
 .section-heading .eyebrow,
@@ -1934,11 +1890,7 @@ body.dark .perspective-takeaway,
 .perspective-takeaway {
   padding-left: 22px !important;
 }
-body:not(.dark) .perspective-takeaway {
-  background: linear-gradient(135deg, #eef5e8 0%, #e3ecd9 100%) !important;
-  color: #1f3a2f !important;
-  border: 1px solid #cfe0c5 !important;
-}
+
 body.dark .perspective-card.open,
 .dark .perspective-card.open {
   background: linear-gradient(180deg, #1a2923 0%, #16211d 100%) !important;
@@ -2060,13 +2012,6 @@ body.dark .perspective-body p,
   font-size: 15px;
   line-height: 1.55;
 }
-body:not(.dark) .step-takeaway {
-  background: linear-gradient(135deg, #eef5e8 0%, #e3ecd9 100%);
-  border-left-color: #6f9160;
-}
-body:not(.dark) .step-takeaway strong {
-  color: #4d6b41;
-}
 
 /* === Rifinitura visiva === */
 
@@ -2097,13 +2042,6 @@ body.dark .sidebar-progress-info strong {
 body.dark .sidebar-progress-info strong small {
   font-size: 11px;
   letter-spacing: 0;
-}
-body:not(.dark) .sidebar-progress-info span,
-body:not(.dark) .sidebar-progress-info small {
-  color: #5c6b55;
-}
-body:not(.dark) .sidebar-progress-info strong {
-  color: #203b32;
 }
 
 /* Focus della decisione: basta il fondo scuro, il colore del testo arriva
@@ -3591,4 +3529,21 @@ body.dark .reading-log-list pre,
   background: #0f1714 !important;
   border-color: #2b3d35 !important;
   color: #e7efe8 !important;
+}
+
+/*
+ * Contorni dei campi: WCAG 1.4.11 chiede 3:1 per il bordo di un controllo, che
+ * qui è l'unico segnale del suo perimetro. #557a68 sta a 3,4:1 sul fondo dei
+ * campi (#18221e) e 3,6:1 su quello della ricerca (#141d1a). Vive in questo
+ * strato perché deve vincere sulle regole di tema caricate prima.
+ */
+body.dark .text-field input,
+body.dark .text-field textarea,
+body.dark .reading-log-field input,
+body.dark .reading-log-field textarea,
+body.dark .gemini-scope select,
+body.dark select,
+body.dark input[type="date"],
+body.dark .search {
+  border-color: #557a68 !important;
 }

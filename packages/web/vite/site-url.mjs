@@ -33,3 +33,30 @@ export function applySiteUrl(distDir, from, to) {
   walk(distDir);
   return touched;
 }
+
+/**
+ * La data di modifica nei dati strutturati non deve essere scritta a mano: è
+ * l'unico campo che invecchia da solo. Si sostituisce a ogni build.
+ */
+export function applyBuildDate(distDir, isoDate) {
+  let touched = 0;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+        continue;
+      }
+      if (path.extname(entry.name) !== ".html") continue;
+
+      const source = fs.readFileSync(full, "utf8");
+      const updated = source.replace(/"dateModified":\s*"[^"]*"/g, `"dateModified": "${isoDate}"`);
+      if (updated === source) continue;
+      fs.writeFileSync(full, updated);
+      touched += 1;
+    }
+  };
+
+  walk(distDir);
+  return touched;
+}

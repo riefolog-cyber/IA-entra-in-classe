@@ -2,9 +2,10 @@ import { useRef, useState } from "react";
 
 import { NAME_REQUIRED_MESSAGE, exportAttestation } from "../lib/export-attestation";
 import { exportPdf, type ExportPdfOptions } from "../lib/export-pdf";
+import { markBackupExported } from "../lib/backup-reminder";
 import { downloadText } from "../lib/clipboard";
 import { parseState } from "../lib/notebook-state";
-import { loadReadings, replaceReadings } from "../lib/reading-store";
+import { loadReadings, mergeReadings } from "../lib/reading-store";
 import type { SavedState } from "../lib/teacher-content";
 
 type Options = {
@@ -93,6 +94,7 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
       "restare-umani-dati.json",
       "application/json;charset=utf-8",
     );
+    markBackupExported();
     notify("Dati esportati in JSON, letture comprese.");
   };
 
@@ -127,7 +129,8 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
         const withReadings =
           raw && typeof raw === "object" && Array.isArray((raw as { readings?: unknown }).readings);
         if (withReadings) {
-          replaceReadings((raw as { readings: unknown }).readings);
+          // Unione, non sostituzione: le letture fatte dopo il backup restano.
+          mergeReadings((raw as { readings: unknown }).readings);
           window.dispatchEvent(new Event("notebook:readings"));
         }
         setExportError("");
@@ -135,7 +138,7 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
           saved
             ? "Dati importati. La copia del quaderno precedente è in «Copie di sicurezza»."
             : withReadings
-              ? "Dati importati, letture comprese."
+              ? "Dati importati, letture unite a quelle già presenti."
               : "Dati importati. Controlla le risposte.",
         );
       } catch {

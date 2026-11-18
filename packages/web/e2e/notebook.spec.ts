@@ -142,6 +142,90 @@ test("con ?sw=1 il service worker si registra e prende il controllo", async ({ p
     .toBe(true);
 });
 
+test("i contorni dei campi hanno almeno 3:1 di contrasto", async ({ page }) => {
+  await page.goto("/#/riepilogo");
+
+  // WCAG 1.4.11: il bordo di un campo è l'unico segnale del suo perimetro.
+  const ratios = await page.evaluate(() => {
+    const parse = (value: string) => {
+      const match = value.match(/rgba?\(([^)]+)\)/);
+      if (!match) return null;
+      const [r, g, b, a = "1"] = match[1].split(",").map(Number);
+      return { r, g, b, a };
+    };
+    const luminance = (color: { r: number; g: number; b: number }) => {
+      const channel = (value: number) => {
+        const s = value / 255;
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      };
+      return 0.2126 * channel(color.r) + 0.7152 * channel(color.g) + 0.0722 * channel(color.b);
+    };
+    const background = (element: Element | null) => {
+      let node: Element | null = element;
+      while (node) {
+        const color = parse(getComputedStyle(node).backgroundColor);
+        if (color && color.a > 0) return color;
+        node = node.parentElement;
+      }
+      return { r: 24, g: 34, b: 30, a: 1 };
+    };
+
+    return [...document.querySelectorAll("input, textarea, select")]
+      .filter((element) => (element as HTMLElement).offsetParent !== null)
+      .map((element) => {
+        const border = parse(getComputedStyle(element).borderTopColor);
+        const bg = background(element);
+        if (!border) return 0;
+        const a = luminance(border);
+        const b = luminance(bg);
+        return Number(((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)).toFixed(2));
+      });
+  });
+
+  expect(ratios.length).toBeGreaterThan(0);
+  for (const ratio of ratios) expect(ratio).toBeGreaterThanOrEqual(3);
+});
+
+test("il questionario si apre precompilato in una nuova scheda", async ({ page, context }) => {
+  // La rotta è intercettata: il test resta deterministico e non esce in rete.
+  await context.route("https://docs.google.com/**", (route) =>
+    route.fulfill({ status: 200, contentType: "text/html", body: "<p>modulo</p>" }),
+  );
+  await page.goto("/#/riepilogo");
+
+  const scales = page.locator(".feedback-scale");
+  await scales.nth(0).getByRole("button", { name: "4" }).click();
+  await scales.nth(1).getByRole("button", { name: "5" }).click();
+
+  const popupPromise = context.waitForEvent("page");
+  await page.getByRole("button", { name: /Apri il questionario/ }).click();
+  const popup = await popupPromise;
+
+  await expect(popup).toHaveURL(/docs\.google\.com\/forms\/.+\/viewform/);
+  expect(popup.url()).toContain("entry.154579810=4");
+  expect(popup.url()).toContain("entry.298496945=5");
+  await expect(page.locator(".notice").filter({ hasText: "nuova scheda" })).toBeVisible();
+});
+
+test("senza rete e senza copia in cache compare la pagina offline", async ({ page, context }) => {
+  await page.goto("/?sw=1");
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const registration = await navigator.serviceWorker.getRegistration();
+        return Boolean(registration?.active);
+      }),
+    )
+    .toBe(true);
+  // Una seconda visita: il worker attivo controlla la pagina.
+  await page.reload();
+
+  await context.setOffline(true);
+  await page.goto("/pagina-mai-vista").catch(() => {});
+  await expect(page.getByRole("heading", { name: "Sei offline" })).toBeVisible();
+  await context.setOffline(false);
+});
+
 test("il prompt per Gemini si copia, si scarica e cambia con l'ambito", async ({
   page,
   context,

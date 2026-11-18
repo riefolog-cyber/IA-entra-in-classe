@@ -5,7 +5,7 @@ const CACHE = `restare-umani-${BUILD_ID.startsWith("__") ? "dev" : BUILD_ID}`;
 // In build il segnaposto diventa l'elenco degli asset compilati: senza, il primo
 // accesso senza rete troverebbe l'HTML e nessuno script. In sviluppo resta una
 // stringa che il filtro scarta.
-const PRECACHE = ["./", "./manifest.json", "__PRECACHE__"].filter(
+const PRECACHE = ["./", "./manifest.json", "./offline.html", "__PRECACHE__"].filter(
   (path) => path && !path.startsWith("__"),
 );
 // Marcatore di versione dentro la cache: serve ad `activate` per capire quale
@@ -100,7 +100,14 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(event.request).then((cached) => cached || Response.error())),
+        // Senza rete e senza copia in cache si mostra una pagina che rassicura:
+        // le risposte sono comunque salve nel browser.
+        .catch(() =>
+          caches
+            .match(event.request)
+            .then((cached) => cached || caches.match("./offline.html"))
+            .then((cached) => cached || Response.error()),
+        ),
     );
     return;
   }

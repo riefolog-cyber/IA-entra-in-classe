@@ -10,6 +10,7 @@ import {
 import { useState, type ReactNode, type RefObject } from "react";
 
 import { useFeedback } from "../../hooks/use-feedback";
+import { lastBackupAt, shouldSuggestBackup } from "../../lib/backup-reminder";
 import { buildCalendarEvent } from "../../lib/calendar";
 import { downloadText } from "../../lib/clipboard";
 import { canExportAttestation } from "../../lib/export-attestation";
@@ -82,6 +83,9 @@ export function SummaryView(props: SummaryProps) {
   } = useFeedback(notify);
 
   const attestationReady = canExportAttestation(data);
+  const hasNotebookContent = answered > 0 || data.completed.length > 0;
+  const [suggestBackup, setSuggestBackup] = useState(() => shouldSuggestBackup(hasNotebookContent));
+  const lastExport = lastBackupAt();
 
   // Promemoria locale: una data scelta, un file .ics, nessun server.
   const [reminderDate, setReminderDate] = useState(() => {
@@ -188,7 +192,13 @@ export function SummaryView(props: SummaryProps) {
               onChange={(event) => setReminderDate(event.target.value)}
             />
           </label>
-          <button className="text-button" type="button" onClick={addReminder}>
+          <button
+            className="text-button"
+            type="button"
+            onClick={addReminder}
+            disabled={!reminderDate}
+            title={reminderDate ? "Scarica un promemoria per il calendario" : "Scegli una data"}
+          >
             <Download size={14} aria-hidden="true" /> Aggiungi al calendario (.ics)
           </button>
         </div>
@@ -292,6 +302,37 @@ export function SummaryView(props: SummaryProps) {
             Esporta le risposte in JSON per conservarle o spostarle su un altro dispositivo; importa
             un file precedentemente esportato per riprendere il lavoro.
           </p>
+
+          {suggestBackup ? (
+            <div className="notice">
+              <p>
+                {lastExport === null
+                  ? "Non hai ancora esportato una copia."
+                  : "Sono passate più di tre settimane dall’ultimo backup."}{" "}
+                Le risposte vivono solo in questo browser: se cancelli i dati del sito o cambi
+                dispositivo, senza un file JSON non si recuperano.
+              </p>
+              <div className="hero-actions">
+                <button
+                  className="button primary"
+                  type="button"
+                  onClick={() => {
+                    exportJson();
+                    setSuggestBackup(false);
+                  }}
+                >
+                  Esporta JSON ora
+                </button>
+                <button
+                  className="text-button"
+                  type="button"
+                  onClick={() => setSuggestBackup(false)}
+                >
+                  Non ora
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           <div className="hero-actions">
             <button className="button outline" onClick={exportJson}>

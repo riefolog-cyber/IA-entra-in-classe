@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { applySiteUrl } from "../../../../vite/site-url.mjs";
+import { applyBuildDate, applySiteUrl } from "../../../../vite/site-url.mjs";
 
 /**
  * La stessa build serve due host: Render (default) e GitHub Pages (`SITE_URL`).
@@ -41,6 +41,20 @@ describe("indirizzo pubblico della build", () => {
     );
     expect(fs.readFileSync(path.join(dir, "icon.png"), "utf8")).toBe("binario");
 
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("la data dei dati strutturati diventa quella della build", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "site-date-"));
+    fs.writeFileSync(
+      path.join(dir, "index.html"),
+      '<script type="application/ld+json">{ "dateModified": "2020-01" }</script>',
+    );
+
+    expect(applyBuildDate(dir, "2026-11-18")).toBe(1);
+    expect(fs.readFileSync(path.join(dir, "index.html"), "utf8")).toContain(
+      '"dateModified": "2026-11-18"',
+    );
     fs.rmSync(dir, { recursive: true, force: true });
   });
 

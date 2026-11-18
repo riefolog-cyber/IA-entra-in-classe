@@ -7,7 +7,7 @@ import {
   MAX_READINGS,
   READINGS_KEY,
   removeReading,
-  replaceReadings,
+  mergeReadings,
   saveReading,
 } from "../reading-store";
 
@@ -152,21 +152,22 @@ describe("letture conservate", () => {
     expect(list.find((entry) => entry.id === "a")?.scope).toBeNull();
   });
 
-  test("un backup importato sostituisce le letture e passa dalla sanificazione", () => {
+  test("un backup importato si unisce alle letture presenti, senza perdere testi", () => {
     clearReadings();
-    saveReading({ model: "Gemini", scope: null, text: LONG });
+    const local = saveReading({ model: "Gemini", scope: null, text: LONG });
 
-    const list = replaceReadings([
+    const list = mergeReadings([
       { id: "nuova", at: 2, model: "Claude", scope: 3, text: `${LONG} Importata.` },
       { id: "rotta", at: "ieri", text: LONG }, // data non numerica: scartata
       { id: "fuori", at: 1, model: "Gemini", scope: 99, text: `${LONG} Ambito impossibile.` },
     ]);
 
-    expect(list).toHaveLength(2);
-    expect(list[0].id).toBe("nuova");
-    expect(list[0].scope).toBe(3);
+    // La lettura locale resta, si aggiungono le due valide del backup.
+    expect(list).toHaveLength(3);
+    expect(list.some((entry) => entry.id === local[0].id && entry.text === LONG)).toBe(true);
+    expect(list.find((entry) => entry.id === "nuova")?.scope).toBe(3);
     expect(list.find((entry) => entry.id === "fuori")?.scope).toBeNull();
-    expect(loadReadings()).toHaveLength(2);
+    expect(loadReadings()).toHaveLength(3);
   });
 
   test("un backup importato non può superare il tetto delle letture", () => {
@@ -178,7 +179,7 @@ describe("letture conservate", () => {
       text: LONG,
     }));
 
-    expect(replaceReadings(many)).toHaveLength(MAX_READINGS);
+    expect(mergeReadings(many)).toHaveLength(MAX_READINGS);
   });
 
   test("la data è leggibile in italiano", () => {

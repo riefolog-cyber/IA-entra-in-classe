@@ -235,7 +235,7 @@ body.dark .search input,
 .dark textarea {
   background: #141d1a;
   color: #e7efe8;
-  border-color: #31463d;
+  border-color: #557a68;
 }
 body.dark .search,
 .dark .search {
@@ -284,48 +284,6 @@ body.dark .close-mobile,
 body.dark .icon-button,
 .dark .icon-button {
   color: #dce8df;
-}
-
-/* === Contrast fixes (light & dark) === */
-body:not(.dark) {
-  color: #193229;
-}
-body:not(.dark) .path-phase-title h3,
-body:not(.dark) .path-phase-head h3,
-body:not(.dark) .section-heading-copy h2,
-body:not(.dark) .section-heading-copy p,
-body:not(.dark) .path-card h3,
-body:not(.dark) .highlight-card h3,
-body:not(.dark) .progress-copy strong,
-body:not(.dark) .hero h1 {
-  color: #173127;
-}
-body:not(.dark) .path-card p,
-body:not(.dark) .highlight-card p,
-body:not(.dark) .hero p,
-body:not(.dark) .progress-copy > span,
-body:not(.dark) .progress-detail > div:first-child,
-body:not(.dark) .progress-detail small,
-body:not(.dark) .card-category,
-body:not(.dark) .card-bottom span,
-body:not(.dark) .section-heading-copy p,
-body:not(.dark) .breadcrumb,
-body:not(.dark) .save-status,
-body:not(.dark) .page-lead {
-  color: #33473d;
-}
-body:not(.dark) .path-phase-head span {
-  color: #173127;
-}
-body:not(.dark) .nav-item,
-body:not(.dark) .step-nav button {
-  color: #244235;
-}
-body:not(.dark) .step-nav button {
-  color: #355543;
-}
-body:not(.dark) .eyebrow {
-  color: #355543;
 }
 
 /* Dark mode: ensure readable defaults on all surfaces */
@@ -419,84 +377,6 @@ body.dark .path-card .card-bottom span {
 body.dark .path-phase-head span {
   color: #e7efe8;
   background: #14201c;
-}
-
-/* === Deep contrast/debug pass === */
-body:not(.dark) .crumb-slash {
-  color: #6f7a65;
-}
-body:not(.dark) .local-note p,
-body:not(.dark) .sidebar-label,
-body:not(.dark) .step-nav button,
-body:not(.dark) .reset-link,
-body:not(.dark) .sidebar-progress-info span,
-body:not(.dark) .sidebar-progress-info small,
-body:not(.dark) .progress-text span,
-body:not(.dark) .card-time,
-body:not(.dark) .home-bottom > div,
-body:not(.dark) .home-bottom small,
-body:not(.dark) .footer,
-body:not(.dark) .footer > span > span,
-body:not(.dark) .footer button,
-body:not(.dark) .quote-band > div,
-body:not(.dark) .quote-band > div > span,
-body:not(.dark) .art-caption,
-body:not(.dark) .profile-footnote,
-body:not(.dark) .text-field small,
-body:not(.dark) .step-pills button:not(.active),
-body:not(.dark) .perspective-toggle,
-body:not(.dark) .glossary-refs,
-body:not(.dark) .glossary-refline,
-body:not(.dark) .references-section p,
-body:not(.dark) .search,
-body:not(.dark) .search input::placeholder {
-  color: #415246 !important;
-}
-body:not(.dark) .text-field textarea::placeholder,
-body:not(.dark) .text-field input::placeholder {
-  color: #6a7865 !important;
-}
-body:not(.dark) .activity > p,
-body:not(.dark) .perspectives p,
-body:not(.dark) .feedback p,
-body:not(.dark) .page-lead,
-body:not(.dark) .intro-text,
-body:not(.dark) .concept-box p,
-body:not(.dark) .scenario-story,
-body:not(.dark) details summary,
-body:not(.dark) details p,
-body:not(.dark) .glossary summary,
-body:not(.dark) .glossary p,
-body:not(.dark) .option,
-body:not(.dark) .option span,
-body:not(.dark) .completion-box p,
-body:not(.dark) .completion-box span {
-  color: #2f4338 !important;
-}
-body:not(.dark) .step-pills button.active,
-body:not(.dark) .button.primary,
-body:not(.dark) .card-current-badge {
-  color: #fff !important;
-}
-body:not(.dark) .step-pills button:not(.active) {
-  background: #e3eadc;
-  color: #2f4a3d !important;
-}
-body:not(.dark) .text-field textarea,
-body:not(.dark) .text-field input,
-body:not(.dark) .option {
-  background: #fffefb;
-  color: #203b32;
-}
-body:not(.dark) .perspective-card,
-body:not(.dark) .perspectives,
-body:not(.dark) details {
-  color: #203b32;
-}
-body:not(.dark) .path-phase-head h3,
-body:not(.dark) .path-phase-title h3 {
-  color: #173127 !important;
-  opacity: 1 !important;
 }
 
 /* Dark mode: fix remaining low-contrast cases */

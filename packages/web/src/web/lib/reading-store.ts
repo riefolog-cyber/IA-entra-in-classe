@@ -125,18 +125,23 @@ export function saveReading(input: {
 }
 
 /**
- * Sostituisce l'elenco con quello di un backup importato. Ogni voce passa dalla
- * stessa sanificazione della lettura da storage: un file esterno non può
- * introdurre ambiti impossibili o testi oltre il tetto.
+ * Unisce le letture di un backup importato a quelle già presenti.
+ *
+ * Sostituire avrebbe buttato via le letture scritte dopo l'esportazione, che è
+ * proprio il caso in cui si importa un backup: si tiene l'elenco locale e si
+ * aggiungono le voci che non ci sono, per `id`. Ogni voce passa dalla stessa
+ * sanificazione della lettura da storage.
  */
-export function replaceReadings(entries: unknown): SavedReading[] {
-  const list = Array.isArray(entries)
-    ? entries
-        .map(sanitize)
-        .filter((entry): entry is SavedReading => entry !== null)
-        .sort((a, b) => b.at - a.at)
-        .slice(0, MAX_READINGS)
+export function mergeReadings(entries: unknown): SavedReading[] {
+  const incoming = Array.isArray(entries)
+    ? entries.map(sanitize).filter((entry): entry is SavedReading => entry !== null)
     : [];
+
+  const byId = new Map<string, SavedReading>();
+  for (const reading of loadReadings()) byId.set(reading.id, reading);
+  for (const reading of incoming) if (!byId.has(reading.id)) byId.set(reading.id, reading);
+
+  const list = [...byId.values()].sort((a, b) => b.at - a.at).slice(0, MAX_READINGS);
   persist(list);
   return list;
 }
