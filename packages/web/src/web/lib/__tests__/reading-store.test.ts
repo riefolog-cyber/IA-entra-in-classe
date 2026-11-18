@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 
 import {
+  clearReadings,
   formatReadingDate,
   loadReadings,
   MAX_READINGS,
@@ -78,6 +79,39 @@ describe("letture conservate", () => {
   test("elimina una lettura specifica", () => {
     const list = saveReading({ model: "Gemini", scope: null, text: LONG });
     expect(removeReading(list[0].id)).toEqual([]);
+  });
+
+  test("«Cancella i miei dati» elimina anche le letture", () => {
+    saveReading({ model: "Gemini", scope: null, text: LONG });
+    expect(loadReadings()).toHaveLength(1);
+
+    clearReadings();
+    expect(loadReadings()).toEqual([]);
+  });
+
+  test("un testo enorme viene troncato, non buttato", () => {
+    const huge = `${LONG} ${"parola ".repeat(5000)}`;
+    const list = saveReading({ model: "Gemini", scope: null, text: huge });
+
+    expect(list).toHaveLength(1);
+    expect(list[0].text.length).toBeLessThanOrEqual(20_000);
+    expect(list[0].text.startsWith("Questa è una lettura")).toBe(true);
+  });
+
+  test("se lo storage rifiuta la scrittura, le letture restano in memoria", () => {
+    const { storage } = installStorage();
+    let calls = 0;
+    storage.setItem = () => {
+      calls += 1;
+      throw new Error("QuotaExceededError");
+    };
+
+    saveReading({ model: "Gemini", scope: null, text: `${LONG} Prima.` });
+    const list = saveReading({ model: "Gemini", scope: null, text: `${LONG} Seconda.` });
+
+    // La seconda scrittura non rilegge uno storage vuoto: tiene entrambe.
+    expect(calls).toBeGreaterThan(0);
+    expect(list).toHaveLength(2);
   });
 
   test("la data è leggibile in italiano", () => {

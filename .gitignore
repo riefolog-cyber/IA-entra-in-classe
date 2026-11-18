@@ -79,3 +79,6 @@ packages/mobile/scripts/*
 test-results/
 playwright-report/
 blob-report/
+
+# Log del server di sviluppo locale
+/dev-server.log

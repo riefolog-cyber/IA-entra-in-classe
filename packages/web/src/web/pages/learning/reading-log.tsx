@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   formatReadingDate,
   loadReadings,
+  READINGS_KEY,
   MAX_READING_LENGTH,
   removeReading,
   saveReading,
@@ -70,7 +71,24 @@ export function ReadingLog({ scope, notify }: ReadingLogProps) {
   const [text, setText] = useState("");
   const [model, setModel] = useState("Gemini");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  /** Eliminazione in due passi: una lettura incollata non si perde per un clic. */
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Se un'altra scheda cancella i dati (o salva una lettura), questa vista
+  // non deve mostrare un elenco che non esiste più.
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === READINGS_KEY || event.key === null) setReadings(loadReadings());
+    };
+    const onCleared = () => setReadings(loadReadings());
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("notebook:cleared", onCleared);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("notebook:cleared", onCleared);
+    };
+  }, []);
 
   useEffect(
     () => () => {
@@ -173,16 +191,36 @@ export function ReadingLog({ scope, notify }: ReadingLogProps) {
                 >
                   <Download size={14} aria-hidden="true" /> Scarica .txt
                 </button>
-                <button
-                  className="text-button"
-                  type="button"
-                  onClick={() => {
-                    setReadings(removeReading(reading.id));
-                    notify?.("Lettura eliminata da questo dispositivo.");
-                  }}
-                >
-                  <Trash2 size={14} aria-hidden="true" /> Elimina
-                </button>
+                {pendingDelete === reading.id ? (
+                  <>
+                    <button
+                      className="text-button"
+                      type="button"
+                      onClick={() => {
+                        setReadings(removeReading(reading.id));
+                        setPendingDelete(null);
+                        notify?.("Lettura eliminata da questo dispositivo.");
+                      }}
+                    >
+                      Conferma eliminazione
+                    </button>
+                    <button
+                      className="text-button"
+                      type="button"
+                      onClick={() => setPendingDelete(null)}
+                    >
+                      Annulla
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="text-button"
+                    type="button"
+                    onClick={() => setPendingDelete(reading.id)}
+                  >
+                    <Trash2 size={14} aria-hidden="true" /> Elimina
+                  </button>
+                )}
               </div>
             </li>
           ))}

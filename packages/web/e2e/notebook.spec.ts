@@ -109,3 +109,26 @@ test("il prompt per Gemini si copia, si scarica e cambia con l'ambito", async ({
   await page.reload();
   await expect(page.locator(".gemini-box")).toContainText("Leggi la lettura conservata");
 });
+
+test("«Cancella i miei dati» elimina anche le letture conservate", async ({ page }) => {
+  await page.goto("/#/riepilogo");
+
+  const box = page.locator(".gemini-box");
+  await box
+    .getByRole("textbox", { name: /^Lettura/ })
+    .fill("Lettura da cancellare: contiene una riflessione abbastanza lunga da essere conservata.");
+  await box.getByRole("button", { name: /Conserva la lettura/ }).click();
+  await expect(box).toContainText("Leggi la lettura conservata");
+
+  await page.getByRole("button", { name: /Cancella i miei dati/ }).click();
+  await page.getByRole("button", { name: "Cancella i dati", exact: true }).click();
+
+  // La vista cambia rotta dopo la cancellazione: si controlla lo storage, che
+  // è la verità che conta per la privacy.
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("restare-umani-letture-v1")))
+    .toBeNull();
+
+  await page.goto("/#/riepilogo");
+  await expect(page.locator(".gemini-box")).not.toContainText("Leggi la lettura conservata");
+});

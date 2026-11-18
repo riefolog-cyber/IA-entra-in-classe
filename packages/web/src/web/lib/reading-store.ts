@@ -28,8 +28,15 @@ export type SavedReading = {
 
 /** Riserva in memoria: senza `localStorage` la funzione resta utilizzabile. */
 let memory: SavedReading[] = [];
+/**
+ * Una volta che lo storage ha rifiutato una scrittura (quota piena, permessi),
+ * si continua in memoria: altrimenti la scrittura successiva rileggerebbe lo
+ * storage vecchio e perderebbe le letture appena salvate.
+ */
+let memoryOnly = false;
 
 function storage(): Storage | null {
+  if (memoryOnly) return null;
   try {
     return typeof localStorage === "undefined" ? null : localStorage;
   } catch {
@@ -50,7 +57,6 @@ function sanitize(value: unknown): SavedReading | null {
   if (typeof entry.id !== "string" || !entry.id) return null;
   if (typeof entry.at !== "number" || !Number.isFinite(entry.at)) return null;
   if (typeof entry.text !== "string" || !entry.text.trim()) return null;
-  if (entry.text.length > MAX_READING_LENGTH) return null;
   const scope =
     typeof entry.scope === "number" &&
     Number.isInteger(entry.scope) &&
@@ -63,7 +69,8 @@ function sanitize(value: unknown): SavedReading | null {
     at: entry.at,
     model: typeof entry.model === "string" ? entry.model.slice(0, 60) : "",
     scope,
-    text: entry.text,
+    // Un incolla enorme si tronca: buttare l'intera lettura sarebbe peggio.
+    text: entry.text.slice(0, MAX_READING_LENGTH),
   };
 }
 
@@ -93,7 +100,9 @@ function persist(list: SavedReading[]) {
   try {
     store.setItem(READINGS_KEY, JSON.stringify(list));
   } catch {
-    // Quota piena o storage negato: la vista aggiorna comunque il suo stato.
+    // Quota piena o storage negato: si prosegue in memoria, senza rileggere
+    // uno storage che non contiene più la verità.
+    memoryOnly = true;
     memory = list;
   }
 }
@@ -119,6 +128,18 @@ export function saveReading(input: {
   const list = [reading, ...loadReadings()].sort((a, b) => b.at - a.at).slice(0, MAX_READINGS);
   persist(list);
   return list;
+}
+
+/** Cancella tutte le letture: fa parte di «Cancella i miei dati». */
+export function clearReadings(): void {
+  memory = [];
+  const store = storage();
+  if (!store) return;
+  try {
+    store.removeItem(READINGS_KEY);
+  } catch {
+    memoryOnly = true;
+  }
 }
 
 export function removeReading(id: string): SavedReading[] {

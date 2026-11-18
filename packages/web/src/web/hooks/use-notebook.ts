@@ -13,6 +13,7 @@ import {
   stepCount,
   type NotebookBackup,
 } from "../lib/notebook-state";
+import { clearReadings } from "../lib/reading-store";
 import {
   detectSyncBackend,
   idbGet,
@@ -245,6 +246,12 @@ export function useNotebook() {
     robustRemove(KEY);
     robustRemove(PREVIOUS_KEY);
     robustRemove(BACKUP_KEY);
+    // Anche le letture incollate da un modello: contengono testolibero e
+    // devono sparire con il resto, altrimenti «Cancella i miei dati» mentirebbe.
+    clearReadings();
+    // Le viste aperte (registro delle letture) non ricevono eventi `storage`
+    // per la propria scheda: un evento esplicito evita di mostrare dati spariti.
+    window.dispatchEvent(new Event("notebook:cleared"));
     setBackups([]);
     setData(freshState());
     setPreviousData(freshState());

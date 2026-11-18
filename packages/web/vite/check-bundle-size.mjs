@@ -92,6 +92,12 @@ if (lazyKb > BUDGETS.lazyKb)
 if (files.length && startupAssets.size === 0) {
   failures.push("nessun asset riconosciuto in index.html: il controllo non sta misurando nulla");
 }
+if (files.length && !vendor) {
+  // Un budget vendor a zero passerebbe sempre: meglio un errore esplicito.
+  failures.push(
+    "nessun chunk vendor riconosciuto: aggiorna il controllo prima di fidarti del numero",
+  );
+}
 
 if (failures.length) {
   console.error(

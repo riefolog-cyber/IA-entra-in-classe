@@ -40,10 +40,10 @@ Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/priv
 
 ## Dati e privacy
 
-- Risposte, nome facoltativo e avanzamento solo in `localStorage` (con ripiego su `sessionStorage`/IndexedDB se bloccati).
+- Risposte, nome facoltativo, avanzamento e letture incollate solo in `localStorage` (con ripiego su `sessionStorage`/IndexedDB se bloccati).
 - Nessun account, nessun analytics, nessuna profilazione.
 - PDF, attestazione di partecipazione e JSON generati nel browser; cancellazione con conferma.
-- Copie di sicurezza locali (fino a tre) create prima di un'importazione: stessa sede del quaderno, rimosse con lo stesso pulsante di cancellazione.
+- Copie di sicurezza locali (fino a tre) create prima di un'importazione: stessa sede del quaderno, rimosse con lo stesso pulsante di cancellazione, che elimina anche le letture conservate.
 - Nessun testo delle risposte viene inviato dal sito: non ci sono chiamate a servizi IA.
 - Per un'interpretazione più ampia il sito offre un prompt da usare con un modello esterno scelto dal docente (Gemini o altro), allegando il PDF: quello è un invio a un terzo, dichiarato nella pagina e nell'avviso accanto al pulsante.
 - La sintesi informativa è nella pagina `#/privacy`.

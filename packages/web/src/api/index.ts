@@ -3,7 +3,7 @@ import { createApp } from "./__core/app";
 
 // API features are oRPC procedures, one file per feature in ./routes/,
 // composed into this router — typed end-to-end via the clients
-// (web: src/web/lib/api.ts, mobile: lib/api.ts).
+// (mobile: lib/api.ts; il sito web non ha client: non chiama l'API).
 // Keep each routes/ file under 500 lines (`bun run lint` enforces this);
 // split into more feature files as they grow.
 // Patterns and examples: skills/app/references/api.md

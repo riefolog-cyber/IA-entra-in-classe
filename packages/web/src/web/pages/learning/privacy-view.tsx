@@ -34,10 +34,11 @@ export function PrivacyView({ go }: { go: Go }) {
         </div>
         <h2>Il quaderno resta sul tuo dispositivo.</h2>
         <p>
-          Risposte, nome facoltativo e avanzamento sono conservati solo nello spazio locale di
-          questo browser (localStorage, sessionStorage o IndexedDB, a seconda di ciò che il browser
-          consente). Non esiste un account e il sito non li invia a un server. Il pulsante «Cancella
-          i miei dati» nella barra laterale li rimuove da questo browser.
+          Risposte, nome facoltativo, avanzamento e letture che hai incollato sono conservati solo
+          nello spazio locale di questo browser (localStorage, sessionStorage o IndexedDB, a seconda
+          di ciò che il browser consente). Non esiste un account e il sito non li invia a un server.
+          Il pulsante «Cancella i miei dati» nella barra laterale li rimuove da questo browser,
+          letture comprese.
         </p>
         <p>
           I PDF e i file JSON vengono generati nel browser: nessun documento viene caricato online.
