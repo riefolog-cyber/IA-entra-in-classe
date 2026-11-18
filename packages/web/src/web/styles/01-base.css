@@ -513,18 +513,7 @@ main {
 .text-button:hover {
   text-decoration: underline;
 }
-.hero-meta {
-  display: flex;
-  gap: 22px;
-  margin-top: 22px;
-  font-size: 9px;
-  color: #7a8375;
-}
-.hero-meta span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+
 .home-credit-banner {
   display: flex;
   flex-wrap: wrap;
@@ -551,89 +540,7 @@ main {
   color: #6e7d63;
   font-size: 10.5px;
 }
-.mirror-art {
-  height: 315px;
-  position: relative;
-  overflow: hidden;
-}
-.orbit {
-  position: absolute;
-  border: 1px solid #dde2d5;
-  border-radius: 50%;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 298px;
-  height: 298px;
-}
-.orbit-two {
-  width: 240px;
-  height: 240px;
-  top: 41px;
-}
-.orbit-three {
-  width: 355px;
-  height: 355px;
-  top: -17px;
-}
-.mirror {
-  position: absolute;
-  width: 164px;
-  height: 225px;
-  border: 1px solid #678568;
-  border-radius: 100px 100px 7px 7px;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-8deg);
-  padding: 10px;
-  background: #f0f2e8;
-  box-shadow: 12px 11px 0 #dfe5d5;
-}
-.mirror-inner {
-  border: 1px solid #a0b299;
-  height: 100%;
-  border-radius: 90px 90px 3px 3px;
-  background: linear-gradient(140deg, #e6ebdf 8%, #f5f6ee 50%, #c8d3b8);
-  position: relative;
-  overflow: hidden;
-}
-.mirror-star {
-  position: absolute;
-  font-size: 52px;
-  font-family: Georgia, serif;
-  font-weight: 400;
-  top: 46px;
-  left: 49px;
-  color: #547449;
-}
-.reflection-line {
-  height: 110%;
-  width: 34px;
-  background: #f9faf4;
-  opacity: 0.5;
-  transform: rotate(30deg);
-  position: absolute;
-  left: 32px;
-  top: -13px;
-}
-.mirror-horizon {
-  width: 180px;
-  height: 80px;
-  border: 1px solid #9bac8b;
-  border-radius: 50%;
-  position: absolute;
-  top: 167px;
-  left: -15px;
-}
-.art-dot {
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  background: #c1916b;
-  border-radius: 50%;
-  top: 165px;
-  left: 13%;
-}
+
 .art-caption {
   position: absolute;
   bottom: 10px;
@@ -1055,80 +962,7 @@ main {
 .concept-box .button {
   margin-top: 18px;
 }
-.profile-report {
-  margin-top: 22px;
-  border: 1px solid #dbe3d0;
-  border-radius: 10px;
-  background: #fbfbf6;
-  overflow: hidden;
-}
-.profile-header {
-  padding: 24px 26px 20px;
-  background: #e9eedf;
-  border-bottom: 1px solid #dbe3d0;
-}
-.profile-kicker {
-  font-size: 9px;
-  letter-spacing: 1.4px;
-  color: #6f8062;
-}
-.profile-header h3 {
-  font-size: 30px;
-  line-height: 1.25;
-  margin: 8px 0 6px;
-}
-.profile-header p {
-  font-size: 13.5px;
-  color: #5f6b57;
-}
-.profile-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-}
-.profile-panel {
-  display: grid;
-  grid-template-columns: 170px 1fr;
-  align-items: start;
-  gap: 8px 26px;
-  padding: 22px 26px;
-  border-bottom: 1px solid var(--line);
-}
-.profile-panel:last-child {
-  border-bottom: 0;
-}
-.profile-panel h4 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding-top: 2px;
-  font-family: "Poppins", sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--green);
-}
-.profile-panel.strengths h4 svg {
-  color: #5f8b52;
-}
-.profile-panel.growth h4 svg {
-  color: #a76d4b;
-}
-.profile-panel.questions h4 svg {
-  color: #6d8862;
-}
-.profile-panel ul {
-  margin: 0;
-  padding-left: 18px;
-  display: grid;
-  gap: 10px;
-}
-.profile-panel li {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #4f5f48;
-}
+
 .profile-footnote {
   padding: 14px 24px 18px;
   border-top: 1px solid var(--line);
@@ -1407,8 +1241,7 @@ details[open] summary > svg:last-child {
   margin: 35px 0 20px;
   gap: 20px;
 }
-.resource-heading h2,
-.sources-title {
+.resource-heading h2 {
   font-size: 28px;
 }
 .search {
@@ -1441,34 +1274,7 @@ details[open] summary > svg:last-child {
   padding: 0 26px 21px 0;
   color: #5f6b57;
 }
-.sources-title {
-  margin: 42px 0 20px;
-}
-.source {
-  display: flex;
-  gap: 14px;
-  padding: 23px 0;
-  border-top: 1px solid var(--line);
-}
-.source > svg {
-  flex-shrink: 0;
-  margin-top: 5px;
-  color: #7c916e;
-}
-.source h3 {
-  font-size: 22px;
-}
-.source p {
-  font-size: 14.5px;
-  color: #5f6b57;
-  margin: 9px 0;
-}
-.source a {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-}
+
 .notice {
   padding: 23px 25px;
   background: #efece1;
@@ -1483,18 +1289,7 @@ details[open] summary > svg:last-child {
 .notice p {
   margin-top: 8px;
 }
-.guide-row {
-  border-top: 1px solid var(--line);
-  padding: 24px 0;
-}
-.guide-row h2 {
-  font-size: 24px;
-  margin-bottom: 9px;
-}
-.guide-row p {
-  font-size: 15px;
-  color: #5f6b57;
-}
+
 .summary-metrics {
   display: flex;
   gap: 30px;
@@ -1634,14 +1429,11 @@ details[open] summary > svg:last-child {
   }
 }
 .hero-copy,
-.mirror-art,
 .progress-panel,
 .path-section {
   animation: reveal 0.65s ease both;
 }
-.mirror-art {
-  animation-delay: 0.1s;
-}
+
 .progress-panel {
   animation-delay: 0.15s;
 }
@@ -1652,9 +1444,7 @@ details[open] summary > svg:last-child {
   .hero {
     min-height: 445px;
   }
-  .mirror-art {
-    transform: scale(1.1);
-  }
+
   .path-card {
     padding-top: 27px;
   }
@@ -1689,11 +1479,7 @@ details[open] summary > svg:last-child {
   .hero {
     grid-template-columns: 1.5fr 1fr;
   }
-  .mirror-art {
-    transform: scale(0.85);
-    margin-left: -25px;
-    margin-right: -20px;
-  }
+
   .path-card {
     padding: 18px 16px 0;
   }
@@ -1712,9 +1498,7 @@ details[open] summary > svg:last-child {
   .quote-band blockquote {
     font-size: 21px;
   }
-  .hero-meta {
-    gap: 12px;
-  }
+
   .hero-actions {
     gap: 15px;
   }
@@ -1733,9 +1517,7 @@ details[open] summary > svg:last-child {
   .hero h1 {
     font-size: 45px;
   }
-  .mirror-art {
-    display: none;
-  }
+
   .hero p {
     font-size: 13px;
   }
@@ -1774,13 +1556,7 @@ details[open] summary > svg:last-child {
   .two-perspectives {
     grid-template-columns: 1fr;
   }
-  .profile-grid {
-    grid-template-columns: 1fr;
-  }
-  .profile-panel {
-    grid-template-columns: 150px 1fr;
-    border-right: 0;
-  }
+
   .reading-page h1 {
     font-size: 39px;
   }
@@ -1885,11 +1661,7 @@ details[open] summary > svg:last-child {
   .desktop-break {
     display: none;
   }
-  .hero-meta {
-    font-size: 8px;
-    gap: 18px;
-    flex-wrap: wrap;
-  }
+
   .hero-actions {
     gap: 20px;
   }
@@ -2024,20 +1796,7 @@ details[open] summary > svg:last-child {
     font-size: 8px;
     padding: 3px 6px;
   }
-  .profile-header {
-    padding: 20px 19px 17px;
-  }
-  .profile-header h3 {
-    font-size: 25px;
-  }
-  .profile-panel {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 19px;
-  }
-  .profile-panel li {
-    font-size: 14px;
-  }
+
   .profile-footnote {
     padding: 13px 19px 16px;
   }
@@ -2095,12 +1854,7 @@ details[open] summary > svg:last-child {
   main {
     padding: 0 !important;
   }
-  .profile-report {
-    border: 1px solid #ccc;
-  }
-  .profile-print {
-    display: none !important;
-  }
+
   body {
     background: #fff;
     color: #000;

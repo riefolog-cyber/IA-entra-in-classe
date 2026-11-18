@@ -1,7 +1,6 @@
 /* General polish */
 .reading-page,
-.step-reading,
-.summary-page {
+.step-reading {
   animation: fadeUp 0.28s ease;
 }
 @keyframes fadeUp {
@@ -19,7 +18,6 @@
 .button,
 .nav-item,
 .step-nav button,
-.theme-toggle,
 .option {
   transition: all 0.18s ease;
 }
@@ -174,19 +172,10 @@ body.dark .reading-page h1 {
 .references-section {
   margin-top: 30px;
 }
-.references-list {
-  margin: 0;
-  padding: 0 0 14px 20px;
-  display: grid;
-  gap: 10px;
-}
-.references-list a {
-  word-break: break-word;
-}
+
 .completion-box,
 .feedback,
 .scenario-story,
-.profile-report,
 .perspectives {
   border-radius: 16px;
 }
@@ -256,10 +245,7 @@ body.dark .glossary-refs {
   flex: 1 1 280px;
   min-width: 220px;
 }
-.topbar-actions {
-  flex: 0 0 auto;
-  margin-left: 0;
-}
+
 main {
   padding-top: 28px;
 }
@@ -277,9 +263,7 @@ main {
     order: 3;
     flex: 1 1 100%;
   }
-  .topbar-actions {
-    margin-left: auto;
-  }
+
   main {
     padding-top: 20px;
   }
@@ -377,7 +361,6 @@ body.dark .intro-text {
 }
 .nav-item,
 .step-nav button,
-.theme-toggle,
 .button,
 .option,
 .perspective-toggle {
@@ -390,8 +373,7 @@ body.dark .intro-text {
 }
 .nav-item:active,
 .step-nav button:active,
-.button:active,
-.theme-toggle:active {
+.button:active {
   transform: scale(0.98);
 }
 .highlight-media::after {
@@ -463,12 +445,7 @@ body.dark .intro-text {
 .path-card.current-card {
   animation: softPulse 3.5s ease-in-out infinite;
 }
-.theme-toggle svg {
-  transition: transform 0.25s ease;
-}
-.theme-toggle:hover svg {
-  transform: rotate(-12deg) scale(1.05);
-}
+
 body.dark .hero::before {
   background: radial-gradient(circle, rgba(142, 177, 140, 0.14), rgba(142, 177, 140, 0));
 }
@@ -494,7 +471,6 @@ body.dark .glossary details:hover {
   .glossary details,
   .nav-item,
   .step-nav button,
-  .theme-toggle,
   .button,
   .option,
   .perspective-toggle,
@@ -502,8 +478,7 @@ body.dark .glossary details:hover {
   .hero-theme-image,
   .phase-thumb,
   .step-visual,
-  .highlight-play,
-  .theme-toggle svg {
+  .highlight-play {
     transition: none !important;
   }
 }
@@ -577,24 +552,7 @@ body.dark .glossary details:hover {
   font-size: 10px;
   white-space: nowrap;
 }
-.theme-toggle {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  padding: 0;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-  border: 1px solid #d2dcc8;
-  background: rgba(255, 255, 255, 0.85);
-  color: #284c3e;
-  box-shadow: 0 2px 8px rgba(32, 59, 50, 0.08);
-  flex: 0 0 auto;
-}
-.theme-toggle:hover {
-  background: #e9f0e2;
-  transform: translateY(-1px);
-}
+
 main {
   padding-top: 22px !important;
 }
@@ -641,11 +599,7 @@ main {
   .breadcrumb strong {
     max-width: 38vw;
   }
-  .theme-toggle {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-  }
+
   main {
     padding-top: 16px !important;
   }
@@ -663,16 +617,6 @@ body.dark .topbar-progress .progress-text span,
 body.dark .topbar-progress .progress-text strong,
 .dark .topbar-progress .progress-text strong {
   color: #e7efe8;
-}
-body.dark .theme-toggle,
-.dark .theme-toggle {
-  background: #1c2924;
-  border-color: #31463d;
-  color: #e7efe8;
-}
-body.dark .theme-toggle:hover,
-.dark .theme-toggle:hover {
-  background: #24352e;
 }
 
 /* === Topbar conflict fixes + extra readability/graphics/animations === */
@@ -696,8 +640,7 @@ body.dark .theme-toggle:hover,
 /* Extra readability */
 body:not(.dark) .eyebrow,
 body:not(.dark) .page-eyebrow,
-body:not(.dark) .activity-label,
-body:not(.dark) .profile-kicker {
+body:not(.dark) .activity-label {
   color: #2f4a3d !important;
 }
 body:not(.dark) .glossary summary,
@@ -712,8 +655,7 @@ body:not(.dark) .perspective-toggle {
 }
 body.dark .eyebrow,
 body.dark .page-eyebrow,
-body.dark .activity-label,
-body.dark .profile-kicker {
+body.dark .activity-label {
   color: #cfe5c8 !important;
 }
 body.dark .perspective-toggle,
@@ -753,7 +695,6 @@ body.dark .path-card .card-bottom {
   letter-spacing: 0.2px;
 }
 .button.primary:focus-visible,
-.theme-toggle:focus-visible,
 .nav-item:focus-visible,
 .path-card:focus-visible,
 .option:focus-visible {
@@ -792,8 +733,7 @@ body.dark .references-section summary:hover {
     background-position: 100% 50%;
   }
 }
-.reading-page > *,
-.summary-page > * {
+.reading-page > * {
   animation: riseIn 0.42s ease both;
 }
 .reading-page > *:nth-child(2) {
@@ -860,8 +800,7 @@ body.dark .option.chosen::before {
   will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {
-  .reading-page > *,
-  .summary-page > * {
+  .reading-page > * {
     animation: none !important;
   }
   body:not(.dark) .highlight-section:hover {
@@ -935,16 +874,12 @@ body.dark .sidebar,
 .glossary details,
 .references-section details,
 .concept-box,
-.prompt-box,
 .activity,
 .scenario-story,
 .feedback,
 .completion-box,
 .option,
-details,
-.profile-report,
-.summary-card,
-.resource-card {
+details {
   background: linear-gradient(
     180deg,
     rgba(24, 34, 30, 0.96) 0%,
@@ -1020,7 +955,6 @@ label {
 .eyebrow,
 .page-eyebrow,
 .activity-label,
-.profile-kicker,
 .highlight-badge {
   color: #d6e8cf !important;
 }
@@ -1167,9 +1101,7 @@ textarea::placeholder,
   border-color: #6b5732 !important;
   color: #f6e7bf !important;
 }
-.theme-toggle {
-  display: none !important;
-}
+
 @media (max-width: 1100px) {
   .topbar-right .save-status {
     display: flex;
@@ -1824,10 +1756,7 @@ textarea:focus-visible {
     animation: none !important;
   }
 }
-body.dark .profile-header {
-  background: linear-gradient(180deg, #1c2a25 0%, #18221e 100%) !important;
-}
-body.dark .profile-kicker,
+
 body.dark .activity-label,
 body.dark .page-eyebrow,
 body.dark .glossary-refs,
@@ -1836,9 +1765,6 @@ body.dark .references-section h2,
 body.dark .resource-heading h2 {
   color: #d6e8cf !important;
 }
-body.dark .profile-header h3,
-body.dark .profile-panel h4,
-body.dark .profile-option h4,
 body.dark .concept-box strong,
 body.dark .feedback strong,
 body.dark .completion-box strong,
@@ -1849,10 +1775,6 @@ body.dark .quote-band blockquote,
 body.dark .quote-band > div {
   color: #f6fbf7 !important;
 }
-body.dark .profile-header p,
-body.dark .profile-panel li,
-body.dark .profile-option p,
-body.dark .profile-option li,
 body.dark .concept-box p,
 body.dark .feedback p,
 body.dark .feedback small,
@@ -1861,7 +1783,6 @@ body.dark .perspectives > div,
 body.dark .scenario-story,
 body.dark .glossary p,
 body.dark .glossary-refline,
-body.dark .references-list li,
 body.dark .references-section p,
 body.dark .notice p,
 body.dark .notice strong,
@@ -1894,16 +1815,12 @@ body.dark svg {
   color: inherit;
 }
 body.dark .concept-box > svg,
-body.dark .home-bottom > div > svg,
-body.dark .profile-panel h4 svg {
+body.dark .home-bottom > div > svg {
   color: #bfe0b7 !important;
 }
 body:not(.dark) .scenario-story,
 body:not(.dark) .feedback p,
 body:not(.dark) .concept-box p,
-body:not(.dark) .profile-header p,
-body:not(.dark) .profile-panel li,
-body:not(.dark) .profile-option p,
 body:not(.dark) .quote-band blockquote {
   color: #2f4338 !important;
 }
@@ -2380,8 +2297,6 @@ body.dark .option.chosen {
 .scenario-story {
   white-space: pre-line;
   overflow-wrap: anywhere;
-}
-@media (prefers-reduced-motion: reduce) {
 }
 
 /* === Micro-polish home/hero e percorso === */
@@ -3158,7 +3073,9 @@ body {
   line-height: 1.7;
 }
 
-/* Etichette, metadati e note: pavimento a 11px, mai sotto.
+/* Etichette,
+metadati e note: pavimento a 11px,
+mai sotto.
    Il prefisso `body.dark` serve a superare le regole più specifiche
    delle passate precedenti (es. `.topbar-right .save-status`). */
 body.dark .footer button,
@@ -3167,10 +3084,8 @@ body.dark .card-current-badge,
 body.dark .quote-band > div > span,
 body.dark .home-bottom small,
 body.dark .home-bottom > div > span,
-body.dark .hero-meta,
 body.dark .reset-link,
 body.dark .perspective-card > span,
-body.dark .profile-kicker,
 body.dark .text-field small,
 body.dark .step-emblem-number,
 body.dark .home-credit-label,
@@ -3232,7 +3147,8 @@ li {
   text-wrap: pretty;
 }
 
-/* Tema scuro: il testo secondario resta secondario, ma non spento. */
+/* Tema scuro: il testo secondario resta secondario,
+ma non spento. */
 body.dark p,
 body.dark li,
 body.dark label,
@@ -3241,11 +3157,9 @@ body.dark .highlight-card p,
 body.dark .perspective-card p,
 body.dark .perspective-body p,
 body.dark .glossary details p,
-body.dark .reference-item p,
 body.dark .step-head-visual p {
   color: #dbe7df;
 }
-body.dark .muted,
 body.dark small,
 body.dark .card-time,
 body.dark .section-heading > div > span {
@@ -3257,8 +3171,7 @@ body.dark .how-list p,
 body.dark .faq-item p,
 body.dark .home-audience p,
 body.dark .plain-list li,
-body.dark .glossary details p,
-body.dark .reference-item p {
+body.dark .glossary details p {
   color: #cfdccd;
 }
 body.dark .page-meta,

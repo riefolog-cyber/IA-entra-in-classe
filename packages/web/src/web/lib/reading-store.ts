@@ -124,6 +124,23 @@ export function saveReading(input: {
   return list;
 }
 
+/**
+ * Sostituisce l'elenco con quello di un backup importato. Ogni voce passa dalla
+ * stessa sanificazione della lettura da storage: un file esterno non può
+ * introdurre ambiti impossibili o testi oltre il tetto.
+ */
+export function replaceReadings(entries: unknown): SavedReading[] {
+  const list = Array.isArray(entries)
+    ? entries
+        .map(sanitize)
+        .filter((entry): entry is SavedReading => entry !== null)
+        .sort((a, b) => b.at - a.at)
+        .slice(0, MAX_READINGS)
+    : [];
+  persist(list);
+  return list;
+}
+
 /** Cancella tutte le letture: fa parte di «Cancella i miei dati». */
 export function clearReadings(): void {
   memory = [];

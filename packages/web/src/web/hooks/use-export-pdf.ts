@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { NAME_REQUIRED_MESSAGE, exportAttestation } from "../lib/export-attestation";
 import { exportPdf, type ExportPdfOptions } from "../lib/export-pdf";
 import { parseState } from "../lib/notebook-state";
+import { loadReadings, replaceReadings } from "../lib/reading-store";
 import type { SavedState } from "../lib/teacher-content";
 
 type Options = {
@@ -83,7 +84,10 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
   };
 
   const exportJson = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    // Il backup contiene anche le letture: sono parole del docente, e senza di
+    // loro cambiare dispositivo o svuotare il browser le perderebbe per sempre.
+    const payload = { ...data, readings: loadReadings() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -94,7 +98,7 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
     a.remove();
     // Safari annulla il download se l'URL viene revocato nello stesso tick.
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    notify("Dati esportati in JSON.");
+    notify("Dati esportati in JSON, letture comprese.");
   };
 
   const importJson = (file: File) => {
@@ -123,11 +127,21 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
         // Un'importazione sostituisce tutto: prima si salva una copia locale.
         const saved = backup();
         setData(() => parseState(JSON.stringify(raw)));
+        // Le letture tornano con il quaderno se il file le contiene; un backup
+        // vecchio (solo quaderno) lascia intatte quelle già sul dispositivo.
+        const withReadings =
+          raw && typeof raw === "object" && Array.isArray((raw as { readings?: unknown }).readings);
+        if (withReadings) {
+          replaceReadings((raw as { readings: unknown }).readings);
+          window.dispatchEvent(new Event("notebook:readings"));
+        }
         setExportError("");
         notify(
           saved
             ? "Dati importati. La copia del quaderno precedente è in «Copie di sicurezza»."
-            : "Dati importati. Controlla le risposte.",
+            : withReadings
+              ? "Dati importati, letture comprese."
+              : "Dati importati. Controlla le risposte.",
         );
       } catch {
         setExportError("File non valido: impossibile leggere il JSON.");

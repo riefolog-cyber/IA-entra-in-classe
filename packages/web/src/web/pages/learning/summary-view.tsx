@@ -31,6 +31,7 @@ type SummaryProps = {
   importJson: (file: File) => void;
   fileInputRef: RefObject<HTMLInputElement | null>;
   downloadAttestation: () => void;
+  downloadStep: (index: number) => void;
   notify: (message: string) => void;
   backups: NotebookBackup[];
   restoreBackup: (savedAt: number) => void;
@@ -57,6 +58,7 @@ export function SummaryView(props: SummaryProps) {
     importJson,
     fileInputRef,
     downloadAttestation,
+    downloadStep,
     notify,
     backups,
     restoreBackup,
@@ -454,7 +456,12 @@ export function SummaryView(props: SummaryProps) {
           anche il tuo nome in copertina.
         </p>
 
-        <GeminiPromptBox data={data} exportButton={exportButton} notify={notify} />
+        <GeminiPromptBox
+          data={data}
+          exportButton={exportButton}
+          onExportStep={downloadStep}
+          notify={notify}
+        />
       </div>
 
       {!feedbackSent ? (

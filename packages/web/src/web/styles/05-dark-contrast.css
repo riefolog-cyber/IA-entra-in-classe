@@ -5,24 +5,7 @@
   justify-content: space-between;
   gap: 16px;
 }
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-left: auto;
-}
-.theme-toggle {
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  border: 1px solid #d2dcc8;
-  background: rgba(255, 255, 255, 0.7);
-  color: #284c3e;
-  box-shadow: 0 4px 10px rgba(32, 59, 50, 0.08);
-}
-.theme-toggle:hover {
-  background: #e9f0e2;
-}
+
 body.dark,
 .dark body {
   background:
@@ -109,12 +92,9 @@ body.dark .quote-band,
 body.dark .home-bottom,
 body.dark .notice,
 body.dark .concept-box,
-body.dark .prompt-box,
 body.dark .activity,
 body.dark .perspective-card,
 body.dark details,
-body.dark .summary-card,
-body.dark .resource-card,
 body.dark .path-card,
 body.dark .highlight-card,
 .dark .hero-visual,
@@ -180,16 +160,7 @@ body.dark .highlight-badge,
   background: #294136;
   color: #dff0d8;
 }
-body.dark .theme-toggle,
-.dark .theme-toggle {
-  background: #1c2924;
-  border-color: #31463d;
-  color: #e7efe8;
-}
-body.dark .theme-toggle:hover,
-.dark .theme-toggle:hover {
-  background: #24352e;
-}
+
 body.dark .progress-bar,
 body.dark .progress-track,
 body.dark .sidebar-progress-bar,
@@ -314,15 +285,6 @@ body.dark .icon-button,
 .dark .icon-button {
   color: #dce8df;
 }
-@media (max-width: 720px) {
-  .topbar-actions {
-    gap: 8px;
-  }
-  .theme-toggle {
-    width: 34px;
-    height: 34px;
-  }
-}
 
 /* === Contrast fixes (light & dark) === */
 body:not(.dark) {
@@ -370,37 +332,23 @@ body:not(.dark) .eyebrow {
 body.dark main,
 body.dark .reading-page,
 body.dark .step-reading,
-body.dark .summary-page,
-body.dark .resources-page,
 .dark main,
 .dark .reading-page {
   color: #e7efe8;
 }
 body.dark .reading-page,
 body.dark .step-reading,
-body.dark .summary-page,
-body.dark .resources-page,
 body.dark .glossary,
 body.dark .references-section,
 body.dark .two-perspectives,
 .dark .reading-page,
-.dark .step-reading,
-.dark .summary-page {
+.dark .step-reading {
   background: transparent;
 }
 body.dark .card,
-body.dark .step-card,
-body.dark .resource-item,
-body.dark .reference-item,
-body.dark .feedback-card,
-body.dark .question-block,
 body.dark .scenario-box,
-body.dark .result-box,
-body.dark .intro-box,
-body.dark .step-box,
 body.dark .mobile-step-cta,
-.dark .card,
-.dark .question-block {
+.dark .card {
   background: #18221e;
   border-color: #2b3d35;
   color: #e7efe8;
@@ -413,7 +361,6 @@ body.dark .highlight-card p,
 body.dark .perspective-card p,
 body.dark .perspective-body p,
 body.dark .glossary details p,
-body.dark .reference-item p,
 body.dark .step-head-visual p,
 .dark p,
 .dark li,
@@ -436,7 +383,6 @@ body.dark summary,
 .dark summary {
   color: #f4f8f5;
 }
-body.dark .muted,
 body.dark small,
 body.dark .card-time,
 body.dark .section-heading > div > span,
@@ -516,8 +462,6 @@ body:not(.dark) .feedback p,
 body:not(.dark) .page-lead,
 body:not(.dark) .intro-text,
 body:not(.dark) .concept-box p,
-body:not(.dark) .profile-header p,
-body:not(.dark) .profile-panel li,
 body:not(.dark) .scenario-story,
 body:not(.dark) details summary,
 body:not(.dark) details p,

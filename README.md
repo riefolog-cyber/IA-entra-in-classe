@@ -38,6 +38,8 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 
 Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/privacy`): funzionano su GitHub Pages e su qualunque host statico senza rewrite.
 
+`packages/mobile/` (Expo) e `packages/desktop/` (Electron) sono **scaffolding del template**, non fanno parte del sito: `turbo check` e `turbo typecheck` li compilano, quindi una modifica all'API deve restare compatibile con `packages/mobile/queries/ping.ts`. Se un giorno non servono, vanno tolti dal workspace insieme alle loro voci in `turbo.json`, non lasciati marcire: togliere una procedura dall'API ha già fatto fallire la CI proprio da lì.
+
 ## Dati e privacy
 
 - Risposte, nome facoltativo, avanzamento e letture incollate solo in `localStorage` (con ripiego su `sessionStorage`/IndexedDB se bloccati).

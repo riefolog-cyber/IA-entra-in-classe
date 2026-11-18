@@ -51,11 +51,15 @@ export function ReadingLog({ scope, notify }: ReadingLogProps) {
       if (event.key === READINGS_KEY || event.key === null) setReadings(loadReadings());
     };
     const onCleared = () => setReadings(loadReadings());
+    // Un'importazione può sostituire le letture senza passare dallo storage.
+    const onReplaced = () => setReadings(loadReadings());
     window.addEventListener("storage", onStorage);
     window.addEventListener("notebook:cleared", onCleared);
+    window.addEventListener("notebook:readings", onReplaced);
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener("notebook:cleared", onCleared);
+      window.removeEventListener("notebook:readings", onReplaced);
     };
   }, []);
 

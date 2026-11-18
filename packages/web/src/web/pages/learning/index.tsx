@@ -412,6 +412,7 @@ export default function Learning() {
                 importJson={importJson}
                 fileInputRef={fileInputRef}
                 downloadAttestation={downloadAttestation}
+                downloadStep={downloadStep}
                 notify={notify}
                 backups={backups}
                 restoreBackup={restoreBackup}

@@ -19,6 +19,8 @@ type GeminiPromptBoxProps = {
   data: SavedState;
   /** Pulsante di esportazione già pronto nella vista: evita due comandi diversi. */
   exportButton?: ReactNode;
+  /** PDF della sola tappa: lo stesso comando della pagina della tappa. */
+  onExportStep?: (index: number) => void;
   notify?: (message: string) => void;
 };
 
@@ -29,7 +31,12 @@ type GeminiPromptBoxProps = {
  * scegliere se portare tutto il quaderno o una sola tappa. Nessun testo esce
  * dal dispositivo per iniziativa del sito: l'invio lo fa il docente, altrove.
  */
-export function GeminiPromptBox({ data, exportButton, notify }: GeminiPromptBoxProps) {
+export function GeminiPromptBox({
+  data,
+  exportButton,
+  onExportStep,
+  notify,
+}: GeminiPromptBoxProps) {
   const [copied, setCopied] = useState<"analysis" | "correction" | null>(null);
   const [failed, setFailed] = useState(false);
   /** -1 = tutto il quaderno, altrimenti indice della tappa. */
@@ -116,8 +123,15 @@ export function GeminiPromptBox({ data, exportButton, notify }: GeminiPromptBoxP
           </label>
           {scope !== -1 ? (
             <p className="gemini-coverage">
-              Per il PDF della sola tappa usa «Esporta la tappa in PDF» nella pagina della tappa: il
-              prompt qui sopra è già scritto per quella.
+              Il prompt qui sopra è scritto per la tappa {scope + 1}. Per farlo leggere insieme alle
+              altre serve il PDF di quella sola tappa:{" "}
+              {onExportStep ? (
+                <button className="text-button" type="button" onClick={() => onExportStep(scope)}>
+                  <Download size={14} aria-hidden="true" /> Esporta la tappa {scope + 1} in PDF
+                </button>
+              ) : (
+                "usa «Esporta la tappa in PDF» nella pagina della tappa."
+              )}
             </p>
           ) : null}
           <div className="gemini-actions">

@@ -145,7 +145,6 @@ body {
   border-color: #9fb28f;
 }
 .path-card,
-.profile-option,
 .summary-step,
 .perspective-card,
 .concept-box,
@@ -273,10 +272,7 @@ body {
   background: linear-gradient(90deg, #f3e7dc, #faf6ec);
   border-left: 3px solid var(--accent);
 }
-.micro-quiz {
-  border-left: 3px solid var(--accent);
-  background: linear-gradient(135deg, #fbfcf8, #f7f6f0);
-}
+
 .home-credit-banner {
   background: linear-gradient(135deg, #eaf0e3, #f3e7dc);
   border: 1px solid #dce4d3;
@@ -287,17 +283,7 @@ body {
   font-size: 48px;
   line-height: 0.8;
 }
-.glossary-tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.glossary-hint {
-  font-size: 12px;
-  color: #7a8375;
-}
+
 .glossary-refs {
   display: inline-flex;
   gap: 4px;
@@ -322,17 +308,10 @@ body {
   .activity,
   .summary-step,
   .perspective-card,
-  .profile-option,
   .button,
   .step-pills button,
   .path-card:hover,
-  .hero-theme-image,
-  .mirror,
-  .art-dot,
-  .reflection-line,
-  .orbit-one,
-  .orbit-two,
-  .orbit-three {
+  .hero-theme-image {
     animation: none !important;
     transition: none !important;
   }
@@ -366,7 +345,6 @@ body {
   .sidebar,
   .topbar,
   .hero-actions,
-  .glossary-tools,
   .button {
     display: none !important;
   }
@@ -606,7 +584,6 @@ body {
   outline-offset: 3px;
 }
 .path-card,
-.profile-option,
 .summary-step,
 .perspective-card,
 .concept-box,
@@ -713,10 +690,7 @@ body {
   background: #faf6ee;
   border-left: 4px solid var(--accent-hot);
 }
-.micro-quiz {
-  border-left: 4px solid var(--accent-glow);
-  background: #fffaf3;
-}
+
 .glossary details {
   border-radius: 2px;
   border: 2px solid #e8e4dc;
@@ -838,17 +812,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.02em;
 }
-.glossary-tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.glossary-hint {
-  font-size: 12px;
-  color: #7a8375;
-}
+
 .glossary-refline {
   font-size: 12px;
   color: #7a8375;
@@ -861,7 +825,6 @@ body {
   .activity,
   .summary-step,
   .perspective-card,
-  .profile-option,
   .button,
   .step-pills button,
   .path-card:hover {
@@ -905,7 +868,6 @@ body {
   .sidebar,
   .topbar,
   .hero-actions,
-  .glossary-tools,
   .button {
     display: none !important;
   }
@@ -1282,12 +1244,7 @@ body {
   background: linear-gradient(90deg, transparent, rgba(217, 119, 87, 0.08));
   pointer-events: none;
 }
-.micro-quiz {
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-.micro-quiz .activity-label::before {
-  background: var(--accent-glow);
-}
+
 @media (prefers-reduced-motion: reduce) {
   .activity::after,
   .scenario-story::before,
@@ -1302,8 +1259,7 @@ body {
   .path-card .card-number,
   .hero,
   .concept-box,
-  .progress-panel,
-  .micro-quiz {
+  .progress-panel {
     animation: none !important;
   }
   .path-card:hover,
@@ -1457,21 +1413,7 @@ body {
 .path-card .card-number {
   animation: bounceIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
-.section-divider {
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--accent-hot),
-    var(--accent-glow),
-    var(--accent-hot),
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: shimmerMove 4s linear infinite;
-  margin: 24px 0;
-  border: none;
-}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-float,
   .hero::after,
@@ -1834,26 +1776,6 @@ body {
   }
 }
 
-/* --- Added: disciplinary case, AI consent, references --- */
-.discipline-case {
-  margin: 20px 0 8px;
-  padding: 18px 22px;
-  border-left: 3px solid var(--terracotta, #c07d5b);
-  background: rgba(192, 125, 91, 0.07);
-  border-radius: 2px;
-}
-.discipline-case strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--terracotta, #c07d5b);
-}
-.discipline-case p {
-  margin: 0;
-  line-height: 1.65;
-}
 .references-section {
   margin-top: 40px;
   padding-top: 24px;
