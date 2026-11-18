@@ -18,8 +18,8 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `bun run lint:fix` applica la formattazione.
 - `bun run typecheck` esegue TypeScript su tutti i pacchetti.
 - `bun test packages/web/src` esegue i test dei contenuti, dello stato e dell'API.
-- `bun run test:e2e` esegue i test end-to-end con Playwright sul sito compilato (prima volta: `bunx playwright install chromium`). Coprono il download dell'attestazione PDF, la cancellazione tra due schede, l'avviso di aggiornamento, la registrazione del service worker e le pagine statiche.
-- `bun run size` verifica il budget di peso: 1400 kB per il bundle JS/CSS, 260 kB per il chunk vendor. Riporta anche il peso delle risorse statiche, che è contenuto e non codice.
+- `bun run test:e2e` esegue i test end-to-end con Playwright sul sito compilato (prima volta: `bunx playwright install chromium`). Coprono il download dell'attestazione PDF, la cancellazione tra due schede (anche delle letture conservate), l'avviso di aggiornamento, la registrazione del service worker e il prompt per Gemini (copia, download, ambito, persistenza).
+- `bun run size` verifica tre budget separati: 800 kB per l'avvio (i file citati da `index.html`), 440 kB per il chunk vendor, 950 kB per i chunk caricati su richiesta (jsPDF, html2canvas, purify). Il peso delle risorse statiche è riportato ma fuori budget: è contenuto, non codice.
 - `bun run og` rigenera l'immagine di condivisione 1200×630 (`packages/web/public/images/og-restare-umani.png`).
 - `bun run db:generate`, `db:migrate`, `db:push` gestiscono il database (non usato dal percorso).
 

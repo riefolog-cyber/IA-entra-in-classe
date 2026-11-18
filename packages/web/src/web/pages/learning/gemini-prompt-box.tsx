@@ -9,47 +9,10 @@ import {
   GEMINI_URL,
   buildGeminiStepPrompt,
 } from "../../lib/gemini-prompt";
+import { copyText, downloadText } from "../../lib/clipboard";
 import { describeCoverage, notebookCoverage } from "../../lib/notebook-coverage";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { ReadingLog } from "./reading-log";
-
-/** Copia negli appunti con ripiego per i browser che negano `navigator.clipboard`. */
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    try {
-      const area = document.createElement("textarea");
-      area.value = text;
-      area.setAttribute("readonly", "");
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.append(area);
-      area.select();
-      const ok = document.execCommand("copy");
-      area.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
-
-/** Scarica il prompt come testo: funziona anche dove gli appunti sono bloccati. */
-function downloadText(text: string, filename: string) {
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.rel = "noopener";
-  document.body.append(link);
-  link.click();
-  link.remove();
-  // Safari annulla il download se l'URL viene revocato nello stesso tick.
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 type GeminiPromptBoxProps = {
   /** Quaderno corrente: serve a dichiarare la copertura prima dell'invio. */

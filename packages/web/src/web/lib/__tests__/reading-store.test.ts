@@ -114,6 +114,43 @@ describe("letture conservate", () => {
     expect(list).toHaveLength(2);
   });
 
+  test("la cancellazione rimuove anche una lettura rimasta nello storage", () => {
+    // Prima un salvataggio riuscito, poi uno storage che si rifiuta: senza il
+    // tentativo di rimozione, la lettura vecchia riemergerebbe al ricaricamento.
+    clearReadings(); // riporta il modulo fuori dallo stato "solo memoria" del test precedente
+    const { data, storage } = installStorage();
+    saveReading({ model: "Gemini", scope: null, text: LONG });
+    expect(data.has(READINGS_KEY)).toBe(true);
+
+    storage.setItem = () => {
+      throw new Error("QuotaExceededError");
+    };
+    saveReading({ model: "Gemini", scope: null, text: `${LONG} Seconda.` });
+
+    clearReadings();
+    expect(data.has(READINGS_KEY)).toBe(false);
+    expect(loadReadings()).toEqual([]);
+  });
+
+  test("un ambito letto dallo storage deve puntare a una tappa esistente", () => {
+    clearReadings();
+    const { data } = installStorage();
+    const base = { id: "a", at: Date.now(), model: "Gemini", text: LONG };
+
+    data.set(
+      READINGS_KEY,
+      JSON.stringify([
+        { ...base, scope: 10 },
+        { ...base, id: "b", scope: 3 },
+      ]),
+    );
+    const list = loadReadings();
+
+    expect(list).toHaveLength(2);
+    expect(list.find((entry) => entry.id === "b")?.scope).toBe(3);
+    expect(list.find((entry) => entry.id === "a")?.scope).toBeNull();
+  });
+
   test("la data è leggibile in italiano", () => {
     expect(formatReadingDate(Date.now())).toMatch(/\d{4}/);
   });

@@ -1,6 +1,7 @@
 import { Check, Copy, Download, Save, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { copyText, downloadText } from "../../lib/clipboard";
 import {
   formatReadingDate,
   loadReadings,
@@ -23,42 +24,10 @@ function scopeLabel(scope: number | null): string {
   return `tappa ${scope + 1}${steps[scope] ? ` — ${steps[scope].short}` : ""}`;
 }
 
-/** Copia di riserva, identica a quella del riquadro del prompt. */
-async function copyText(text: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    try {
-      const area = document.createElement("textarea");
-      area.value = text;
-      area.setAttribute("readonly", "");
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.append(area);
-      area.select();
-      const ok = document.execCommand("copy");
-      area.remove();
-      return ok;
-    } catch {
-      return false;
-    }
-  }
-}
-
 function downloadReading(reading: SavedReading) {
   const name =
     reading.scope === null ? "lettura-quaderno.txt" : `lettura-tappa-${reading.scope + 1}.txt`;
-  const blob = new Blob([reading.text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name;
-  link.rel = "noopener";
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  downloadText(reading.text, name);
 }
 
 /**

@@ -6,8 +6,8 @@ export const emptyState: SavedState = { answers: {}, completed: [], current: 0, 
 
 /**
  * I contenuti del percorso vivono in `teacher-content.json`: il testo si
- * modifica senza toccare il codice e le pagine statiche delle tappe nascono
- * dallo stesso file.
+ * modifica senza toccare il codice, e tappe, PDF e prompt leggono tutti dalla
+ * stessa fonte.
  *
  * La forma viene controllata **al caricamento**, non solo nei test: un JSON
  * malformato deve fermarsi qui con un messaggio preciso, invece di arrivare

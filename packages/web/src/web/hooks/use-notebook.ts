@@ -246,7 +246,7 @@ export function useNotebook() {
     robustRemove(KEY);
     robustRemove(PREVIOUS_KEY);
     robustRemove(BACKUP_KEY);
-    // Anche le letture incollate da un modello: contengono testolibero e
+    // Anche le letture incollate da un modello: contengono testo libero e
     // devono sparire con il resto, altrimenti «Cancella i miei dati» mentirebbe.
     clearReadings();
     // Le viste aperte (registro delle letture) non ricevono eventi `storage`

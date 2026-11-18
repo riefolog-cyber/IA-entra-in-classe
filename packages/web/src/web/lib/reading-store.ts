@@ -57,13 +57,7 @@ function sanitize(value: unknown): SavedReading | null {
   if (typeof entry.id !== "string" || !entry.id) return null;
   if (typeof entry.at !== "number" || !Number.isFinite(entry.at)) return null;
   if (typeof entry.text !== "string" || !entry.text.trim()) return null;
-  const scope =
-    typeof entry.scope === "number" &&
-    Number.isInteger(entry.scope) &&
-    entry.scope >= 0 &&
-    entry.scope < 10
-      ? entry.scope
-      : null;
+  const scope = validScope(entry.scope);
   return {
     id: entry.id,
     at: entry.at,
@@ -133,10 +127,12 @@ export function saveReading(input: {
 /** Cancella tutte le letture: fa parte di «Cancella i miei dati». */
 export function clearReadings(): void {
   memory = [];
-  const store = storage();
-  if (!store) return;
+  // Anche se una scrittura è fallita prima, la rimozione va tentata: uno
+  // storage pieno non impedisce di cancellare, e senza questo tentativo una
+  // lettura vecchia riemergerebbe al ricaricamento della pagina.
+  memoryOnly = false;
   try {
-    store.removeItem(READINGS_KEY);
+    if (typeof localStorage !== "undefined") localStorage.removeItem(READINGS_KEY);
   } catch {
     memoryOnly = true;
   }

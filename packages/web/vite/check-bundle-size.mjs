@@ -21,11 +21,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 const BUDGETS = {
-  /** File citati da index.html: 731 kB oggi, con margine per una feature. */
+  /** File citati da index.html: circa 700 kB oggi, con margine per una feature. */
   startupKb: 800,
-  /** Chunk caricati on demand: 778 kB oggi (PDF e cattura della pagina). */
+  /** Chunk caricati on demand: circa 760 kB oggi (PDF e cattura della pagina). */
   lazyKb: 950,
-  /** Chunk vendor delle dipendenze (React, icone): 400 kB oggi. */
+  /** Chunk vendor delle dipendenze (React, icone): circa 360 kB oggi. */
   vendorKb: 440,
 };
 
