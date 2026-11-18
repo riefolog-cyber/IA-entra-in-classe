@@ -3,6 +3,12 @@ import { steps, type SavedState } from "./teacher-content";
 export const KEY = "restare-umani-docenti-v2";
 export const PREVIOUS_KEY = "restare-umani-v1";
 export const BACKUP_KEY = "restare-umani-copie-v1";
+/**
+ * Chiavi di funzioni rimosse (l'analisi IA locale) che contenevano testo
+ * libero. Non si leggono più, ma restano nello storage di chi usava la
+ * versione precedente: «Cancella i miei dati» deve portarle via.
+ */
+export const LEGACY_KEYS = ["restare-umani-analisi-v1"];
 export const MAX_BACKUPS = 3;
 export const stepCount = steps.length;
 

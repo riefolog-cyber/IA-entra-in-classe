@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   BACKUP_KEY,
   KEY,
+  LEGACY_KEYS,
   PREVIOUS_KEY,
   freshState,
   isEmptyState,
@@ -246,6 +247,8 @@ export function useNotebook() {
     robustRemove(KEY);
     robustRemove(PREVIOUS_KEY);
     robustRemove(BACKUP_KEY);
+    // Testo rimasto da funzioni non più presenti nel sito.
+    LEGACY_KEYS.forEach((key) => robustRemove(key));
     // Anche le letture incollate da un modello: contengono testo libero e
     // devono sparire con il resto, altrimenti «Cancella i miei dati» mentirebbe.
     clearReadings();
