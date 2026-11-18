@@ -34,7 +34,7 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `packages/web/src/web/boot-guard.ts` — schermata di emergenza se il bootstrap dell'app fallisce.
 - `packages/web/e2e/` — test Playwright sul build, con `playwright.config.ts` che avvia l'anteprima.
 - `packages/web/public/` — asset statici, immagini, font WOFF2, service worker.
-- `packages/web/dist/` — build statica (non versionata): la produce `bun run build:web` e la pubblica il workflow di GitHub Pages, con `tappe/` e `sitemap.xml`.
+- `packages/web/dist/` — build statica (non versionata): la produce `bun run build:web` e la pubblica il workflow di GitHub Pages, con `sitemap.xml`.
 
 Le rotte sono con hash (`#/tappa/3`, `#/approfondimenti`, `#/riepilogo`, `#/privacy`): funzionano su GitHub Pages e su qualunque host statico senza rewrite.
 

@@ -7,9 +7,7 @@ import path from "path";
 import honoDevPlugin from "./vite/__plugins/hono-dev-plugin.ts";
 import assetOptimizerPlugin from "./vite/__plugins/asset-optimizer-plugin.ts";
 import { DEV_CSP, META_CSP, cspHeader } from "./src/csp.ts";
-import { renderStepPage, renderStepsIndex } from "./src/web/lib/prerender.ts";
 import { siteMeta } from "./src/web/lib/site-meta.ts";
-import { steps } from "./src/web/lib/teacher-content.ts";
 import ports from "../../__ports.cjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
@@ -68,41 +66,7 @@ function serviceWorkerBuild(): Plugin {
   };
 }
 
-/**
- * Pagine statiche delle tappe: l'app è instradata con hash, quindi una tappa non
- * ha un URL proprio. Qui ogni tappa diventa un file leggibile e indicizzabile.
- */
-function prerenderStepsPlugin(): Plugin {
-  return {
-    name: "prerender-steps",
-    apply: "build",
-    transformIndexHtml(html: string) {
-      // Internal link verso le pagine statiche: senza, i motori di ricerca non
-      // hanno un percorso per raggiungerle dall'app. I metadati social stanno
-      // già nell'index: aggiungerli qui li duplicherebbe, e i crawler leggono
-      // solo il primo `og:image` che trovano.
-      if (html.includes('href="./tappe/index.html"')) return html;
-
-      return html.replace(
-        "</head>",
-        '    <link rel="alternate" type="text/html" href="./tappe/index.html" title="Le tappe in pagine statiche" />\n  </head>',
-      );
-    },
-    closeBundle() {
-      const dist = path.resolve(import.meta.dirname, "dist");
-      if (!fs.existsSync(path.join(dist, "index.html"))) return;
-
-      const dir = path.join(dist, "tappe");
-      fs.mkdirSync(dir, { recursive: true });
-      steps.forEach((step, index) => {
-        fs.writeFileSync(path.join(dir, `tappa-${index + 1}.html`), renderStepPage(step, index));
-      });
-      fs.writeFileSync(path.join(dir, "index.html"), renderStepsIndex());
-    },
-  };
-}
-
-/** `sitemap.xml` con le pagine statiche: sono loro ad avere un URL indicizzabile. */
+/** `sitemap.xml`: senza pagine statiche resta la sola home. */
 function sitemapPlugin(): Plugin {
   return {
     name: "sitemap",
@@ -111,11 +75,10 @@ function sitemapPlugin(): Plugin {
       const dist = path.resolve(import.meta.dirname, "dist");
       if (!fs.existsSync(path.join(dist, "index.html"))) return;
 
-      // `new URL` invece della concatenazione: se `siteMeta.url` perdesse la
-      // barra finale, la concatenazione produrrebbe URL sbagliati in silenzio.
-      const urls = ["", "tappe/", ...steps.map((_, index) => `tappe/tappa-${index + 1}.html`)].map(
-        (path) => new URL(path, siteMeta.url).href,
-      );
+      // L'app è instradata con hash: l'unico URL indicizzabile è la home.
+      // `new URL` invece della concatenazione, così una barra finale mancante
+      // in `siteMeta.url` non produce URL sbagliati in silenzio.
+      const urls = [new URL("", siteMeta.url).href];
       const updated = new Date().toISOString().slice(0, 10);
 
       const body = [
@@ -187,7 +150,6 @@ export default defineConfig(({ mode }) => {
       tailwind(),
       assetOptimizerPlugin(),
       serviceWorkerBuild(),
-      prerenderStepsPlugin(),
       sitemapPlugin(),
       devCspPlugin(),
       mirrorCspPlugin(),

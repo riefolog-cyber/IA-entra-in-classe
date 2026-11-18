@@ -62,15 +62,6 @@ test("con ?sw=1 il service worker si registra e prende il controllo", async ({ p
     .toBe(true);
 });
 
-test("le pagine statiche delle tappe rispondono", async ({ page }) => {
-  const response = await page.request.get("/tappe/tappa-1.html");
-  expect(response.status()).toBe(200);
-
-  const html = await response.text();
-  expect(html).toContain("Tappa 1 di 10");
-  expect(html).toContain('href="../#/tappa/1"');
-});
-
 test("il prompt per Gemini si copia, si scarica e cambia con l'ambito", async ({
   page,
   context,

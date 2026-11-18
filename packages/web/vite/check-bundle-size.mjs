@@ -14,7 +14,7 @@
  *   - **su richiesta**: i chunk caricati con `import()` (jsPDF, html2canvas,
  *     purify). Non pesano all'avvio e non devono consumare quel budget;
  *   - **vendor**: il chunk delle dipendenze, dentro il peso d'avvio;
- *   - **risorse statiche**: HTML, immagini, pagine delle tappe; misurate e
+ *   - **risorse statiche**: HTML, immagini, font; misurate e
  *     riportate, fuori budget per scelta — sono contenuti, non codice.
  */
 import fs from "node:fs";
@@ -77,9 +77,7 @@ console.log(
   `Avvio: ${startupKb.toFixed(0)} kB su ${BUDGETS.startupKb} kB · vendor: ${vendorKb.toFixed(0)} kB su ${BUDGETS.vendorKb} kB`,
 );
 console.log(`Su richiesta: ${lazyKb.toFixed(0)} kB su ${BUDGETS.lazyKb} kB`);
-console.log(
-  `Risorse statiche (HTML, immagini, pagine delle tappe): ${staticKb.toFixed(0)} kB (fuori budget)`,
-);
+console.log(`Risorse statiche (HTML, immagini, font): ${staticKb.toFixed(0)} kB (fuori budget)`);
 
 const failures = [];
 if (startupKb > BUDGETS.startupKb)

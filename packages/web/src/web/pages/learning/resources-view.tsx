@@ -1,6 +1,6 @@
 import { ArrowUpRight, ChevronDown, Search } from "lucide-react";
 
-import { glossary, references, steps } from "../../lib/teacher-content";
+import { glossary, references } from "../../lib/teacher-content";
 
 type ResourcesProps = {
   search: string;
@@ -291,28 +291,6 @@ export function ResourcesView({
                 {reference.title}
               </a>
               <p>{reference.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="references-section">
-        <div className="resource-heading">
-          <h2>Ogni tappa in una pagina</h2>
-        </div>
-
-        <p className="page-meta">
-          Versione statica e stampabile di ogni tappa, senza il quaderno: serve a condividere un
-          singolo passo con un collega o a leggerlo con calma. Le attività e le verifiche restano
-          nel percorso interattivo.
-        </p>
-
-        <ul className="reference-list">
-          {steps.map((step, index) => (
-            <li key={step.title}>
-              <a href={`./tappe/tappa-${index + 1}.html`} target="_blank" rel="noreferrer">
-                {index + 1}. {step.title}
-              </a>
             </li>
           ))}
         </ul>
