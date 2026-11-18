@@ -42,6 +42,22 @@
   margin: 8px 0 18px;
   gap: 8px;
 }
+.summary-reminder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.summary-reminder .text-field {
+  flex: 0 1 240px;
+  margin: 0;
+}
+.summary-reminder .text-field > span {
+  margin-bottom: 6px;
+}
 .summary-phases .path-phase {
   background: #f7f8f2;
   border: 1px solid var(--line);
@@ -51,7 +67,7 @@
 .summary-phases .path-phase-head {
   margin: 0;
 }
-.summary-phases .path-phase-head h3 {
+.summary-phases .path-phase-head h2 {
   font-size: 15px;
 }
 

@@ -10,8 +10,11 @@ import {
 import { useState, type ReactNode, type RefObject } from "react";
 
 import { useFeedback } from "../../hooks/use-feedback";
+import { buildCalendarEvent } from "../../lib/calendar";
+import { downloadText } from "../../lib/clipboard";
 import { canExportAttestation } from "../../lib/export-attestation";
 import { MAX_NAME_LENGTH, type NotebookBackup } from "../../lib/notebook-state";
+import { siteMeta } from "../../lib/site-meta";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { GeminiPromptBox } from "./gemini-prompt-box";
 import type { Go } from "./navigation";
@@ -68,10 +71,44 @@ export function SummaryView(props: SummaryProps) {
   // Il ripristino sostituisce il quaderno: un clic solo è troppo poco.
   const [pendingRestore, setPendingRestore] = useState<number | null>(null);
 
-  const { feedback, setFeedback, feedbackSent, feedbackError, submitFeedback, resetFeedback } =
-    useFeedback(notify);
+  const {
+    feedback,
+    setFeedback,
+    feedbackSent,
+    feedbackError,
+    feedbackFallback,
+    submitFeedback,
+    resetFeedback,
+  } = useFeedback(notify);
 
   const attestationReady = canExportAttestation(data);
+
+  // Promemoria locale: una data scelta, un file .ics, nessun server.
+  const [reminderDate, setReminderDate] = useState(() => {
+    const inAWeek = new Date();
+    inAWeek.setDate(inAWeek.getDate() + 7);
+    return [
+      inAWeek.getFullYear(),
+      String(inAWeek.getMonth() + 1).padStart(2, "0"),
+      String(inAWeek.getDate()).padStart(2, "0"),
+    ].join("-");
+  });
+
+  const addReminder = () => {
+    const [year, month, day] = reminderDate.split("-").map(Number);
+    if (!year || !month || !day) return;
+
+    const ics = buildCalendarEvent({
+      date: new Date(year, month - 1, day),
+      title: "Riprendi il percorso: Restare umani",
+      description:
+        "Torna al quaderno di aggiornamento. Le risposte sono salvate nel browser del dispositivo su cui le hai scritte.",
+      url: `${siteMeta.url}#/riepilogo`,
+    });
+
+    downloadText(ics, "restare-umani-promemoria.ics", "text/calendar;charset=utf-8");
+    notify("Promemoria scaricato: aprilo con il tuo calendario.");
+  };
 
   return (
     <div className="reading-page">
@@ -142,6 +179,19 @@ export function SummaryView(props: SummaryProps) {
             Stampa il riepilogo
           </button>
         </div>
+        <div className="summary-reminder">
+          <label className="text-field">
+            <span>Riprendi più avanti</span>
+            <input
+              type="date"
+              value={reminderDate}
+              onChange={(event) => setReminderDate(event.target.value)}
+            />
+          </label>
+          <button className="text-button" type="button" onClick={addReminder}>
+            <Download size={14} aria-hidden="true" /> Aggiungi al calendario (.ics)
+          </button>
+        </div>
         <div className="summary-progress-bar" aria-hidden="true">
           <span style={{ width: `${progressPct}%` }} />
         </div>
@@ -181,7 +231,7 @@ export function SummaryView(props: SummaryProps) {
         {phases.map((phase) => (
           <section key={phase.name} className="path-phase">
             <div className="path-phase-head">
-              <h3>{phase.name}</h3>
+              <h2>{phase.name}</h2>
 
               <span>
                 {phase.items.filter(({ i }) => data.completed.includes(i)).length}/
@@ -404,7 +454,7 @@ export function SummaryView(props: SummaryProps) {
               )}
               {s.prompts.map((p, n) => (
                 <div key={p}>
-                  <h4>{p}</h4>
+                  <h3>{p}</h3>
 
                   <p className="answer-text">
                     {data.answers[`${i}-p${n}`] || "Non ancora compilata."}
@@ -412,7 +462,7 @@ export function SummaryView(props: SummaryProps) {
                 </div>
               ))}
 
-              <h4>Quiz: {s.question}</h4>
+              <h3>Quiz: {s.question}</h3>
 
               <p>
                 {data.answers[`${i}-quiz`] !== undefined
@@ -420,7 +470,7 @@ export function SummaryView(props: SummaryProps) {
                   : "Nessuna scelta."}
               </p>
 
-              <h4>Scenario: {s.scenario}</h4>
+              <h3>Scenario: {s.scenario}</h3>
 
               <p>
                 {data.answers[`${i}-scenario`] !== undefined
@@ -428,7 +478,7 @@ export function SummaryView(props: SummaryProps) {
                   : "Nessuna scelta."}
               </p>
 
-              <h4>La mia motivazione</h4>
+              <h3>La mia motivazione</h3>
 
               <p className="answer-text">
                 {data.answers[`${i}-reason`] || "Non ancora compilata."}
@@ -529,13 +579,18 @@ export function SummaryView(props: SummaryProps) {
                 onClick={submitFeedback}
                 disabled={!feedback.u || !feedback.c}
               >
-                Invia feedback
+                Apri il questionario
               </button>
             </div>
 
             {feedbackError && (
               <div className="ai-error" role="alert">
-                {feedbackError}
+                {feedbackError}{" "}
+                {feedbackFallback ? (
+                  <a href={feedbackFallback} target="_blank" rel="noreferrer noopener">
+                    Apri il questionario
+                  </a>
+                ) : null}
               </div>
             )}
 
@@ -548,7 +603,7 @@ export function SummaryView(props: SummaryProps) {
         </div>
       ) : (
         <div className="notice">
-          Grazie per il tuo feedback!{" "}
+          Il questionario si è aperto in una nuova scheda: l’invio lo conferma Google.{" "}
           <button className="text-button" onClick={resetFeedback}>
             Modifica risposta
           </button>

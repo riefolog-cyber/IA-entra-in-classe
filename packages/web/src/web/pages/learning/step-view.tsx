@@ -81,7 +81,13 @@ export function StepView({
         maxLength={MAX_ANSWER_LENGTH}
         rows={4}
       />
-      <small>Riflessione professionale · niente nomi o dati identificativi degli studenti</small>
+      <small>
+        Riflessione professionale · niente nomi o dati identificativi degli studenti
+        {/* Il limite è 4.000 caratteri: meglio dirlo prima che il campo si fermi. */}
+        {(data.answers[key] || "").length >= MAX_ANSWER_LENGTH - 400
+          ? ` · ${(data.answers[key] || "").length}/${MAX_ANSWER_LENGTH} caratteri`
+          : ""}
+      </small>
     </label>
   );
 

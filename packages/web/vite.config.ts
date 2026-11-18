@@ -8,9 +8,17 @@ import honoDevPlugin from "./vite/__plugins/hono-dev-plugin.ts";
 import assetOptimizerPlugin from "./vite/__plugins/asset-optimizer-plugin.ts";
 import { DEV_CSP, META_CSP, cspHeader } from "./src/csp.ts";
 import { siteMeta } from "./src/web/lib/site-meta.ts";
+import { applySiteUrl } from "./vite/site-url.mjs";
 import ports from "../../__ports.cjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
+
+/**
+ * Indirizzo pubblico con cui firmare canonical, dati strutturati, sitemap e
+ * prompt: `SITE_URL` lo cambia per la copia su GitHub Pages, altrimenti vale
+ * quello dichiarato in `siteMeta`.
+ */
+const siteUrl = (process.env.SITE_URL || siteMeta.url).replace(/\/?$/, "/");
 
 /**
  * Service worker versionato e precaricato dalla build: sostituisce `__BUILD_ID__`
@@ -66,6 +74,23 @@ function serviceWorkerBuild(): Plugin {
   };
 }
 
+/**
+ * Riscrive l'indirizzo pubblico in tutta la build quando `SITE_URL` indica un
+ * host diverso: canonical, OG, dati strutturati, sitemap, robots e i link
+ * generati dal codice devono parlare dell'host che serve davvero la pagina.
+ */
+function siteUrlPlugin(): Plugin {
+  return {
+    name: "site-url",
+    apply: "build",
+    closeBundle() {
+      const dist = path.resolve(import.meta.dirname, "dist");
+      if (!fs.existsSync(path.join(dist, "index.html"))) return;
+      applySiteUrl(dist, siteMeta.url, siteUrl);
+    },
+  };
+}
+
 /** `sitemap.xml`: senza pagine statiche resta la sola home. */
 function sitemapPlugin(): Plugin {
   return {
@@ -77,8 +102,8 @@ function sitemapPlugin(): Plugin {
 
       // L'app è instradata con hash: l'unico URL indicizzabile è la home.
       // `new URL` invece della concatenazione, così una barra finale mancante
-      // in `siteMeta.url` non produce URL sbagliati in silenzio.
-      const urls = [new URL("", siteMeta.url).href];
+      // in `siteUrl` non produce URL sbagliati in silenzio.
+      const urls = [new URL("", siteUrl).href];
       const updated = new Date().toISOString().slice(0, 10);
 
       const body = [
@@ -153,6 +178,7 @@ export default defineConfig(({ mode }) => {
       sitemapPlugin(),
       devCspPlugin(),
       mirrorCspPlugin(),
+      siteUrlPlugin(),
     ],
     build: {
       // Separa le librerie sempre caricate (React, oRPC, lucide) dal codice

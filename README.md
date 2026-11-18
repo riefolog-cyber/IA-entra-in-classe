@@ -59,6 +59,7 @@ La risposta ricevuta dal modello può essere incollata in "Conserva la lettura r
 ## Pubblicazione
 
 - **Render (host principale)**: `render.yaml` descrive il servizio. Build `bun install && bun run build:web`, avvio `bun packages/web/src/server.ts`, health check `/api/health`. Nessuna chiave o variabile di modello è necessaria.
+- **Indirizzo pubblico**: `siteMeta.url` (Render) è il default di canonical, OG, dati strutturati e sitemap. La build di Pages riceve `SITE_URL=https://riefolog-cyber.github.io/<repo>/` dal workflow, così la copia su Pages dichiara sé stessa invece di duplicare il sito Render.
 - **GitHub Pages**: sorgente impostata su "GitHub Actions" (non più `main`/`docs`). Il workflow `.github/workflows/deploy.yml` ha i job `check` (typecheck su tutti i pacchetti, lint, test) ed `e2e` (Playwright su Chromium): il deploy parte solo se entrambi passano, e pubblica l'artefatto `packages/web/dist`. È un mirror statico: il quaderno, il PDF e il prompt per Gemini funzionano allo stesso modo, perché non richiedono backend.
 - **Server Bun + pm2**: `bun run start`, con l'API di base (`/api/health`).
 

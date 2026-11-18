@@ -48,7 +48,11 @@ jobs:
         with:
           bun-version: "1.3.14"
       - run: bun install --frozen-lockfile
+      # La copia su Pages dichiara sé stessa in canonical, OG, dati strutturati
+      # e sitemap: senza SITE_URL direbbe di essere il sito Render.
       - run: bun run build:web
+        env:
+          SITE_URL: https://riefolog-cyber.github.io/${{ github.event.repository.name }}/
       - run: bun run size
       - run: cp packages/web/dist/index.html packages/web/dist/404.html
       - uses: actions/upload-pages-artifact@v3

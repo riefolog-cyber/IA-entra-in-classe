@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import fs from "node:fs";
 
 /**
  * Percorsi che nessun unit test può coprire: il PDF realmente scaricato, la
@@ -28,6 +29,70 @@ test("senza risposte l'export «in corso» della barra è disattivato", async ({
     .first()
     .fill("Ho verificato le fonti prima di usare la scheda in tavola.");
   await expect(topbarExport).toBeEnabled();
+});
+
+test("il backup JSON riporta indietro anche le letture", async ({ page }) => {
+  await page.goto("/#/riepilogo");
+
+  const box = page.locator(".gemini-box");
+  await box
+    .getByRole("textbox", { name: /^Lettura/ })
+    .fill("Lettura da conservare nel backup: testo abbastanza lungo da essere salvato.");
+  await box.getByRole("button", { name: /Conserva la lettura/ }).click();
+  await expect(box).toContainText("Leggi la lettura conservata");
+
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Esporta JSON" }).click();
+  const backup = await (await download).path();
+  expect(backup).not.toBeNull();
+
+  await page.getByRole("button", { name: /Cancella i miei dati/ }).click();
+  await page.getByRole("button", { name: "Cancella i dati", exact: true }).click();
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("restare-umani-letture-v1")))
+    .toBeNull();
+
+  await page.goto("/#/riepilogo");
+  await page.setInputFiles('input[type="file"]', backup as string);
+  await page.getByRole("button", { name: /Importa e salva copia/ }).click();
+
+  await expect(page.locator(".gemini-box")).toContainText("Leggi la lettura conservata");
+  await expect(page.locator(".gemini-box")).toContainText("Lettura da conservare nel backup");
+});
+
+test("il promemoria si scarica come file .ics", async ({ page }) => {
+  await page.goto("/#/riepilogo");
+  await page.getByLabel("Riprendi più avanti").fill("2026-12-12");
+
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: /Aggiungi al calendario/ }).click();
+  const file = await download;
+
+  expect(file.suggestedFilename()).toBe("restare-umani-promemoria.ics");
+  const ics = fs.readFileSync((await file.path()) as string, "utf8");
+  expect(ics).toContain("DTSTART;VALUE=DATE:20261212");
+  expect(ics).toContain("BEGIN:VEVENT");
+});
+
+test("i titoli delle pagine non saltano livelli", async ({ page }) => {
+  for (const route of ["/#/", "/#/tappa/1", "/#/riepilogo", "/#/approfondimenti", "/#/privacy"]) {
+    await page.goto(route);
+
+    const levels = await page.$$eval("h1,h2,h3,h4,h5,h6", (nodes) =>
+      nodes
+        .filter((node) => (node as HTMLElement).offsetParent !== null)
+        .map((node) => Number(node.tagName.slice(1))),
+    );
+
+    expect(levels.filter((level) => level === 1)).toHaveLength(1);
+    let previous = 0;
+    for (const level of levels) {
+      expect(level, `${route}: salto da h${previous} a h${level}`).toBeLessThanOrEqual(
+        previous + 1,
+      );
+      previous = level;
+    }
+  }
 });
 
 test("l'attestazione si scarica dal riepilogo", async ({ page }) => {

@@ -94,7 +94,7 @@ export function ReadingLog({ scope, notify }: ReadingLogProps) {
 
   return (
     <section className="reading-log" aria-labelledby="reading-log-title">
-      <h5 id="reading-log-title">Conserva la lettura ricevuta</h5>
+      <h4 id="reading-log-title">Conserva la lettura ricevuta</h4>
       <p>
         Incolla qui la risposta che ti ha dato il modello: resta in questo browser accanto al
         quaderno, con la data. Il sito non la invia a nessuno e non la controlla.

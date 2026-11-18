@@ -85,7 +85,7 @@ export function GeminiPromptBox({
 
   return (
     <section className="gemini-box" aria-labelledby="gemini-title">
-      <h4 id="gemini-title">Leggi il percorso con Gemini</h4>
+      <h3 id="gemini-title">Leggi il percorso con Gemini</h3>
       <p>
         Il quaderno in PDF contiene tutto ciò che hai scritto. Puoi caricarlo in Gemini, o in un
         altro modello, con un prompt già scritto: il sito non chiama alcun modello e non conserva

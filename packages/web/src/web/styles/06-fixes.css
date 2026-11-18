@@ -3359,7 +3359,7 @@ body.dark .topbar-export:hover:not(:disabled),
   border-radius: 12px;
   background: #f8faf3;
 }
-.gemini-box h4 {
+.gemini-box h3 {
   margin: 0 0 6px;
   color: var(--green-deep);
 }
@@ -3425,7 +3425,7 @@ body.dark .gemini-box,
   color: #e7efe8 !important;
 }
 body.dark .gemini-box h4,
-.dark .gemini-box h4 {
+.dark .gemini-box h3 {
   color: #f6fbf7 !important;
 }
 body.dark .gemini-prompt-preview pre,
@@ -3495,7 +3495,7 @@ body.dark .gemini-coverage,
   padding-top: 12px;
   border-top: 1px dashed #cfdcc4;
 }
-.reading-log h5 {
+.reading-log h4 {
   margin: 0 0 4px;
   font-size: 13px;
   letter-spacing: 0.04em;

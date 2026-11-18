@@ -1345,7 +1345,7 @@ details[open] summary > svg:last-child {
   padding: 0 10px 24px;
   font-size: 14.5px;
 }
-.summary-step h4 {
+.summary-step h3 {
   font-size: 13px;
   font-weight: 500;
   margin-top: 18px;

@@ -5,8 +5,8 @@ import { robustGetSync, robustRemove, robustSet } from "../lib/safe-storage";
 const SENT_KEY = "restare-umani-feedback";
 
 // Form pubblico: https://docs.google.com/forms/d/1hxlD_cUGAbZ973Ban5wpU0IqdExpGPa4HB8okZfh-b0/edit
-const FORM_RESPONSE =
-  "https://docs.google.com/forms/d/e/1FAIpQLScHacKURs-Exni9nb62SenSPPXZu_gSUq1HggdWYRF6wNQY0A/formResponse";
+const FORM_VIEW =
+  "https://docs.google.com/forms/d/e/1FAIpQLScHacKURs-Exni9nb62SenSPPXZu_gSUq1HggdWYRF6wNQY0A/viewform";
 
 // Entry ID estratti automaticamente dal form pubblico.
 const ENTRIES = {
@@ -20,44 +20,63 @@ export function clearFeedbackFlag(): void {
   robustRemove(SENT_KEY);
 }
 
+/** Indirizzo del questionario con le risposte già compilate (esportato per il test). */
+export function prefilledFeedbackUrl(feedback: { u: number; c: number; open: string }): string {
+  const params = new URLSearchParams({ usp: "pp_url" });
+  if (feedback.u) params.set(ENTRIES.utility, String(feedback.u));
+  if (feedback.c) params.set(ENTRIES.clarity, String(feedback.c));
+  if (feedback.open.trim()) params.set(ENTRIES.open, feedback.open.trim());
+  return `${FORM_VIEW}?${params.toString()}`;
+}
+
 export function useFeedback(notify: (message: string) => void) {
   const [feedback, setFeedback] = useState({ u: 0, c: 0, open: "" });
   const [feedbackSent, setFeedbackSent] = useState(() => robustGetSync(SENT_KEY) === "1");
   const [feedbackError, setFeedbackError] = useState("");
+  /** Se il browser blocca la finestra, il link resta a portata di mano. */
+  const [feedbackFallback, setFeedbackFallback] = useState("");
 
-  const submitFeedback = async () => {
+  /**
+   * Apre il modulo Google in una nuova scheda, con le risposte già compilate.
+   * Prima il sito inviava con `fetch(..., { mode: "no-cors" })`: quella
+   * richiesta "riesce" anche se Google risponde 400 o il modulo è chiuso, e
+   * l'utente vedeva «Grazie» senza che nulla fosse arrivato.
+   */
+  const submitFeedback = () => {
     setFeedbackError("");
+    setFeedbackFallback("");
 
-    const params = new URLSearchParams();
-    if (feedback.u) params.set(ENTRIES.utility, String(feedback.u));
-    if (feedback.c) params.set(ENTRIES.clarity, String(feedback.c));
-    if (feedback.open.trim()) params.set(ENTRIES.open, feedback.open.trim());
+    const url = prefilledFeedbackUrl(feedback);
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
 
-    try {
-      await fetch(FORM_RESPONSE, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params.toString(),
-      });
-    } catch {
-      // no-cors: qui la richiesta non è nemmeno partita (rete assente).
-      // Segnare il feedback come inviato sarebbe una bugia: si invita a riprovare.
-      setFeedbackError("Feedback non inviato: controlla la connessione e riprova.");
+    if (!opened) {
+      setFeedbackFallback(url);
+      setFeedbackError(
+        "Il browser ha bloccato la nuova scheda: apri il questionario con il link qui sotto.",
+      );
       return;
     }
 
     void robustSet(SENT_KEY, "1");
     setFeedbackSent(true);
-    notify("Grazie per il feedback!");
+    notify("Questionario aperto in una nuova scheda: invialo da lì.");
   };
 
   const resetFeedback = () => {
     robustRemove(SENT_KEY);
     setFeedbackSent(false);
     setFeedbackError("");
+    setFeedbackFallback("");
     setFeedback({ u: 0, c: 0, open: "" });
   };
 
-  return { feedback, setFeedback, feedbackSent, feedbackError, submitFeedback, resetFeedback };
+  return {
+    feedback,
+    setFeedback,
+    feedbackSent,
+    feedbackError,
+    feedbackFallback,
+    submitFeedback,
+    resetFeedback,
+  };
 }
