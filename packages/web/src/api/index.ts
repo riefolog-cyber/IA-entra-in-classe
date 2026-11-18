@@ -1,5 +1,6 @@
 import type { RouterClient } from "@orpc/server";
 import { createApp } from "./__core/app";
+import { ping } from "./routes/ping";
 
 // API features are oRPC procedures, one file per feature in ./routes/,
 // composed into this router — typed end-to-end via the clients
@@ -8,11 +9,13 @@ import { createApp } from "./__core/app";
 // split into more feature files as they grow.
 // Patterns and examples: skills/app/references/api.md
 //
-// Il sito non ha procedure: l'analisi è affidata al prompt per un modello
-// esterno e tutto il resto vive nel browser. Il router resta perché
-// `createApp` monta `/api/health` e oRPC; aggiungere una procedura qui è
-// l'unico punto da toccare quando servirà.
-export const router = {};
+// Il sito non chiama l'API: l'analisi è affidata al prompt per un modello
+// esterno e tutto il resto vive nel browser. Resta `ping`, usata dal client
+// mobile di scaffolding; aggiungere una procedura qui è l'unico punto da
+// toccare quando servirà.
+export const router = {
+  ping,
+};
 
 export type AppRouter = typeof router;
 /** Typed client for the router — used by the web and mobile api clients. */

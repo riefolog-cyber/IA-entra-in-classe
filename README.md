@@ -29,7 +29,7 @@ I nomi dei comandi sono il contratto con gli strumenti di pubblicazione: le impl
 - `packages/web/src/web/hooks/` — quaderno locale (`useNotebook`), esportazione (`useExportPdf`), feedback.
 - `packages/web/src/web/lib/` — contenuti delle tappe, stato e sua sanificazione, prompt per l'analisi esterna, PDF.
 - `packages/web/src/http-server.ts` — server Bun di produzione: file statici, fallback SPA, `Cache-Control` e header di sicurezza (fuori dai file `__` protetti dal template).
-- `packages/web/src/api/` — server Hono + oRPC: solo `/api/health`, senza servizi esterni né chiavi.
+- `packages/web/src/api/` — server Hono + oRPC: `/api/health` e la procedura `ping` (usata dal client mobile di scaffolding); nessun servizio esterno, nessuna chiave.
 - `packages/web/src/csp.ts` — unica fonte delle direttive CSP, condivisa da server Bun, `<meta>` del mirror e sviluppo.
 - `packages/web/src/web/boot-guard.ts` — schermata di emergenza se il bootstrap dell'app fallisce.
 - `packages/web/e2e/` — test Playwright sul build, con `playwright.config.ts` che avvia l'anteprima.
