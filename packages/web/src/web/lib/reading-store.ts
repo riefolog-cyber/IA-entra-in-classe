@@ -166,6 +166,34 @@ export function removeReading(id: string): SavedReading[] {
   return list;
 }
 
+/** Etichetta dell'ambito, con il titolo breve della tappa quando c'è. */
+function scopeName(scope: number | null): string {
+  if (scope === null) return "tutto il quaderno";
+  const step = steps[scope];
+  return step ? `tappa ${scope + 1} — ${step.short}` : `tappa ${scope + 1}`;
+}
+
+/**
+ * Tutte le letture in un solo testo: chi le porta in dipartimento non deve
+ * scaricare cinque file e ricomporli a mano.
+ */
+export function formatReadingsExport(readings: SavedReading[], now: Date = new Date()): string {
+  const header = [
+    "Restare umani · letture conservate",
+    `Esportate il ${formatReadingDate(now.getTime())}`,
+    "Testi ricevuti da un modello esterno e incollati dal docente: il sito non li ha prodotti né verificati.",
+  ].join("\n");
+
+  const blocks = readings.map((reading) =>
+    [
+      `${formatReadingDate(reading.at)} · ${reading.model || "modello non indicato"} · ${scopeName(reading.scope)}`,
+      reading.text,
+    ].join("\n"),
+  );
+
+  return [header, ...blocks].join("\n\n---\n\n") + "\n";
+}
+
 export function formatReadingDate(at: number): string {
   return new Date(at).toLocaleString("it-IT", {
     day: "numeric",

@@ -8,7 +8,7 @@ import honoDevPlugin from "./vite/__plugins/hono-dev-plugin.ts";
 import assetOptimizerPlugin from "./vite/__plugins/asset-optimizer-plugin.ts";
 import { DEV_CSP, META_CSP, cspHeader } from "./src/csp.ts";
 import { siteMeta } from "./src/web/lib/site-meta.ts";
-import { applyBuildDate, applySiteUrl } from "./vite/site-url.mjs";
+import { applyContentDate, applySiteUrl } from "./vite/site-url.mjs";
 import ports from "../../__ports.cjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
@@ -87,8 +87,9 @@ function siteUrlPlugin(): Plugin {
       const dist = path.resolve(import.meta.dirname, "dist");
       if (!fs.existsSync(path.join(dist, "index.html"))) return;
       applySiteUrl(dist, siteMeta.url, siteUrl);
-      // La data nei dati strutturati è quella della build, non una scritta a mano.
-      applyBuildDate(dist, new Date().toISOString().slice(0, 10));
+      // La data nei dati strutturati è quella dell'ultima revisione dei contenuti,
+      // non quella del deploy: un rilascio di codice non rende «nuovo» il corso.
+      applyContentDate(dist, siteMeta.reviewedAtIso);
     },
   };
 }

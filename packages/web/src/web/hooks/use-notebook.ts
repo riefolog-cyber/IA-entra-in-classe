@@ -14,7 +14,7 @@ import {
   stepCount,
   type NotebookBackup,
 } from "../lib/notebook-state";
-import { LAST_EXPORT_KEY } from "../lib/backup-reminder";
+import { LAST_EXPORT_KEY, SNOOZE_KEY } from "../lib/backup-reminder";
 import { clearReadings } from "../lib/reading-store";
 import { clearFeedbackFlag } from "./use-feedback";
 import {
@@ -256,6 +256,7 @@ export function useNotebook() {
     // sopravvivere, altrimenti il promemoria tace su un quaderno nuovo.
     clearFeedbackFlag();
     robustRemove(LAST_EXPORT_KEY);
+    robustRemove(SNOOZE_KEY);
     // Anche le letture incollate da un modello: contengono testo libero e
     // devono sparire con il resto, altrimenti «Cancella i miei dati» mentirebbe.
     clearReadings();

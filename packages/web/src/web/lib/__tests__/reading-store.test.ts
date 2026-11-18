@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import {
   clearReadings,
   formatReadingDate,
+  formatReadingsExport,
   loadReadings,
   MAX_READINGS,
   READINGS_KEY,
@@ -180,6 +181,24 @@ describe("letture conservate", () => {
     }));
 
     expect(mergeReadings(many)).toHaveLength(MAX_READINGS);
+  });
+
+  test("l'esportazione unica contiene tutte le letture, con data e ambito", () => {
+    clearReadings();
+    saveReading({ model: "Gemini", scope: 2, text: `${LONG} Prima lettura.` });
+    const list = saveReading({ model: "", scope: null, text: `${LONG} Seconda lettura.` });
+    const text = formatReadingsExport(list);
+
+    expect(text).toContain("Restare umani · letture conservate");
+    expect(text).toContain("Prima lettura.");
+    expect(text).toContain("Seconda lettura.");
+    expect(text).toContain("tappa 3");
+    expect(text).toContain("modello non indicato");
+    expect(text).toContain("tutto il quaderno");
+    // Ogni lettura è separata: senza, i testi sembrerebbero uno solo.
+    expect(text.split("---").length).toBeGreaterThanOrEqual(list.length);
+    // La più recente viene prima, come nel registro.
+    expect(text.indexOf("Seconda lettura.")).toBeLessThan(text.indexOf("Prima lettura."));
   });
 
   test("la data è leggibile in italiano", () => {

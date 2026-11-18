@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { copyText, downloadText } from "../../lib/clipboard";
 import {
   formatReadingDate,
+  formatReadingsExport,
   loadReadings,
   READINGS_KEY,
   MAX_READING_LENGTH,
@@ -133,6 +134,20 @@ export function ReadingLog({ scope, notify }: ReadingLogProps) {
       <output className="screen-reader-only" aria-live="polite">
         {readings.length > 0 ? `${readings.length} letture conservate` : ""}
       </output>
+
+      {readings.length > 0 ? (
+        <div className="reading-log-actions">
+          <button
+            className="text-button"
+            type="button"
+            onClick={() =>
+              downloadText(formatReadingsExport(readings), "restare-umani-letture.txt")
+            }
+          >
+            <Download size={14} aria-hidden="true" /> Scarica tutte le letture (.txt)
+          </button>
+        </div>
+      ) : null}
 
       {readings.length > 0 ? (
         <ul className="reading-log-list">

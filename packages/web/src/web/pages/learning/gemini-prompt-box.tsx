@@ -10,7 +10,7 @@ import {
   buildGeminiStepPrompt,
 } from "../../lib/gemini-prompt";
 import { copyText, downloadText } from "../../lib/clipboard";
-import { describeCoverage, notebookCoverage } from "../../lib/notebook-coverage";
+import { MIN_MEANINGFUL, describeCoverage, notebookCoverage } from "../../lib/notebook-coverage";
 import { steps, type SavedState } from "../../lib/teacher-content";
 import { ReadingLog } from "./reading-log";
 
@@ -98,7 +98,8 @@ export function GeminiPromptBox({
           {exportButton ? <div className="gemini-export">{exportButton}</div> : null}
           <p className="gemini-coverage">
             {describeCoverage(coverage)} Il modello leggerà solo ciò che c’è: le tappe vuote restano
-            mute.
+            mute. Una tappa conta come lavorata con almeno {MIN_MEANINGFUL} caratteri in una
+            risposta, oppure con un quiz o uno scenario scelti.
           </p>
         </li>
         <li>

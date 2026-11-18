@@ -41,6 +41,13 @@ test("il backup JSON riporta indietro anche le letture", async ({ page }) => {
   await box.getByRole("button", { name: /Conserva la lettura/ }).click();
   await expect(box).toContainText("Leggi la lettura conservata");
 
+  // Tutte le letture in un file solo: chi le porta in dipartimento non deve
+  // ricomporre cinque download.
+  const combined = page.waitForEvent("download");
+  await box.getByRole("button", { name: /Scarica tutte le letture/ }).click();
+  const archive = await combined;
+  expect(archive.suggestedFilename()).toBe("restare-umani-letture.txt");
+
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Esporta JSON" }).click();
   const backup = await (await download).path();
@@ -189,6 +196,33 @@ test("i contorni dei campi hanno almeno 3:1 di contrasto", async ({ page }) => {
 
   expect(ratios.length).toBeGreaterThan(0);
   for (const ratio of ratios) expect(ratio).toBeGreaterThanOrEqual(3);
+});
+
+test("offline il quaderno si riapre dalla cache, con le risposte", async ({ page, context }) => {
+  await page.goto("/?sw=1");
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const registration = await navigator.serviceWorker.getRegistration();
+        return Boolean(registration?.active);
+      }),
+    )
+    .toBe(true);
+  // Una seconda visita: il worker attivo controlla la pagina e mette in cache
+  // la shell e gli asset.
+  await page.reload();
+
+  await page.goto("/#/tappa/1");
+  await page.getByRole("textbox").first().fill("Risposta scritta prima di perdere la connessione.");
+  await expect
+    .poll(() => page.evaluate((key) => localStorage.getItem(key) ?? "", NOTEBOOK_KEY))
+    .toContain("prima di perdere la connessione");
+
+  await context.setOffline(true);
+  await page.reload();
+
+  await expect(page.getByRole("textbox").first()).toHaveValue(/prima di perdere la connessione/);
+  await context.setOffline(false);
 });
 
 test("il questionario si apre precompilato in una nuova scheda", async ({ page, context }) => {

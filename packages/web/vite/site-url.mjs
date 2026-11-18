@@ -35,10 +35,11 @@ export function applySiteUrl(distDir, from, to) {
 }
 
 /**
- * La data di modifica nei dati strutturati non deve essere scritta a mano: è
- * l'unico campo che invecchia da solo. Si sostituisce a ogni build.
+ * La data di modifica nei dati strutturati segue la revisione dei contenuti
+ * (`siteMeta.reviewedAtIso`), non il deploy: un rilascio di codice non rende
+ * «nuovo» il percorso.
  */
-export function applyBuildDate(distDir, isoDate) {
+export function applyContentDate(distDir, isoDate) {
   let touched = 0;
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

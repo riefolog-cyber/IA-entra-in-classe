@@ -10,7 +10,7 @@ import {
 import { useState, type ReactNode, type RefObject } from "react";
 
 import { useFeedback } from "../../hooks/use-feedback";
-import { lastBackupAt, shouldSuggestBackup } from "../../lib/backup-reminder";
+import { lastBackupAt, shouldSuggestBackup, snoozeBackupReminder } from "../../lib/backup-reminder";
 import { buildCalendarEvent } from "../../lib/calendar";
 import { downloadText } from "../../lib/clipboard";
 import { canExportAttestation } from "../../lib/export-attestation";
@@ -225,7 +225,7 @@ export function SummaryView(props: SummaryProps) {
             <small>/{totalFields}</small>
           </strong>
 
-          <span>Domande e scelte compilate</span>
+          <span>Campi con una risposta</span>
         </div>
         <div>
           <strong>
@@ -233,7 +233,7 @@ export function SummaryView(props: SummaryProps) {
             <small>%</small>
           </strong>
 
-          <span>Campi compilati</span>
+          <span>Campi con una risposta</span>
         </div>
       </div>
 
@@ -326,9 +326,12 @@ export function SummaryView(props: SummaryProps) {
                 <button
                   className="text-button"
                   type="button"
-                  onClick={() => setSuggestBackup(false)}
+                  onClick={() => {
+                    snoozeBackupReminder();
+                    setSuggestBackup(false);
+                  }}
                 >
-                  Non ora
+                  Non ora (tra una settimana)
                 </button>
               </div>
             </div>

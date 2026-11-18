@@ -10,6 +10,10 @@ import { robustGetSync, robustSet } from "./safe-storage";
 
 export const LAST_EXPORT_KEY = "restare-umani-ultimo-export-v1";
 
+/** «Non ora» non deve tornare alla visita successiva: vale una settimana. */
+export const SNOOZE_KEY = "restare-umani-backup-snooze-v1";
+export const SNOOZE_DAYS = 7;
+
 /** Tre settimane: abbastanza da non essere fastidioso, poco per un percorso di dieci tappe. */
 export const BACKUP_REMINDER_DAYS = 21;
 
@@ -27,9 +31,25 @@ export function lastBackupAt(): number | null {
   return raw && Number.isFinite(value) ? value : null;
 }
 
+/** Rimanda il promemoria: chi ha già scelto «Non ora» non lo rivede subito. */
+export function snoozeBackupReminder(days: number = SNOOZE_DAYS, now: number = Date.now()): void {
+  void robustSet(SNOOZE_KEY, String(now + days * DAY_MS));
+}
+
+/** Istante fino al quale il promemoria resta zitto, oppure `null`. */
+export function snoozedUntil(): number | null {
+  const raw = robustGetSync(SNOOZE_KEY);
+  const value = Number(raw);
+  return raw && Number.isFinite(value) ? value : null;
+}
+
 /** Il promemoria ha senso solo se c'è qualcosa da perdere e l'ultima copia è vecchia. */
 export function shouldSuggestBackup(hasContent: boolean, now: number = Date.now()): boolean {
   if (!hasContent) return false;
+
+  const until = snoozedUntil();
+  if (until !== null && now < until) return false;
+
   const last = lastBackupAt();
   return last === null || now - last >= BACKUP_REMINDER_DAYS * DAY_MS;
 }
