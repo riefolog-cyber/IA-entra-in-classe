@@ -22,10 +22,13 @@ export async function copyText(text: string): Promise<boolean> {
       area.style.position = "fixed";
       area.style.opacity = "0";
       document.body.append(area);
-      area.select();
-      const ok = document.execCommand("copy");
-      area.remove();
-      return ok;
+      try {
+        area.select();
+        return document.execCommand("copy");
+      } finally {
+        // Anche se `execCommand` lancia, il campo temporaneo non resta nel DOM.
+        area.remove();
+      }
     } catch {
       return false;
     }
@@ -33,8 +36,12 @@ export async function copyText(text: string): Promise<boolean> {
 }
 
 /** Scarica un testo come file: funziona anche dove gli appunti sono bloccati. */
-export function downloadText(text: string, filename: string): void {
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+export function downloadText(
+  text: string,
+  filename: string,
+  type = "text/plain;charset=utf-8",
+): void {
+  const blob = new Blob([text], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

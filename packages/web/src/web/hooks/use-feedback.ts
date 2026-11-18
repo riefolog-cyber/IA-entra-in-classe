@@ -15,6 +15,11 @@ const ENTRIES = {
   open: "entry.948175716",
 };
 
+/** «Cancella i miei dati» rimuove anche il segno «feedback già inviato». */
+export function clearFeedbackFlag(): void {
+  robustRemove(SENT_KEY);
+}
+
 export function useFeedback(notify: (message: string) => void) {
   const [feedback, setFeedback] = useState({ u: 0, c: 0, open: "" });
   const [feedbackSent, setFeedbackSent] = useState(() => robustGetSync(SENT_KEY) === "1");

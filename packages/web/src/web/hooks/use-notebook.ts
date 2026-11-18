@@ -15,6 +15,7 @@ import {
   type NotebookBackup,
 } from "../lib/notebook-state";
 import { clearReadings } from "../lib/reading-store";
+import { clearFeedbackFlag } from "./use-feedback";
 import {
   detectSyncBackend,
   idbGet,
@@ -249,6 +250,8 @@ export function useNotebook() {
     robustRemove(BACKUP_KEY);
     // Testo rimasto da funzioni non più presenti nel sito.
     LEGACY_KEYS.forEach((key) => robustRemove(key));
+    // Il segno «questionario già inviato» è comunque uno stato salvato dal sito.
+    clearFeedbackFlag();
     // Anche le letture incollate da un modello: contengono testo libero e
     // devono sparire con il resto, altrimenti «Cancella i miei dati» mentirebbe.
     clearReadings();

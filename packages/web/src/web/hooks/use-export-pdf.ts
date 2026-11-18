@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 
 import { NAME_REQUIRED_MESSAGE, exportAttestation } from "../lib/export-attestation";
 import { exportPdf, type ExportPdfOptions } from "../lib/export-pdf";
+import { downloadText } from "../lib/clipboard";
 import { parseState } from "../lib/notebook-state";
 import { loadReadings, replaceReadings } from "../lib/reading-store";
 import type { SavedState } from "../lib/teacher-content";
@@ -87,17 +88,11 @@ export function useExportPdf({ data, previousData, setData, notify, backup }: Op
     // Il backup contiene anche le letture: sono parole del docente, e senza di
     // loro cambiare dispositivo o svuotare il browser le perderebbe per sempre.
     const payload = { ...data, readings: loadReadings() };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "restare-umani-dati.json";
-    a.rel = "noopener";
-    document.body.append(a);
-    a.click();
-    a.remove();
-    // Safari annulla il download se l'URL viene revocato nello stesso tick.
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadText(
+      JSON.stringify(payload, null, 2),
+      "restare-umani-dati.json",
+      "application/json;charset=utf-8",
+    );
     notify("Dati esportati in JSON, letture comprese.");
   };
 

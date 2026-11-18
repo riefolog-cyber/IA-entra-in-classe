@@ -15,6 +15,21 @@ async function waitForSaved(page: import("@playwright/test").Page) {
     .toContain("Docente di prova");
 }
 
+test("senza risposte l'export «in corso» della barra è disattivato", async ({ page }) => {
+  await page.goto("/#/tappa/1");
+
+  const topbarExport = page.locator(".topbar-export");
+  await expect(topbarExport).toBeDisabled();
+  await expect(topbarExport).toHaveAttribute("title", /almeno una risposta/);
+
+  // Con una risposta il comando torna disponibile: il PDF ha qualcosa da dire.
+  await page
+    .getByRole("textbox")
+    .first()
+    .fill("Ho verificato le fonti prima di usare la scheda in tavola.");
+  await expect(topbarExport).toBeEnabled();
+});
+
 test("l'attestazione si scarica dal riepilogo", async ({ page }) => {
   await page.goto("/#/riepilogo");
   await page.getByLabel("Nome").fill("Docente di prova");

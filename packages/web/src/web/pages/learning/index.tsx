@@ -87,6 +87,8 @@ export default function Learning() {
   const step = steps[stepIndex] ?? steps[0];
   const answered = Object.entries(data.answers).filter(([, value]) => value.trim()).length;
   const progressPct = totalFields ? Math.round((answered / totalFields) * 100) : 0;
+  /** C'è qualcosa da esportare: senza, il PDF «in corso» sarebbe un quaderno vuoto. */
+  const hasContent = answered > 0 || data.completed.length > 0;
   const nextStepIndex = steps.findIndex((_, i) => !data.completed.includes(i));
   const nextStep = nextStepIndex >= 0 ? nextStepIndex : data.current;
   const summaryStatus =
@@ -313,10 +315,14 @@ export default function Learning() {
               <button
                 className="topbar-export"
                 type="button"
-                disabled={exporting}
+                disabled={exporting || !hasContent}
                 onClick={() => download({ partial: true })}
                 aria-label="Esporta in PDF il lavoro fatto finora"
-                title="Esporta in PDF le tappe già avviate"
+                title={
+                  hasContent
+                    ? "Esporta in PDF le tappe già avviate"
+                    : "Scrivi almeno una risposta per esportare il lavoro in corso"
+                }
               >
                 <Download size={15} />
                 <span>{exporting ? "Generazione…" : "Esporta PDF"}</span>

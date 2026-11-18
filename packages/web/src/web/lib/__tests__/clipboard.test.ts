@@ -9,6 +9,7 @@ import { JSDOM } from "jsdom";
  */
 let dom: JSDOM;
 let clicked: Array<{ download: string; href: string }> = [];
+let lastBlob: Blob | null = null;
 
 beforeAll(() => {
   dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/" });
@@ -19,7 +20,13 @@ beforeAll(() => {
   globals.navigator = dom.window.navigator;
 
   // jsdom non implementa gli object URL: bastano due sostituti registrabili.
-  Object.defineProperty(URL, "createObjectURL", { configurable: true, value: () => "blob:test" });
+  Object.defineProperty(URL, "createObjectURL", {
+    configurable: true,
+    value: (blob: Blob) => {
+      lastBlob = blob;
+      return "blob:test";
+    },
+  });
   Object.defineProperty(URL, "revokeObjectURL", { configurable: true, value: () => {} });
 
   dom.window.HTMLAnchorElement.prototype.click = function (this: HTMLAnchorElement) {
@@ -31,6 +38,7 @@ afterAll(() => dom.window.close());
 
 beforeEach(() => {
   clicked = [];
+  lastBlob = null;
 });
 
 describe("appunti e download", () => {
@@ -74,5 +82,15 @@ describe("appunti e download", () => {
     expect(clicked).toHaveLength(1);
     expect(clicked[0].download).toBe("prompt-gemini-quaderno.txt");
     expect(clicked[0].href).toContain("blob:test");
+    expect(lastBlob?.type).toBe("text/plain;charset=utf-8");
+  });
+
+  test("il tipo del file si può scegliere: il backup JSON resta JSON", async () => {
+    const { downloadText } = await import("../clipboard");
+
+    downloadText("{}", "restare-umani-dati.json", "application/json;charset=utf-8");
+
+    expect(clicked[0].download).toBe("restare-umani-dati.json");
+    expect(lastBlob?.type).toBe("application/json;charset=utf-8");
   });
 });
