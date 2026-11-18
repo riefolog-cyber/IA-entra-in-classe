@@ -12,7 +12,7 @@ export const LEGACY_KEYS = ["restare-umani-analisi-v1"];
 export const MAX_BACKUPS = 3;
 export const stepCount = steps.length;
 
-/** Tetto per una singola risposta: un incolla enorme non deve pesare su storage, PDF e sintesi IA. */
+/** Tetto per una singola risposta: un incolla enorme non deve pesare su storage e PDF. */
 export const MAX_ANSWER_LENGTH = 4000;
 
 /** Il nome compare solo nel PDF: uno spazio breve è sufficiente. */
