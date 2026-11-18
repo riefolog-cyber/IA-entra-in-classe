@@ -584,7 +584,7 @@ export function SummaryView(props: SummaryProps) {
             </div>
 
             {feedbackError && (
-              <div className="ai-error" role="alert">
+              <div className="notice" role="alert">
                 {feedbackError}{" "}
                 {feedbackFallback ? (
                   <a href={feedbackFallback} target="_blank" rel="noreferrer noopener">

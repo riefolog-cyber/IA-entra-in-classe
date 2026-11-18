@@ -20,6 +20,27 @@ export function clearFeedbackFlag(): void {
   robustRemove(SENT_KEY);
 }
 
+/**
+ * Apre un indirizzo in una nuova scheda e dice se il browser l'ha permesso.
+ *
+ * `window.open(url, "_blank", "noopener")` restituisce **sempre** `null` (lo
+ * impone la specifica), quindi non si può usare `noopener` per decidere se la
+ * finestra si è aperta: si apre senza feature e si recide il riferimento dopo.
+ */
+export function openInNewTab(
+  url: string,
+  open: typeof window.open = window.open.bind(window),
+): boolean {
+  const opened = open(url, "_blank");
+  if (!opened) return false;
+  try {
+    opened.opener = null;
+  } catch {
+    /* cross-origin: la nuova scheda è già isolata */
+  }
+  return true;
+}
+
 /** Indirizzo del questionario con le risposte già compilate (esportato per il test). */
 export function prefilledFeedbackUrl(feedback: { u: number; c: number; open: string }): string {
   const params = new URLSearchParams({ usp: "pp_url" });
@@ -47,9 +68,8 @@ export function useFeedback(notify: (message: string) => void) {
     setFeedbackFallback("");
 
     const url = prefilledFeedbackUrl(feedback);
-    const opened = window.open(url, "_blank", "noopener,noreferrer");
 
-    if (!opened) {
+    if (!openInNewTab(url)) {
       setFeedbackFallback(url);
       setFeedbackError(
         "Il browser ha bloccato la nuova scheda: apri il questionario con il link qui sotto.",

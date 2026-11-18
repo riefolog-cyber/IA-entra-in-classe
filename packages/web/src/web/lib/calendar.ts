@@ -15,6 +15,21 @@ export function icsDate(date: Date): string {
   return `${year}${month}${day}`;
 }
 
+/** Istante UTC completo, il formato che `DTSTAMP` richiede (`20261118T093000Z`). */
+function icsTimestamp(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return [
+    date.getUTCFullYear(),
+    pad(date.getUTCMonth() + 1),
+    pad(date.getUTCDate()),
+    "T",
+    pad(date.getUTCHours()),
+    pad(date.getUTCMinutes()),
+    pad(date.getUTCSeconds()),
+    "Z",
+  ].join("");
+}
+
 /** Le righe di un .ics non superano 75 ottetti: le continuazioni iniziano con uno spazio. */
 function fold(line: string): string {
   const bytes = new TextEncoder().encode(line);
@@ -69,7 +84,7 @@ export function buildCalendarEvent(event: CalendarEvent): string {
     "BEGIN:VEVENT",
     // L'UID deve essere stabile per lo stesso evento: data più sito, senza caso.
     `UID:${icsDate(start)}-restare-umani@ia-entra-in-classe`,
-    `DTSTAMP:${icsDate(stamp).slice(0, 8)}T000000Z`,
+    `DTSTAMP:${icsTimestamp(stamp)}`,
     `DTSTART;VALUE=DATE:${icsDate(start)}`,
     `DTEND;VALUE=DATE:${icsDate(end)}`,
     `SUMMARY:${escape(event.title)}`,

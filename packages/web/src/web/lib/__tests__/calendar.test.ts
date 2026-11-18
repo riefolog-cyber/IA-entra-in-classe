@@ -13,12 +13,18 @@ describe("promemoria .ics", () => {
     title: "Riprendi il percorso: Restare umani",
     description: "Torna al quaderno; le risposte sono nel browser.",
     url: "https://ia-entra-in-classe.onrender.com/#/riepilogo",
-    now: new Date(2026, 10, 18, 9, 30),
+    now: new Date(Date.UTC(2026, 10, 18, 9, 30, 15)),
   };
 
   test("usa date locali, non UTC: il giorno è quello scelto", () => {
     expect(icsDate(new Date(2026, 11, 12))).toBe("20261212");
     expect(icsDate(new Date(2026, 0, 5))).toBe("20260105");
+  });
+
+  test("DTSTAMP è un istante UTC completo, non mezzanotte locale", () => {
+    const ics = buildCalendarEvent(event);
+
+    expect(ics).toContain("DTSTAMP:20261118T093015Z");
   });
 
   test("produce un evento di un giorno intero che finisce il giorno dopo", () => {
