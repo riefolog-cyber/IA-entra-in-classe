@@ -176,11 +176,13 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwind(),
       assetOptimizerPlugin(),
+      // Prima del service worker: il suo `BUILD_ID` deve derivare dall'index
+      // definitivo, non da uno che cambia ancora dopo (URL e data).
+      siteUrlPlugin(),
       serviceWorkerBuild(),
       sitemapPlugin(),
       devCspPlugin(),
       mirrorCspPlugin(),
-      siteUrlPlugin(),
     ],
     build: {
       // Separa le librerie sempre caricate (React, oRPC, lucide) dal codice

@@ -71,4 +71,17 @@ describe("foglio di stile", () => {
 
     expect(dead).toEqual([]);
   });
+
+  test("non tornano regole per il tema chiaro: il sito è pubblicato solo in scuro", () => {
+    // `index.tsx` impone `dark` su html e body, quindi `.light`/`body:not(.dark)`
+    // non possono mai applicarsi. Se ricompaiono, è codice che nessuno vedrà.
+    const lightRules = files(path.join(WEB, "src/web/styles"), /\.css$/).flatMap((file) => {
+      const css = code(file);
+      return [/body:not\(\.dark\)/g, /(?:^|[\s>+~])\.light(?![A-Za-z0-9_-])/g].flatMap((pattern) =>
+        [...css.matchAll(pattern)].map(() => path.relative(WEB, file)),
+      );
+    });
+
+    expect(lightRules).toEqual([]);
+  });
 });

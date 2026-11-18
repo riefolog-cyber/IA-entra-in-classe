@@ -52,6 +52,11 @@ test("il backup JSON riporta indietro anche le letture", async ({ page }) => {
     .poll(() => page.evaluate(() => localStorage.getItem("restare-umani-letture-v1")))
     .toBeNull();
 
+  // Anche la data dell'ultimo backup sparisce: è stato salvato dal sito.
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("restare-umani-ultimo-export-v1")))
+    .toBeNull();
+
   await page.goto("/#/riepilogo");
   await page.setInputFiles('input[type="file"]', backup as string);
   await page.getByRole("button", { name: /Importa e salva copia/ }).click();

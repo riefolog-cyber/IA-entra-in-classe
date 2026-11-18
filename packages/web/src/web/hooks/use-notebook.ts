@@ -14,6 +14,7 @@ import {
   stepCount,
   type NotebookBackup,
 } from "../lib/notebook-state";
+import { LAST_EXPORT_KEY } from "../lib/backup-reminder";
 import { clearReadings } from "../lib/reading-store";
 import { clearFeedbackFlag } from "./use-feedback";
 import {
@@ -250,8 +251,11 @@ export function useNotebook() {
     robustRemove(BACKUP_KEY);
     // Testo rimasto da funzioni non più presenti nel sito.
     LEGACY_KEYS.forEach((key) => robustRemove(key));
-    // Il segno «questionario già inviato» è comunque uno stato salvato dal sito.
+    // Il segno «questionario già inviato» e la data dell'ultimo backup sono
+    // comunque stati salvati dal sito: dopo la cancellazione non devono
+    // sopravvivere, altrimenti il promemoria tace su un quaderno nuovo.
     clearFeedbackFlag();
+    robustRemove(LAST_EXPORT_KEY);
     // Anche le letture incollate da un modello: contengono testo libero e
     // devono sparire con il resto, altrimenti «Cancella i miei dati» mentirebbe.
     clearReadings();
